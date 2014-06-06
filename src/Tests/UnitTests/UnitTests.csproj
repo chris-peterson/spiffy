@@ -47,7 +47,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Create_event.cs" />
+    <Compile Include="Create_named_event.cs" />
+    <Compile Include="Create_unnamed_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

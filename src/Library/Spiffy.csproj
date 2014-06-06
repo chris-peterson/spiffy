@@ -7,8 +7,8 @@
     <ProjectGuid>{592E6C82-C9D3-4534-9B29-C331AE6345EE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Spiffy</RootNamespace>
-    <AssemblyName>Spiffy</AssemblyName>
+    <RootNamespace>Spiffy.Monitoring</RootNamespace>
+    <AssemblyName>Spiffy.Monitoring</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -34,8 +34,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Event.cs" />
-    <Compile Include="Monitor.cs" />
+    <Compile Include="AutoTimer.cs" />
+    <Compile Include="EventContext.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="GlobalEventContext.cs" />
+    <Compile Include="LoggingFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
