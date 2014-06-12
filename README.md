@@ -4,7 +4,7 @@ A monitoring framework for .NET that supports IoC and modern targets, e.g. Splun
 ## Setup
 `PM> Install-Package Spiffy.Monitoring.NLog`
 
-## Initialize
+### Initialize
 ```c#
         static void Main()
         {
@@ -13,6 +13,8 @@ A monitoring framework for .NET that supports IoC and modern targets, e.g. Splun
 
             // Initialize to use NLog (currently the only supported target)
             NLog.Initialize();
-        }
-
+            
+            ...
 ```
+
+### Hello World
