@@ -10,5 +10,5 @@ echo "Publishing packages: $packages"
 
 for pkg in $packages
 do
-  ./.nuget/nuget.exe push $pkg
+  ./src/.nuget/nuget.exe push $pkg
 done
