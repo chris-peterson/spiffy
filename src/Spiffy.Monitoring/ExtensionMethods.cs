@@ -49,7 +49,7 @@ namespace Spiffy.Monitoring
         }
     }
 
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         private const string WhitespaceRegexPattern = @"\s+";
 

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Spiffy")]
+[assembly: AssemblyTitle("TestConsoleApp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Spiffy")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyProduct("TestConsoleApp")]
+[assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,10 +19,8 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
-[assembly: InternalsVisibleTo("Spiffy.Monitoring.NLog")]
-
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d54c4f7c-e1c2-40b0-bf9c-cd711c6bfe49")]
+[assembly: Guid("a736a4cf-1881-4107-8bfa-29693f1113d7")]
 
 // Version information for an assembly consists of the following four values:
 //

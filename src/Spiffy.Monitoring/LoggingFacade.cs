@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
-    public static class LoggingFacade
+    internal static class LoggingFacade
     {
         private static Action<Level, string> _logAction;
 

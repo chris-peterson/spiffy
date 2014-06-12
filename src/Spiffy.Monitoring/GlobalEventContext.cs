@@ -18,7 +18,7 @@ namespace Spiffy.Monitoring
 
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
 
-        internal GlobalEventContext Set(string key, object value)
+        public GlobalEventContext Set(string key, object value)
         {
             _values[key] = value;
             return this;
