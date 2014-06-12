@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>$id$</id>
+        <title>$id$</title>
+        <version>1.0</version>
+        <authors>$author$</authors>
+        <summary>Spiffy monitoring framework</summary>
+        <description>$description$</description>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <projectUrl>http://github.com/chris-peterson/spiffy</projectUrl>
+        <tags>structured logging monitoring splunk</tags>
+        <copyright>2014</copyright>
+        <releaseNotes>
+            Initial release
+        </releaseNotes>
+    </metadata>
+</package>

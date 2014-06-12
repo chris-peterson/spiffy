@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Spiffy")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Spiffy.Monitoring")]
+[assembly: AssemblyDescription("A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Spiffy")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCompany("Chris Peterson")]
+[assembly: AssemblyProduct("Spiffy.Monitoring")]
+[assembly: AssemblyCopyright("Copyright ©  2013-2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
