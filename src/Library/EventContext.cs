@@ -13,7 +13,7 @@ namespace Spiffy.Monitoring
             GlobalEventContext.Instance.CopyTo(this);
             _timestamp = DateTime.UtcNow;
 
-            _values["Level"] = "Info";
+            SetToInfo();
             Initialize(component, operation);
             // reserve this spot for later...
             _values["TimeElapsed"] = 0;
@@ -42,6 +42,7 @@ namespace Spiffy.Monitoring
 
         public string Component { get; private set; }
         public string Operation { get; private set; }
+        public Level Level { get; private set; }
 
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
         private readonly Dictionary<string, AutoTimer> _stopwatches = new Dictionary<string, AutoTimer>();
@@ -80,16 +81,21 @@ namespace Spiffy.Monitoring
             }
         }
 
+        private void SetToInfo()
+        {
+            _values["Level"] = Level = Level.Info;
+        }
+
         public void SetToError(string reason)
         {
-            _values["Level"] = "Error";
+            _values["Level"] = Level = Level.Error;
             _values["ErrorReason"] = reason;
         }
 
         public void Dispose()
         {
             this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-            LoggingFacade.Log(GetFormattedMessage());
+            LoggingFacade.Log(Level, GetFormattedMessage());
         }
 
         private void Initialize(string component, string operation)
