@@ -14,12 +14,14 @@ namespace TestConsoleApp
 
             using (var context = new EventContext())
             {
+                context["CustomValue"] = "foo";
+
                 using (context.Time("WarmUpCache"))
                 {
                     Thread.Sleep(1000);
                 }
 
-                context.IncludeException(new ApplicationException("foo", new NullReferenceException()));
+                context.IncludeException(new ApplicationException("bar", new NullReferenceException()));
             }
         }
     }
