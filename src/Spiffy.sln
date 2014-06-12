@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spiffy.Monitoring", "Library\Spiffy.Monitoring.csproj", "{592E6C82-C9D3-4534-9B29-C331AE6345EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spiffy.Monitoring", "Spiffy.Monitoring\Spiffy.Monitoring.csproj", "{592E6C82-C9D3-4534-9B29-C331AE6345EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DA574FBE-DE9D-48AD-AC70-136EB052CEF5}"
 EndProject

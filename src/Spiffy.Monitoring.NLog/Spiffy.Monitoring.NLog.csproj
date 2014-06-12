@@ -46,7 +46,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Library\Spiffy.Monitoring.csproj">
+    <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj">
       <Project>{592E6C82-C9D3-4534-9B29-C331AE6345EE}</Project>
       <Name>Spiffy.Monitoring</Name>
     </ProjectReference>
