@@ -39,9 +39,9 @@ A monitoring framework for .NET that supports IoC and modern targets, e.g. Splun
 
 
 ### Normal Entry
-```
-[2014-06-13 00:05:17.634Z] Application=TestConsole Level=Info Component=Program Operation=Main TimeElapsed=1004.2 MyCustomValue=foo TimeElapsed_LongRunning=1000.2
-```
+[2014-06-13 00:05:17.634Z] Application=TestConsole Level=Info Component=Program Operation=Main TimeElapsed=1004.2  <FONT 
+style="BACKGROUND-COLOR: yellow">MyCustomValue=foo</FONT> TimeElapsed_LongRunning=1000.2
+
 
 ### Exception Entry:
 ```
