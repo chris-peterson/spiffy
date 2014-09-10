@@ -8,20 +8,43 @@ namespace TestConsoleApp
     {
         static void Main()
         {
-            GlobalEventContext.Instance.Set("Application", "TestConsole");
-
+            // this should be the first line of your application
             NLog.Initialize();
+
+            // key-value-pairs set here appear in every event message
+            GlobalEventContext.Instance
+                .Set("Application", "TestConsole");
 
             using (var context = new EventContext())
             {
-                context["CustomValue"] = "foo";
+                context["MyCustomValue"] = "foo";
 
-                using (context.Time("WarmUpCache"))
+                using (context.Time("LongRunning"))
                 {
-                    Thread.Sleep(1000);
+                    DoSomethingLongRunning();
                 }
 
-                context.IncludeException(new ApplicationException("bar", new NullReferenceException()));
+                try
+                {
+                    DoSomethingDangerous();
+                }
+                catch (Exception ex)
+                {
+                    context.IncludeException(ex);
+                }
+            }
+        }
+
+        static void DoSomethingLongRunning()
+        {
+            Thread.Sleep(1000);
+        }
+
+        static void DoSomethingDangerous()
+        {
+            if (new Random().Next(100) == 0)
+            {
+                throw new ApplicationException("you were unlucky!", new NullReferenceException());
             }
         }
     }
