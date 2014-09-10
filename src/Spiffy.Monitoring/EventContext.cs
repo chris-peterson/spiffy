@@ -72,8 +72,7 @@ namespace Spiffy.Monitoring
             if (_values.ContainsKey(key))
             {
                 _values[key] = string.Join(delimiter,
-                    _values[key],
-                    content);
+                    new[] {_values[key].ToString(), content});
             }
             else
             {
@@ -164,7 +163,7 @@ namespace Spiffy.Monitoring
         private void GenerateKeysIfNecessary(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
-                .Where(k => string.IsNullOrWhiteSpace(k.Key))
+                .Where(k => k.Key.IsNullOrWhiteSpace())
                 .ToList())
             {
                 keyValuePairs.Remove(kvp.Key);
@@ -174,9 +173,8 @@ namespace Spiffy.Monitoring
 
         private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
-            return string.Join(" ", keyValuePairs
-                                        .Select(kvp =>
-                                                string.Format("{0}={1}", kvp.Key, kvp.Value)));
+            return string.Join(" ", keyValuePairs.Select(kvp =>
+                string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
         }
 
         private static string GetValue(object value)

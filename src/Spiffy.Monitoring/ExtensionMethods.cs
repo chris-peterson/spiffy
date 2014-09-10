@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Spiffy.Monitoring
@@ -76,6 +77,11 @@ namespace Spiffy.Monitoring
         public static string WrappedInBrackets(this string value)
         {
             return string.Format("[{0}]", value);
+        }
+
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            return value == null || value.All(char.IsWhiteSpace);
         }
     }
 }

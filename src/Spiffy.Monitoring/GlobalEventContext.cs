@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace Spiffy.Monitoring
@@ -9,11 +8,11 @@ namespace Spiffy.Monitoring
         {
         }
 
-        private static readonly Lazy<GlobalEventContext> _instance = new Lazy<GlobalEventContext>(() => new GlobalEventContext());
+        static GlobalEventContext _instance;
 
         public static GlobalEventContext Instance
         {
-            get { return _instance.Value; }
+            get { return _instance ?? (_instance = new GlobalEventContext()); }
         }
 
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
