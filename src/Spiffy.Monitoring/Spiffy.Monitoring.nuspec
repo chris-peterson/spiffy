@@ -11,7 +11,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <projectUrl>http://github.com/chris-peterson/spiffy</projectUrl>
         <tags>structured logging monitoring splunk</tags>
-        <copyright>2014</copyright>
+        <copyright>2014-2015</copyright>
         <releaseNotes>
             Target .NET 3.5 instead of 4.0 since there's still a lot of legacy code out there worth instrumenting.
         </releaseNotes>

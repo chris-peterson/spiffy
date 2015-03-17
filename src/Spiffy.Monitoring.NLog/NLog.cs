@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using System;
+using NLog;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
@@ -11,12 +12,18 @@ namespace Spiffy.Monitoring
         private const string LoggerName = "Spiffy";
         private static Logger _logger;
 
-        public static void Initialize()
+        public static void Initialize(Action<NLogConfigurationApi> configure = null)
         {
             if (_logger != null) 
                 return;
 
-            _logger = SetupNLog();
+            var config = new NLogConfigurationApi();
+            if (configure != null)
+            {
+                configure(config);
+            }
+
+            _logger = SetupNLog(config);
 
             LoggingFacade.Initialize((level, message) =>
             {
@@ -34,7 +41,7 @@ namespace Spiffy.Monitoring
             });
         }
 
-        private static Logger SetupNLog()
+        private static Logger SetupNLog(NLogConfigurationApi config)
         {
             var fileTarget = new FileTarget
             {
@@ -42,9 +49,9 @@ namespace Spiffy.Monitoring
                 Layout = "${message}",
                 ConcurrentWrites = false,
                 FileName = new SimpleLayout("${basedir}/Logs/current.log"),
-                ArchiveEvery = FileArchivePeriod.Day,
+                ArchiveEvery = config.ArchivePeriod,
                 ArchiveNumbering = ArchiveNumberingMode.Sequence,
-                MaxArchiveFiles = 2,
+                MaxArchiveFiles = config.MaxArchiveFiles,
                 ArchiveFileName = new SimpleLayout("${basedir}/Logs/archive/{####}.log")
             };
             var asyncWrapper = new AsyncTargetWrapper(fileTarget)
@@ -52,11 +59,11 @@ namespace Spiffy.Monitoring
                 Name = "AsyncWrapper"
             };
 
-            var config = new LoggingConfiguration();
-            config.AddTarget(LoggerName, asyncWrapper);
-            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, asyncWrapper));
+            var loggingConfiguration = new LoggingConfiguration();
+            loggingConfiguration.AddTarget(LoggerName, asyncWrapper);
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, asyncWrapper));
 
-            LogManager.Configuration = config;
+            LogManager.Configuration = loggingConfiguration;
 
             return LogManager.GetLogger(LoggerName);
         }

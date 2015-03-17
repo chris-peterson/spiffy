@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using NLog.Targets;
 using Spiffy.Monitoring;
 
 namespace TestConsoleApp
@@ -9,28 +10,35 @@ namespace TestConsoleApp
         static void Main()
         {
             // this should be the first line of your application
-            NLog.Initialize();
+            Spiffy.Monitoring.NLog.Initialize(c => c
+                .ArchiveEvery(FileArchivePeriod.Minute)
+                .KeepMaxArchiveFiles(5));
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance
                 .Set("Application", "TestConsole");
 
-            using (var context = new EventContext())
+            var cutOffTime = DateTime.UtcNow.AddMinutes(5);
+
+            while (DateTime.UtcNow < cutOffTime)
             {
-                context["MyCustomValue"] = "foo";
+                using (var context = new EventContext())
+                {
+                    context["MyCustomValue"] = "foo";
 
-                using (context.Time("LongRunning"))
-                {
-                    DoSomethingLongRunning();
-                }
+                    using (context.Time("LongRunning"))
+                    {
+                        DoSomethingLongRunning();
+                    }
 
-                try
-                {
-                    DoSomethingDangerous();
-                }
-                catch (Exception ex)
-                {
-                    context.IncludeException(ex);
+                    try
+                    {
+                        DoSomethingDangerous();
+                    }
+                    catch (Exception ex)
+                    {
+                        context.IncludeException(ex);
+                    }
                 }
             }
         }
