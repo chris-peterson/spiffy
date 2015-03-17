@@ -85,10 +85,13 @@ namespace Spiffy.Monitoring
             _values["Level"] = Level = Level.Info;
         }
 
-        public void SetToError(string reason)
+        public void SetToError(string reason = null)
         {
             _values["Level"] = Level = Level.Error;
-            _values["ErrorReason"] = reason;
+            if (reason != null)
+            {
+                _values["ErrorReason"] = reason;
+            }
         }
 
         public void Dispose()
