@@ -12,7 +12,9 @@ namespace TestConsoleApp
             // this should be the first line of your application
             Spiffy.Monitoring.NLog.Initialize(c => c
                 .ArchiveEvery(FileArchivePeriod.Minute)
-                .KeepMaxArchiveFiles(5));
+                .KeepMaxArchiveFiles(5)
+                //.LogLevel(Level.Error)
+                );
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance

@@ -9,10 +9,12 @@ namespace Spiffy.Monitoring
         {
             ArchivePeriod = FileArchivePeriod.Day;
             MaxArchiveFiles = 2;
+            MinLogLevel = Level.Info;
         }
 
         internal FileArchivePeriod ArchivePeriod { get; private set; }
         internal int MaxArchiveFiles { get; private set; }
+        internal Level MinLogLevel { get; private set; }
 
         public NLogConfigurationApi ArchiveEvery(FileArchivePeriod archivePeriod)
         {
@@ -23,6 +25,17 @@ namespace Spiffy.Monitoring
         public NLogConfigurationApi KeepMaxArchiveFiles(int maxArchiveFiles)
         {
             MaxArchiveFiles = maxArchiveFiles;
+            return this;
+        }
+
+        /// <summary>
+        /// Log at the minLogLevel and below
+        /// </summary>
+        /// <param name="minLogLevel"></param>
+        /// <returns></returns>
+        public NLogConfigurationApi LogLevel(Level minLogLevel)
+        {
+            MinLogLevel = minLogLevel;
             return this;
         }
     }

@@ -85,6 +85,11 @@ namespace Spiffy.Monitoring
             _values["Level"] = Level = Level.Info;
         }
 
+        private void SetToWarning()
+        {
+            _values["Level"] = Level = Level.Warning;
+        }
+
         public void SetToError(string reason = null)
         {
             _values["Level"] = Level = Level.Error;
