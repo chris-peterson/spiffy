@@ -12,11 +12,30 @@ namespace TestConsoleApp
             // this should be the first line of your application
             Spiffy.Monitoring.NLog.Initialize(c => c
                 .ArchiveEvery(FileArchivePeriod.Minute)
-                .KeepMaxArchiveFiles(5));
+                .KeepMaxArchiveFiles(5)
+                .MinLogLevel(Level.Info));
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance
                 .Set("Application", "TestConsole");
+
+            // info:
+            using (var context = new EventContext())
+            {
+                context["Greeting"] = "Hello world!";
+            }
+
+            // warning:
+            using (var context = new EventContext())
+            {
+                context.SetToWarning("cause something sorta bad happened");
+            }
+
+            // error:
+            using (var context = new EventContext())
+            {
+                context.SetToError("cause something very bad happened");
+            }
 
             var cutOffTime = DateTime.UtcNow.AddMinutes(5);
 
@@ -50,7 +69,7 @@ namespace TestConsoleApp
 
         static void DoSomethingDangerous()
         {
-            if (new Random().Next(100) == 0)
+            if (new Random().Next(10) == 0)
             {
                 throw new ApplicationException("you were unlucky!", new NullReferenceException());
             }

@@ -94,6 +94,15 @@ namespace Spiffy.Monitoring
             }
         }
 
+        public void SetToWarning(string reason = null)
+        {
+            _values["Level"] = Level = Level.Warning;
+            if (reason != null)
+            {
+                _values["WarningReason"] = reason;
+            }
+        }
+
         public void Dispose()
         {
             this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
