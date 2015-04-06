@@ -3,7 +3,7 @@
     <metadata>
         <id>$id$</id>
         <title>$id$</title>
-        <version>1.1</version>
+        <version>1.2</version>
         <authors>$author$</authors>
         <summary>Spiffy monitoring framework (NLog adapter)</summary>
         <description>$description$</description>
@@ -13,11 +13,10 @@
         <tags>structured logging monitoring splunk NLog</tags>
         <copyright>2014-2015</copyright>
         <releaseNotes>
-            Target .NET 3.5 instead of 4.0 since there's still a lot of legacy code out there worth instrumenting.
-            Add fluent API for configuring NLog
+            Ability to control MinLogLevel
         </releaseNotes>
         <dependencies>
-            <dependency id="Spiffy.Monitoring" version="1.1" />
+            <dependency id="Spiffy.Monitoring" version="1.2" />
         </dependencies>
     </metadata>
 </package>
