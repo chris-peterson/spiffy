@@ -70,7 +70,7 @@ namespace Spiffy.Monitoring
 
             var loggingConfiguration = new LoggingConfiguration();
             loggingConfiguration.AddTarget(LoggerName, asyncWrapper);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LevelToNLogLevel(config.MinLogLevel), asyncWrapper));
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LevelToNLogLevel(config.MinimumLogLevel), asyncWrapper));
 
             LogManager.Configuration = loggingConfiguration;
 
