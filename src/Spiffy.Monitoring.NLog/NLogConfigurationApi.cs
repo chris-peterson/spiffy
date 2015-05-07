@@ -15,6 +15,7 @@ namespace Spiffy.Monitoring
         internal FileArchivePeriod ArchivePeriod { get; private set; }
         internal int MaxArchiveFiles { get; private set; }
         internal Level MinimumLogLevel { get; private set; }
+        internal string LogDirectory { get; private set; }
 
         public NLogConfigurationApi ArchiveEvery(FileArchivePeriod archivePeriod)
         {
@@ -25,6 +26,12 @@ namespace Spiffy.Monitoring
         public NLogConfigurationApi KeepMaxArchiveFiles(int maxArchiveFiles)
         {
             MaxArchiveFiles = maxArchiveFiles;
+            return this;
+        }
+
+        public NLogConfigurationApi ChangeLogDirectory(string logDirectory)
+        {
+            LogDirectory = logDirectory;
             return this;
         }
 
