@@ -53,23 +53,20 @@ namespace Spiffy.Monitoring
 
         private static Logger SetupNLog(NLogConfigurationApi config)
         {
-            var baseDir = "${basedir}/Logs";
-
-            if (!string.IsNullOrEmpty(config.LogDirectory))
-            {
-                baseDir = config.LogDirectory;
-            }
+            var logDirectory = string.IsNullOrEmpty(config.LogDirectory) ? 
+                "${basedir}/Logs" : 
+                config.LogDirectory;
 
             var fileTarget = new FileTarget
             {
                 Name = "FileTarget",
                 Layout = "${message}",
                 ConcurrentWrites = false,
-                FileName = new SimpleLayout(Path.Combine(baseDir, "current.log")),
+                FileName = new SimpleLayout(Path.Combine(logDirectory, "current.log")),
                 ArchiveEvery = config.ArchivePeriod,
                 ArchiveNumbering = ArchiveNumberingMode.Sequence,
                 MaxArchiveFiles = config.MaxArchiveFiles,
-                ArchiveFileName = new SimpleLayout(Path.Combine(baseDir,"archive/{####}.log"))
+                ArchiveFileName = new SimpleLayout(Path.Combine(logDirectory,"archive/{####}.log"))
             };
             var asyncWrapper = new AsyncTargetWrapper(fileTarget)
             {

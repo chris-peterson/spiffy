@@ -29,7 +29,7 @@ namespace Spiffy.Monitoring
             return this;
         }
 
-        public NLogConfigurationApi ChangeLogDirectory(string logDirectory)
+        public NLogConfigurationApi LogToPath(string logDirectory)
         {
             LogDirectory = logDirectory;
             return this;

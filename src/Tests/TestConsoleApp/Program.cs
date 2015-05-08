@@ -14,8 +14,7 @@ namespace TestConsoleApp
                 .ArchiveEvery(FileArchivePeriod.Minute)
                 .KeepMaxArchiveFiles(5)
                 .MinLogLevel(Level.Info)
-                .ChangeLogDirectory("c:\\logs\\dsp")
-                );
+                .LogToPath(@"c:\logs\TestConsoleApp"));
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance
