@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
-    internal class AutoTimer : IDisposable
+    public class AutoTimer : IDisposable
     {
         public AutoTimer()
         {
