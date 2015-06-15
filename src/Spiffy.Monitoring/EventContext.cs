@@ -44,8 +44,8 @@ namespace Spiffy.Monitoring
         public string Operation { get; private set; }
         public Level Level { get; private set; }
 
-        private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
-        private readonly Dictionary<string, AutoTimer> _stopwatches = new Dictionary<string, AutoTimer>();
+        protected IDictionary<string, object> _values = new Dictionary<string, object>();
+        protected IDictionary<string, AutoTimer> _stopwatches = new Dictionary<string, AutoTimer>();
         private readonly DateTime _timestamp;
         private readonly AutoTimer _timer = new AutoTimer();
 
