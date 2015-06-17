@@ -16,7 +16,7 @@ namespace Spiffy.Monitoring
             SetToInfo();
             Initialize(component, operation);
             // reserve this spot for later...
-            _values["TimeElapsed"] = 0;
+            this["TimeElapsed"] = 0;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -44,63 +44,90 @@ namespace Spiffy.Monitoring
         public string Operation { get; private set; }
         public Level Level { get; private set; }
 
-        private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
-        private readonly Dictionary<string, AutoTimer> _stopwatches = new Dictionary<string, AutoTimer>();
-        private readonly DateTime _timestamp;
-        private readonly AutoTimer _timer = new AutoTimer();
+        readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+        readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
+
+        readonly object _valuesSyncObject = new object();
+        readonly object _timersSyncObject = new object();
+        
+        readonly DateTime _timestamp;
+        readonly AutoTimer _timer = new AutoTimer();
 
         public IDisposable Time(string key)
         {
             key = string.Format("TimeElapsed_{0}", key);
 
-            if (!_stopwatches.ContainsKey(key))
+            lock (_timersSyncObject)
             {
-                _stopwatches[key] = new AutoTimer();
-            }
+                if (!_timers.ContainsKey(key))
+                {
+                    _timers[key] = new AutoTimer();
+                }
 
-            return _stopwatches[key];
+                return _timers[key];
+            }
         }
 
         public object this[string key]
         {
-            get { return _values[key]; }
-            set { _values[key] = value; }
+            get
+            {
+                lock (_valuesSyncObject)
+                {
+                    return _values[key];
+                }
+            }
+            set
+            {
+                lock (_valuesSyncObject)
+                {
+                    _values[key] = value;
+                }
+            }
         }
 
         public void AppendToValue(string key, string content, string delimiter)
         {
-            if (_values.ContainsKey(key))
+            lock (_valuesSyncObject)
             {
-                _values[key] = string.Join(delimiter,
-                    new[] {_values[key].ToString(), content});
-            }
-            else
-            {
-                _values.Add(key, content);
+                if (_values.ContainsKey(key))
+                {
+                    _values[key] = string.Join(delimiter,
+                        new[] {_values[key].ToString(), content});
+                }
+                else
+                {
+                    _values.Add(key, content);
+                }
             }
         }
 
         private void SetToInfo()
         {
-            _values["Level"] = Level = Level.Info;
+            SetLevel(Level.Info);
         }
 
         public void SetToError(string reason = null)
         {
-            _values["Level"] = Level = Level.Error;
+            SetLevel(Level.Error);
             if (reason != null)
             {
-                _values["ErrorReason"] = reason;
+                this["ErrorReason"] = reason;
             }
         }
 
         public void SetToWarning(string reason = null)
         {
-            _values["Level"] = Level = Level.Warning;
+            SetLevel(Level.Warning);
             if (reason != null)
             {
-                _values["WarningReason"] = reason;
+                this["WarningReason"] = reason;
             }
+        }
+
+        void SetLevel(Level level)
+        {
+            this["Level"] = Level = level;
         }
 
         public void Dispose()
@@ -113,15 +140,20 @@ namespace Spiffy.Monitoring
         {
             Component = component;
             Operation = operation;
-            _values["Component"] = Component;
-            _values["Operation"] = Operation;
+            this["Component"] = Component;
+            this["Operation"] = Operation;
         }
 
         private string GetFormattedMessage()
         {
-            var kvps = _values.ToDictionary(
-                kvp => kvp.Key,
-                kvp => GetValue(kvp.Value));
+            Dictionary<string, string> kvps;
+            
+            lock (_valuesSyncObject)
+            {
+                kvps = _values.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => GetValue(kvp.Value));
+            }
 
             foreach (var kvp in GetTimeValues())
             {
@@ -212,10 +244,13 @@ namespace Spiffy.Monitoring
 
         private IEnumerable<KeyValuePair<string, string>> GetTimeValues()
         {
-            var timings = new Dictionary<string, string>();
-            foreach (var s in _stopwatches)
+            Dictionary<string, string> timings;
+
+            lock (_timersSyncObject)
             {
-                timings[s.Key] = GetTimeFor(s.Value.TotalMilliseconds);
+                timings = _timers.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => GetTimeFor(kvp.Value.TotalMilliseconds));
             }
 
             return timings;

@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Create_named_event.cs" />
     <Compile Include="Create_unnamed_event.cs" />
+    <Compile Include="Event_context_is_thread_safe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
