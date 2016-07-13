@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Kekiri;
 using Kekiri.TestRunner.NUnit;
 using Spiffy.Monitoring;
 
