@@ -23,19 +23,19 @@ namespace TestConsoleApp
             Console.WriteLine("Running application...  Check Logs folder");
             
             // info:
-            using (var context = new EventContext("Application", "Start"))
+            using (var context = new EventContext("Greetings", "Start"))
             {
                 context["Greeting"] = "Hello world!";
             }
 
             // warning:
-            using (var context = new EventContext("Application", "Run"))
+            using (var context = new EventContext())
             {
                 context.SetToWarning("cause something sorta bad happened");
             }
 
             // error:
-            using (var context = new EventContext("Application", "Crash"))
+            using (var context = new EventContext())
             {
                 context.SetToError("cause something very bad happened");
             }
@@ -44,7 +44,7 @@ namespace TestConsoleApp
 
             while (DateTime.UtcNow < cutOffTime)
             {
-                using (var context = new EventContext("Application", "RunTask"))
+                using (var context = new EventContext())
                 {
                     context["MyCustomValue"] = "foo";
 

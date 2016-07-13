@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.0",
   "buildOptions": {
     "debugType": "portable",
     "emitEntryPoint": true
@@ -12,8 +12,8 @@
           "type": "platform",
           "version": "1.0.0"
         },
-        "Spiffy.Monitoring": "3.0.0-*",
-        "Spiffy.Monitoring.NLog": "3.0.0-*",        
+        "Spiffy.Monitoring": "3.0.*",
+        "Spiffy.Monitoring.NLog": "3.0.*",        
         "NETStandard.Library": "1.6.0",
         "NLog": "4.4.0-beta-14" 
       },
