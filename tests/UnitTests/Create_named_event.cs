@@ -1,27 +1,31 @@
 ﻿using FluentAssertions;
 using Kekiri;
+using Kekiri.TestRunner.NUnit;
 using Spiffy.Monitoring;
 
 namespace UnitTests
 {
-    [Scenario]
-    public class Create_named_event : ScenarioTest
+    public class Create_named_event : Scenario
     {
-        private EventContext _context;
+        EventContext _context;
 
-        [When]
-        public void When_creating_event()
+        public Create_named_event()
+        {
+            When(Creating_event);
+            Then(It_should_have_the_correct_component)
+              .And(It_should_have_the_correct_operation);
+        }
+
+        void Creating_event()
         {
             _context = new EventContext("MyComponent", "MyOperation");
         }
 
-        [Then]
         public void It_should_have_the_correct_component()
         {
             _context.Component.Should().Be("MyComponent");
         }
 
-        [Then]
         public void It_should_have_the_correct_operation()
         {
             _context.Operation.Should().Be("MyOperation");

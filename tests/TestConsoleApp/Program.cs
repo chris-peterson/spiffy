@@ -14,26 +14,28 @@ namespace TestConsoleApp
                 .ArchiveEvery(FileArchivePeriod.Minute)
                 .KeepMaxArchiveFiles(5)
                 .MinLogLevel(Level.Info)
-                .LogToPath(@"c:\logs\TestConsoleApp"));
+                .LogToPath(@"Logs"));
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance
                 .Set("Application", "TestConsole");
 
+            Console.WriteLine("Running application...  Check Logs folder");
+            
             // info:
-            using (var context = new EventContext())
+            using (var context = new EventContext("Application", "Start"))
             {
                 context["Greeting"] = "Hello world!";
             }
 
             // warning:
-            using (var context = new EventContext())
+            using (var context = new EventContext("Application", "Run"))
             {
                 context.SetToWarning("cause something sorta bad happened");
             }
 
             // error:
-            using (var context = new EventContext())
+            using (var context = new EventContext("Application", "Crash"))
             {
                 context.SetToError("cause something very bad happened");
             }
@@ -42,7 +44,7 @@ namespace TestConsoleApp
 
             while (DateTime.UtcNow < cutOffTime)
             {
-                using (var context = new EventContext())
+                using (var context = new EventContext("Application", "RunTask"))
                 {
                     context["MyCustomValue"] = "foo";
 
@@ -72,7 +74,7 @@ namespace TestConsoleApp
         {
             if (new Random().Next(10) == 0)
             {
-                throw new ApplicationException("you were unlucky!", new NullReferenceException());
+                throw new Exception("you were unlucky!", new NullReferenceException());
             }
         }
     }

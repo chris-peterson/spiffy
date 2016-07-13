@@ -1,0 +1,27 @@
+{
+    "version": "1.0.0",
+    "frameworks": {
+        "netcoreapp1.0": {
+            "dependencies": {
+                "Microsoft.NETCore.App": {
+                    "type": "platform",
+                    "version": "1.0.0"
+                },
+                "NUnit": "3.4.0",
+                "dotnet-test-nunit": "3.4.0-*",
+                "Kekiri": "4.0.0-alpha-*",
+                "Kekiri.TestRunner.NUnit": "1.0.0-alpha-*",
+                "Moq": "4.6.25-*",
+                "System.Diagnostics.TraceSource": "4.0.0",
+                "FluentAssertions": "4.11.0",
+                "Spiffy.Monitoring": "3.0.0-*",
+                "Spiffy.Monitoring.NLog": "3.0.0-*"
+            },
+            "imports": [
+                "dotnet",
+                "netcore50"
+            ]
+        }
+    },
+    "testRunner": "nunit"
+}

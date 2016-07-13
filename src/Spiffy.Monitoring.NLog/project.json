@@ -1,0 +1,32 @@
+{
+  "version": "3.0.0-alpha-*",
+  "packOptions": {
+    "summary": "Spiffy monitoring framework",
+    "licenseUrl": "http://opensource.org/licenses/MIT",
+    "projectUrl": "http://github.com/chris-peterson/spiffy",
+    "tags": [
+      "monitoring",
+      "eventcontext",
+      "logging",
+      "structured logging",
+      "nlog",
+      "splunk"
+    ],
+    "releaseNotes": "Target netstandard" 
+  },
+  "copyright": "2014-2016",
+  "buildOptions": {
+    "debugType": "portable"
+  },
+  "frameworks": {
+    "netstandard1.5": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Diagnostics.TraceSource": "4.0.0",
+        "System.Diagnostics.StackTrace": "4.0.1",
+        "Spiffy.Monitoring": "3.0.0-*",
+        "NLog": "4.4.0-beta-*"
+      }
+    }
+  }
+}

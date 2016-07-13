@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -19,14 +20,26 @@ namespace Spiffy.Monitoring
             this["TimeElapsed"] = 0;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public EventContext() : this(null, null)
         {
             string component = "[Unknown]";
             string operation = "[Unknown]";
 
-            var stackFrame = new StackFrame(1, false);
-            var method = stackFrame.GetMethod();
+            var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
+            var frames = stackTrace.GetFrames();
+
+            StackFrame stackFrame = null;
+            foreach (var f in frames)
+            {
+                var assembly = f.GetMethod().DeclaringType.GetTypeInfo().Assembly;
+                if (!FrameworkAssembly(assembly))
+                {
+                    stackFrame = f;
+                    break;
+                }
+            }
+
+            var method = stackFrame?.GetMethod();
             if (method != null)
             {
                 var declaringType = method.DeclaringType;
@@ -38,6 +51,12 @@ namespace Spiffy.Monitoring
             }
 
             Initialize(component, operation);
+        }
+
+        bool FrameworkAssembly(Assembly assembly)
+        {
+            return assembly == typeof(Activator).GetTypeInfo().Assembly || 
+               assembly == typeof(EventContext).GetTypeInfo().Assembly;
         }
 
         public string Component { get; private set; }

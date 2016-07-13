@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
+  "dependencies": {},
+  "frameworks": {
+    "netcoreapp1.0": {
+      "dependencies": {
+        "Microsoft.NETCore.App": {
+          "type": "platform",
+          "version": "1.0.0"
+        },
+        "Spiffy.Monitoring": "3.0.0-*",
+        "Spiffy.Monitoring.NLog": "3.0.0-*",        
+        "NETStandard.Library": "1.6.0",
+        "NLog": "4.4.0-beta-14" 
+      },
+      "imports": "dnxcore50"
+    }
+  }
+}
