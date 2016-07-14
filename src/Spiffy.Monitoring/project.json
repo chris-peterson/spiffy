@@ -23,12 +23,20 @@
     "debugType": "portable"
   },
   "frameworks": {
-    "netstandard1.5": {
+    "netstandard1.3": {
       "dependencies": {
         "NETStandard.Library": "1.6.0",
         "System.Diagnostics.TraceSource": "4.0.0",
         "System.Diagnostics.StackTrace": "4.0.1",
         "System.Reflection": "4.1.0"
+      }
+    },
+    ".NETFramework,Version=v3.5": {
+      "frameworkAssemblies": {
+        "System": ""
+      },
+      "buildOptions": {
+        "define": [ "NET3_5" ]
       }
     }
   }

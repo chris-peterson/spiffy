@@ -25,10 +25,14 @@ namespace Spiffy.Monitoring
             string component = "[Unknown]";
             string operation = "[Unknown]";
 
+            StackFrame stackFrame = null;
+
+#if NET3_5
+            stackFrame = new StackFrame();
+#else
             var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
             var frames = stackTrace.GetFrames();
 
-            StackFrame stackFrame = null;
             foreach (var f in frames)
             {
                 var assembly = f.GetMethod().DeclaringType.GetTypeInfo().Assembly;
@@ -38,7 +42,7 @@ namespace Spiffy.Monitoring
                     break;
                 }
             }
-
+#endif
             var method = stackFrame?.GetMethod();
             if (method != null)
             {
@@ -55,8 +59,17 @@ namespace Spiffy.Monitoring
 
         bool FrameworkAssembly(Assembly assembly)
         {
-            return assembly == typeof(Activator).GetTypeInfo().Assembly || 
-               assembly == typeof(EventContext).GetTypeInfo().Assembly;
+            return assembly == AssemblyFor<object>() ||
+               assembly == AssemblyFor<EventContext>();
+        }
+
+        Assembly AssemblyFor<T>()
+        {
+#if NET3_5
+        return typeof(T).Assembly;
+#else
+        return typeof(T).GetTypeInfo().Assembly;
+#endif
         }
 
         public string Component { get; private set; }
