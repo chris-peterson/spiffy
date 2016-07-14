@@ -31,6 +31,18 @@
         "Spiffy.Monitoring": "3.0.*",
         "NLog": "4.4.0-beta-*"
       }
+    },
+    ".NETFramework,Version=v3.5": {
+      "frameworkAssemblies": {
+        "System": "",
+      },
+      "dependencies": {        
+        "NLog": "2.0.0.2000",
+        "Spiffy.Monitoring": "3.0.*"
+      },
+      "buildOptions": {
+        "define": [ "NET3_5" ]
+      }
     }
   }
 }
