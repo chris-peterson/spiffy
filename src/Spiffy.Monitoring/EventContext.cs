@@ -134,7 +134,12 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private void SetToInfo()
+        public void SetLevel(Level level)
+        {
+            this["Level"] = Level = level;
+        }
+
+        public void SetToInfo()
         {
             SetLevel(Level.Info);
         }
@@ -157,18 +162,18 @@ namespace Spiffy.Monitoring
             }
         }
 
-        void SetLevel(Level level)
-        {
-            this["Level"] = Level = level;
-        }
-
+        volatile bool _disposed = false;
         public void Dispose()
         {
-            this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-            LoggingFacade.Log(Level, GetFormattedMessage());
+            if (!_disposed)
+            {
+                this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
+                LoggingFacade.Log(Level, GetFormattedMessage());
+                _disposed = true;
+            }
         }
 
-        private void Initialize(string component, string operation)
+        public void Initialize(string component, string operation)
         {
             Component = component;
             Operation = operation;

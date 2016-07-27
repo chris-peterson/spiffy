@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: InternalsVisibleTo("Spiffy.Monitoring.NLog")]
+[assembly: InternalsVisibleTo("UnitTests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("d54c4f7c-e1c2-40b0-bf9c-cd711c6bfe49")]

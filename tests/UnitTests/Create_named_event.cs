@@ -20,12 +20,12 @@ namespace UnitTests
             _context = new EventContext("MyComponent", "MyOperation");
         }
 
-        public void It_should_have_the_correct_component()
+        void It_should_have_the_correct_component()
         {
             _context.Component.Should().Be("MyComponent");
         }
 
-        public void It_should_have_the_correct_operation()
+        void It_should_have_the_correct_operation()
         {
             _context.Operation.Should().Be("MyOperation");
         }
