@@ -9,7 +9,7 @@ A monitoring framework for .NET that supports IoC and modern targets, e.g. Splun
 ```c#
         static void Main()
         {
-            // this should be the first line of your application
+            // this should be the first line of your application.  If not provided, the default behavior is to emit logs to the console.
             NLog.Initialize();
 
             // key-value-pairs set here appear in every event message

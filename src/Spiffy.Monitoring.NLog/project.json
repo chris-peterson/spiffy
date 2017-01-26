@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "packOptions": {
     "summary": "Spiffy monitoring framework",
     "licenseUrl": "http://opensource.org/licenses/MIT",
@@ -12,9 +12,9 @@
       "nlog",
       "splunk"
     ],
-    "releaseNotes": "Target netstandard" 
+    "releaseNotes": "Use latest NLog (still pre-release)"
   },
-  "copyright": "2014-2016",
+  "copyright": "2014-2017",
     "authors": [
     "Chris Peterson"
   ],
@@ -28,8 +28,8 @@
         "NETStandard.Library": "1.6.0",
         "System.Diagnostics.TraceSource": "4.0.0",
         "System.Diagnostics.StackTrace": "4.0.1",
-        "Spiffy.Monitoring": "3.0.*",
-        "NLog": "4.4.0-beta-14"
+        "Spiffy.Monitoring": "3.1.0",
+        "NLog": "4.4.0-betaV15"
       },
       "imports": ["dnxcore50"]
     },
@@ -39,7 +39,7 @@
       },
       "dependencies": {        
         "NLog": "2.0.0.2000",
-        "Spiffy.Monitoring": "3.0.*"
+        "Spiffy.Monitoring": "3.1.0"
       },
       "buildOptions": {
         "define": [ "NET3_5" ]
