@@ -12,16 +12,34 @@ namespace Spiffy.Monitoring
             _logAction = logAction;
         }
 
+        public static void Initialize(LoggingBehavior behavior = LoggingBehavior.Console)
+        {
+            switch (behavior)
+            {
+                case LoggingBehavior.Console:
+                    _logAction = (level, message) => Console.WriteLine(message);
+                    break;
+                case LoggingBehavior.Trace:
+                    _logAction = (level, message) => Trace.WriteLine(message);
+                    break;
+                default:
+                    throw new NotSupportedException($"{behavior} is not supported");
+            }
+        }
+
         public static void Log(Level level, string message)
         {
             if (_logAction == null)
             {
-                Trace.WriteLine(message);
+                Initialize();
             }
-            else
-            {
-                _logAction(level, message);
-            }
+            _logAction(level, message);
         }
+    }
+
+    public enum LoggingBehavior
+    {
+        Trace,
+        Console
     }
 }

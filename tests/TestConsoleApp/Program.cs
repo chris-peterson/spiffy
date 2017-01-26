@@ -7,20 +7,37 @@ namespace TestConsoleApp
 {
     class Program
     {
-        static void Main()
+        static void Main(string [] args)
         {
-            // this should be the first line of your application
-            Spiffy.Monitoring.NLog.Initialize(c => c
-                .ArchiveEvery(FileArchivePeriod.Minute)
-                .KeepMaxArchiveFiles(5)
-                .MinLogLevel(Level.Info)
-                .LogToPath(@"Logs"));
+            if (args?.Length > 0)
+            {
+                switch (args[0].Trim().ToLower())
+                {
+                    case "file":
+                        Spiffy.Monitoring.NLog.Initialize(c => c
+                            .ArchiveEvery(FileArchivePeriod.Minute)
+                            .KeepMaxArchiveFiles(5)
+                            .MinLogLevel(Level.Info)
+                            .LogToPath(@"Logs"));
+                    break;
+                    case "trace":
+                        LoggingFacade.Initialize(LoggingBehavior.Trace);
+                    break;
+                    case "console":
+                        LoggingFacade.Initialize(LoggingBehavior.Console);
+                    break;
+                }
+            }
+            else
+            {
+                // default behavior if nothing is specified (should be console)
+            }
 
             // key-value-pairs set here appear in every event message
             GlobalEventContext.Instance
                 .Set("Application", "TestConsole");
 
-            Console.WriteLine("Running application...  Check Logs folder");
+            Console.WriteLine("Running application.  Logs are either emitted here, or to 'Logs'");
             
             // info:
             using (var context = new EventContext("Greetings", "Start"))
