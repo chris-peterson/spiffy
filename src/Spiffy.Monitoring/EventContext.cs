@@ -118,6 +118,11 @@ namespace Spiffy.Monitoring
             }
         }
 
+        public bool Contains(string key)
+        {
+            return _values.ContainsKey(key);
+        }
+
         public void AppendToValue(string key, string content, string delimiter)
         {
             lock (_valuesSyncObject)

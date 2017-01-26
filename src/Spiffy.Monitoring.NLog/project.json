@@ -29,12 +29,13 @@
         "System.Diagnostics.TraceSource": "4.0.0",
         "System.Diagnostics.StackTrace": "4.0.1",
         "Spiffy.Monitoring": "3.0.*",
-        "NLog": "4.4.0-beta-*"
-      }
+        "NLog": "4.4.0-beta-14"
+      },
+      "imports": ["dnxcore50"]
     },
     ".NETFramework,Version=v3.5": {
       "frameworkAssemblies": {
-        "System": "",
+        "System": ""
       },
       "dependencies": {        
         "NLog": "2.0.0.2000",
