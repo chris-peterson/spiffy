@@ -1,5 +1,4 @@
-﻿using System;
-using NLog.Targets;
+﻿using NLog.Targets;
 
 namespace Spiffy.Monitoring
 {
