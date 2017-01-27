@@ -14,9 +14,8 @@
                 "System.Collections": "4.0.11",
                 "System.Linq": "4.1.0",
                 "System.Diagnostics.TraceSource": "4.0.0",
-                "FluentAssertions": "4.11.0",
-                "Spiffy.Monitoring": "3.0.*",
-                "Spiffy.Monitoring.NLog": "3.0.*"
+                "Spiffy.Monitoring": "3.1.0",
+                "Spiffy.Monitoring.NLog": "3.1.0"
             },
             "imports": [
                 "dotnet",

@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using Kekiri.TestRunner.NUnit;
+﻿using Kekiri.TestRunner.NUnit;
+using NUnit.Framework;
 using Spiffy.Monitoring;
 
 namespace UnitTests
@@ -22,12 +22,12 @@ namespace UnitTests
 
         void It_should_use_the_type_name_for_component()
         {
-            _context.Component.Should().Be(GetType().Name);
+            Assert.That(_context.Component, Is.EqualTo(GetType().Name));
         }
 
         void It_should_use_the_method_name_for_operation()
         {
-            _context.Operation.Should().Be("Creating_event");
+            Assert.That(_context.Operation, Is.EqualTo("Creating_event"));
         }
     }
 }

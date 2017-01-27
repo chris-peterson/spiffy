@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using FluentAssertions;
 using Kekiri.TestRunner.NUnit;
+using NUnit.Framework;
 using Spiffy.Monitoring;
 
 namespace UnitTests
@@ -23,8 +23,8 @@ namespace UnitTests
         void It_should_publish_the_log_message()
         {
             var message = Context.Messages.Single();
-            message.Item1.Should().Be(Level.Info);
-            message.Item2.Length.Should().BeGreaterThan(10);
+            Assert.That(message.Item1, Is.EqualTo(Level.Info));
+            Assert.That(message.Item2.Length, Is.GreaterThan(10));
         }
     }
 
@@ -49,7 +49,7 @@ namespace UnitTests
 
         void It_should_not_publish_again()
         {
-            var message = Context.Messages.Count.Should().Be(1);
+            Assert.That(Context.Messages.Count, Is.EqualTo(1));
         }
     }
     public class PublishingTestContext

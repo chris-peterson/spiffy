@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Spiffy.Monitoring
 {
@@ -19,6 +20,7 @@ namespace Spiffy.Monitoring
             this["TimeElapsed"] = 0;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public EventContext() : this(null, null)
         {
             string component = "[Unknown]";
@@ -27,7 +29,7 @@ namespace Spiffy.Monitoring
             StackFrame stackFrame = null;
 
 #if NET3_5
-            stackFrame = new StackFrame();
+            stackFrame = new StackFrame(1, false);
 #else
             var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
             var frames = stackTrace.GetFrames();
