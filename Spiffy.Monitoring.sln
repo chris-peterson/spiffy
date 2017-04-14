@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2DF31750-1635-4C57-980C-23EA82B2DE53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests.DotNet40", "tests\UnitTests.DotNet40\UnitTests.DotNet40.csproj", "{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +34,6 @@ Global
 		{9959DB99-8334-4ED8-B8AB-5950221F9CF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9959DB99-8334-4ED8-B8AB-5950221F9CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9959DB99-8334-4ED8-B8AB-5950221F9CF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -47,6 +41,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{AEBEC637-B489-47E5-B43A-EFB839B3DD0C} = {2DF31750-1635-4C57-980C-23EA82B2DE53}
 		{9959DB99-8334-4ED8-B8AB-5950221F9CF0} = {2DF31750-1635-4C57-980C-23EA82B2DE53}
-		{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42} = {2DF31750-1635-4C57-980C-23EA82B2DE53}
 	EndGlobalSection
 EndGlobal
