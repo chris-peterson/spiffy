@@ -28,7 +28,7 @@ namespace Spiffy.Monitoring
 
             StackFrame stackFrame = null;
 
-#if NET3_5
+#if NET4_0
             stackFrame = new StackFrame(1, false);
 #else
             var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
@@ -66,7 +66,7 @@ namespace Spiffy.Monitoring
 
         Assembly AssemblyFor<T>()
         {
-#if NET3_5
+#if NET4_0
         return typeof(T).Assembly;
 #else
         return typeof(T).GetTypeInfo().Assembly;

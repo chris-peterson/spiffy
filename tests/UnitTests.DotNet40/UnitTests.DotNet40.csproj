@@ -7,9 +7,9 @@
     <ProjectGuid>{16D994F4-3CB6-4E48-9ECE-9EED1DFCEE42}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnitTests.DotNet35</RootNamespace>
-    <AssemblyName>UnitTests.DotNet35</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <RootNamespace>UnitTests.DotNet40</RootNamespace>
+    <AssemblyName>UnitTests.DotNet40</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,19 +30,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.4.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NUnit.3.4.0\lib\net35\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Spiffy.Monitoring, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Spiffy.Monitoring, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Spiffy.Monitoring\bin\Debug\net35\Spiffy.Monitoring.dll</HintPath>
+      <HintPath>..\..\src\Spiffy.Monitoring\bin\Debug\net40\Spiffy.Monitoring.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Create_unnamed_event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
