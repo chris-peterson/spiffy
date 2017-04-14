@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="Spiffy.Monitoring, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Spiffy.Monitoring\bin\Debug\net40\Spiffy.Monitoring.dll</HintPath>
+      <HintPath>..\..\src\Spiffy.Monitoring\bin\$(Configuration)\net40\Spiffy.Monitoring.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
