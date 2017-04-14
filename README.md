@@ -1,10 +1,18 @@
 # Spiffy
+[![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy)
+
 A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
 
 ## Setup
+Console
+
+`PM> Install-Package Spiffy.Monitoring`
+
+Customizable Targets
+
 `PM> Install-Package Spiffy.Monitoring.NLog`
 
-## Example
+## Usage
 
 ```c#
         static void Main()
@@ -45,4 +53,3 @@ A monitoring framework for .NET that supports IoC and modern targets, e.g. Splun
 ### Exception Entry
 [2014-06-13 00:12:52.038Z] Application=TestConsole **Level=Error** Component=Program Operation=Main TimeElapsed=1027.0 MyCustomValue=foo **ErrorReason="An exception has ocurred"** **Exception_Type=ApplicationException Exception_Message="you were unlucky!"** Exception_StackTrace="   at TestConsoleApp.Program.DoSomethingDangerous() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 47
    at TestConsoleApp.Program.Main() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 29" InnermostException_Type=NullReferenceException **InnermostException_Message="Object reference not set to an instance of an object."** InnermostException_StackTrace={null} Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
-
