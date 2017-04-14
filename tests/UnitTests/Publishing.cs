@@ -11,7 +11,7 @@ namespace UnitTests
         readonly PublishingTestContext _context = new PublishingTestContext();
 
         [Fact]
-        public void Events_are_published()
+        public void Single_publish()
         {
             // When:
             Disposing_an_event_context();
@@ -20,7 +20,7 @@ namespace UnitTests
         }
     
         [Fact]
-        public void Duplicate_disposal_does_not_double_publish()
+        public void Double_publish()
         {
             // Given:
             Event_has_already_been_disposed();
