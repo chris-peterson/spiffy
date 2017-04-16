@@ -22,7 +22,7 @@
         <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>4.0.0</Version>
+        <Version>4.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
