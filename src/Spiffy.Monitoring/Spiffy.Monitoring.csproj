@@ -2,14 +2,14 @@
 
     <PropertyGroup>
         <Copyright>2014-2017</Copyright>
-        <AssemblyTitle>Spiffy Monitoring</AssemblyTitle>
         <Authors>Chris Peterson</Authors>
+        <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
         <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
         <DebugType>portable</DebugType>
         <AssemblyName>Spiffy.Monitoring</AssemblyName>
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
-        <PackageReleaseNotes>Drop support for net35 (not working with latest dotnet CLI)</PackageReleaseNotes>
+        <PackageReleaseNotes>"full framework" build now targets .NET 4.0 rather than 3.5 (couldn't get it working with latest CLI tooling)</PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
