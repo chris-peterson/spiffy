@@ -21,7 +21,7 @@
         <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
         <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
         <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <Version>4.0.0</Version>
     </PropertyGroup>
 
