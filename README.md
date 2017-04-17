@@ -1,10 +1,14 @@
 # Spiffy
-[![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy)
+
+Package  | Build status | NuGet 
+-------- | :------------ | :------------ 
+Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://badge.fury.io/nu/spiffy.monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
+Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring)
 
 A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
 
 ## Setup
-`PM> Install-Package Spiffy.Monitoring`
+`PM> Install-Package Spiffy.Monitoring` [![NuGet version](https://badge.fury.io/nu/spiffy.monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
 
 If you need additional customization (anything more than just logging to the console), you need a provider package.  For example:
 
