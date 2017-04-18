@@ -2,9 +2,9 @@
 A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
 
 ## Build
-Package Name | CI Status | Latest Release 
+Package | CI Status | Latest Release 
 -------- | :------------ | :------------ 
-Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://badge.fury.io/nu/spiffy.monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
+Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/v/Spiffy.Monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
 Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring.nlog)
 
 ## Setup
