@@ -1,20 +1,18 @@
 # Spiffy
+A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
 
-Package  | Build status | NuGet 
+## Build
+Package Name | CI Status | Latest Release 
 -------- | :------------ | :------------ 
 Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://badge.fury.io/nu/spiffy.monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
-Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://badge.fury.io/nu/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/Spiffy.Monitoring.NLog) [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring.nlog)
-
-A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
+Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring.nlog)
 
 ## Setup
 `PM> Install-Package Spiffy.Monitoring`
 
-If you need additional customization (anything more than just logging to the console), you need a provider package.  For example:
+If you need additional customization (anything more than just logging to the console), you'll need to install a provider package and intialize it.  NOTE: the provider package need only be installed for your application's entry point assembly, it is not necessary to be installed in library packages.
 
 `PM> Install-Package Spiffy.Monitoring.NLog`
-
-When using a provider package, make sure you initialize it during application startup.  See Example below.
 
 ## Example
 
