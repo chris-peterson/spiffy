@@ -1,8 +1,8 @@
 # Spiffy
 A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk
 
-## Build
-Package | CI Status | Latest Release 
+## Status
+Package | Build Status | Latest Release 
 -------- | :------------ | :------------ 
 Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/v/Spiffy.Monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
 Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring.nlog)
@@ -46,6 +46,9 @@ If you need additional customization (anything more than just logging to the con
             }
         }
 ```
+
+## Log
+The example above creates a log file in a `Logs` subfolder of the application's running directory.  It contains entries like the following:
 
 ### Normal Entry
 [2014-06-13 00:05:17.634Z] Application=TestConsole **Level=Info** Component=Program Operation=Main TimeElapsed=1004.2 **MyCustomValue=foo** TimeElapsed_LongRunning=1000.2
