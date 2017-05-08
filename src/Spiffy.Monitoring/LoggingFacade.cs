@@ -13,8 +13,7 @@ namespace Spiffy.Monitoring
     public class LoggingFacade: ILoggingFacade
     {
         private LoggingFacade()
-        {
-        }
+        {}
 
         static ILoggingFacade _instance;
 

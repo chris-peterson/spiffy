@@ -18,7 +18,7 @@ namespace Spiffy.Monitoring
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public CompositeEventContext() : base(null, null)
+        public CompositeEventContext() : base()
         {
             LoggerCollection.Add("default", LoggingFacade.Instance);
         }
@@ -30,7 +30,7 @@ namespace Spiffy.Monitoring
             {
                 this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
                 foreach(var logger in LoggerCollection) {
-                    logger.Value.Log(Level, GetFormattedMessage());
+                    logger.Value.Log(Level, GetFormattedMessage(logger.Key));
                 }
                 _disposed = true;
             }
