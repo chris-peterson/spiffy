@@ -58,33 +58,33 @@ namespace Spiffy.Monitoring
             Initialize(component, operation);
         }
 
-        bool FrameworkAssembly(Assembly assembly)
+        protected bool FrameworkAssembly(Assembly assembly)
         {
             return assembly == AssemblyFor<object>() ||
                assembly == AssemblyFor<EventContext>();
         }
 
-        Assembly AssemblyFor<T>()
+        protected Assembly AssemblyFor<T>()
         {
 #if NET4_0
-        return typeof(T).Assembly;
+            return typeof(T).Assembly;
 #else
-        return typeof(T).GetTypeInfo().Assembly;
+            return typeof(T).GetTypeInfo().Assembly;
 #endif
         }
 
-        public string Component { get; private set; }
-        public string Operation { get; private set; }
-        public Level Level { get; private set; }
+        public string Component { get; protected set; }
+        public string Operation { get; protected set; }
+        public Level Level { get; protected set; }
 
-        readonly Dictionary<string, object> _values = new Dictionary<string, object>();
-        readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
+        internal readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+        internal readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
 
-        readonly object _valuesSyncObject = new object();
-        readonly object _timersSyncObject = new object();
+        internal readonly object _valuesSyncObject = new object();
+        internal readonly object _timersSyncObject = new object();
         
-        readonly DateTime _timestamp;
-        readonly AutoTimer _timer = new AutoTimer();
+        internal readonly DateTime _timestamp;
+        internal readonly AutoTimer _timer = new AutoTimer();
 
         public IDisposable Time(string key)
         {
@@ -168,15 +168,25 @@ namespace Spiffy.Monitoring
             }
         }
 
-        volatile bool _disposed = false;
-        public void Dispose()
-        {
+        protected volatile bool _disposed = false;
+        protected virtual void Dispose(bool disposing) {
             if (!_disposed)
             {
+                // Base class has nothing special to dispose, so disposing value is not used
                 this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                LoggingFacade.Log(Level, GetFormattedMessage());
+                LoggingFacade.Instance.Log(Level, GetFormattedMessage());
                 _disposed = true;
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        ~EventContext() {
+            Dispose(false);
         }
 
         public void Initialize(string component, string operation)
@@ -187,7 +197,7 @@ namespace Spiffy.Monitoring
             this["Operation"] = Operation;
         }
 
-        private string GetFormattedMessage()
+        protected virtual string GetFormattedMessage(string loggerId = null)
         {
             Dictionary<string, string> kvps;
             
@@ -203,6 +213,10 @@ namespace Spiffy.Monitoring
                 kvps.Add(kvp.Key, kvp.Value);
             }
 
+            if(!string.IsNullOrWhiteSpace(loggerId)) {
+                kvps.Add("loggerId", loggerId);
+            }
+
             GenerateKeysIfNecessary(kvps);
 
             ReplaceKeysThatHaveSpaces(kvps);
@@ -214,7 +228,7 @@ namespace Spiffy.Monitoring
                                  GetKeyValuePairsAsDelimitedString(kvps));
         }
 
-        private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)
+        protected static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => !k.Value.StartsWithQuote()
@@ -225,7 +239,7 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static void ReplaceKeysThatHaveSpaces(Dictionary<string, string> keyValuePairs)
+        protected static void ReplaceKeysThatHaveSpaces(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => k.Key.ContainsWhitespace())
@@ -236,7 +250,7 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static void ReplaceKeysThatHaveDots(Dictionary<string, string> keyValuePairs)
+        protected static void ReplaceKeysThatHaveDots(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => k.Key.Contains("."))
@@ -247,7 +261,7 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private void GenerateKeysIfNecessary(Dictionary<string, string> keyValuePairs)
+        protected void GenerateKeysIfNecessary(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => k.Key.IsNullOrWhiteSpace())
@@ -258,13 +272,13 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
+        protected static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
             return string.Join(" ", keyValuePairs.Select(kvp =>
                 string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
         }
 
-        private static string GetValue(object value)
+        protected static string GetValue(object value)
         {
             if (value == null)
             {
@@ -280,12 +294,12 @@ namespace Spiffy.Monitoring
             return valueStr;
         }
 
-        private string GetSplunkFormattedTime()
+        protected string GetSplunkFormattedTime()
         {
             return _timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
         }
 
-        private IEnumerable<KeyValuePair<string, string>> GetTimeValues()
+        protected IEnumerable<KeyValuePair<string, string>> GetTimeValues()
         {
             Dictionary<string, string> timings;
 
@@ -299,7 +313,7 @@ namespace Spiffy.Monitoring
             return timings;
         }
 
-        private static string GetTimeFor(double milliseconds)
+        protected static string GetTimeFor(double milliseconds)
         {
             return string.Format("{0:F1}", milliseconds);
         }

@@ -3,16 +3,34 @@ using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
-    public static class LoggingFacade
-    {
-        private static Action<Level, string> _logAction;
+    public interface ILoggingFacade {
+        void Log(Level level, string message);
+        void Initialize(Action<Level, string> logAction);
+        void Initialize(LoggingBehavior behavior);
 
-        public static void Initialize(Action<Level, string> logAction)
+    }
+
+    public class LoggingFacade: ILoggingFacade
+    {
+        private LoggingFacade()
+        {
+        }
+
+        static ILoggingFacade _instance;
+
+        public static ILoggingFacade Instance
+        {
+            get { return _instance ?? (_instance = new LoggingFacade()); }
+        }
+
+        private Action<Level, string> _logAction;
+
+        public virtual void Initialize(Action<Level, string> logAction)
         {
             _logAction = logAction;
         }
 
-        public static void Initialize(LoggingBehavior behavior = LoggingBehavior.Console)
+        public virtual void Initialize(LoggingBehavior behavior = LoggingBehavior.Console)
         {
             switch (behavior)
             {
@@ -27,7 +45,7 @@ namespace Spiffy.Monitoring
             }
         }
 
-        public static void Log(Level level, string message)
+        public void Log(Level level, string message)
         {
             if (_logAction == null)
             {

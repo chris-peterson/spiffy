@@ -26,7 +26,7 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            LoggingFacade.Initialize((level, message) =>
+            LoggingFacade.Instance.Initialize((level, message) =>
             {
                 var nLogLevel = LevelToNLogLevel(level);
                 _logger.Log(nLogLevel, message);

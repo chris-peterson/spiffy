@@ -21,10 +21,10 @@ namespace TestConsoleApp
                             .LogToPath(@"Logs"));
                     break;
                     case "trace":
-                        LoggingFacade.Initialize(LoggingBehavior.Trace);
+                        LoggingFacade.Instance.Initialize(LoggingBehavior.Trace);
                     break;
                     case "console":
-                        LoggingFacade.Initialize(LoggingBehavior.Console);
+                        LoggingFacade.Instance.Initialize(LoggingBehavior.Console);
                     break;
                 }
             }
