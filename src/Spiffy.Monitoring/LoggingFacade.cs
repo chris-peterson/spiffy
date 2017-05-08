@@ -7,22 +7,34 @@ namespace Spiffy.Monitoring
         void Log(Level level, string message);
         void Initialize(Action<Level, string> logAction);
         void Initialize(LoggingBehavior behavior);
-
     }
 
-    public class LoggingFacade: ILoggingFacade
-    {
-        private LoggingFacade()
-        {}
-
-        static ILoggingFacade _instance;
-
-        public static ILoggingFacade Instance
+    public static class LoggingFacadeFactory {
+        public static ILoggingFacade Create(Action<Level, string> logAction)
         {
-            get { return _instance ?? (_instance = new LoggingFacade()); }
+            var loggingFacade = new LoggingFacade();
+            loggingFacade.Initialize(logAction);
+            return loggingFacade;
         }
 
-        private Action<Level, string> _logAction;
+        public static ILoggingFacade Create(LoggingBehavior behavior)
+        {
+            var loggingFacade = new LoggingFacade();
+            loggingFacade.Initialize(behavior);
+            return loggingFacade;
+        }
+
+        public static ILoggingFacade Create()
+        {
+            var loggingFacade = new LoggingFacade();
+            loggingFacade.Initialize();
+            return loggingFacade;
+        }
+    }
+
+    public class LoggingFacade : ILoggingFacade
+    {
+        protected Action<Level, string> _logAction;
 
         public virtual void Initialize(Action<Level, string> logAction)
         {
@@ -51,6 +63,19 @@ namespace Spiffy.Monitoring
                 Initialize();
             }
             _logAction(level, message);
+        }
+    }
+
+    public class DefaultLoggingFacade: LoggingFacade
+    {
+        private DefaultLoggingFacade()
+        {}
+
+        static ILoggingFacade _instance;
+
+        public static ILoggingFacade Instance
+        {
+            get { return _instance ?? (_instance = LoggingFacadeFactory.Create()); }
         }
     }
 

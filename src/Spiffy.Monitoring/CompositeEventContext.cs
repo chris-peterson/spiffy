@@ -20,7 +20,7 @@ namespace Spiffy.Monitoring
         [MethodImpl(MethodImplOptions.NoInlining)]
         public CompositeEventContext() : base()
         {
-            LoggerCollection.Add("default", LoggingFacade.Instance);
+            LoggerCollection.Add("default", DefaultLoggingFacade.Instance);
         }
 
         public IDictionary<string, ILoggingFacade> LoggerCollection { get; protected set; } = new Dictionary<string, ILoggingFacade>();

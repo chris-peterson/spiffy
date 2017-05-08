@@ -174,7 +174,7 @@ namespace Spiffy.Monitoring
             {
                 // Base class has nothing special to dispose, so disposing value is not used
                 this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                LoggingFacade.Instance.Log(Level, GetFormattedMessage());
+                DefaultLoggingFacade.Instance.Log(Level, GetFormattedMessage());
                 _disposed = true;
             }
         }

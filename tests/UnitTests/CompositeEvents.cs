@@ -20,7 +20,7 @@ namespace UnitTests
         public void Named_event()
         {
             // When:
-            var context = new CompositeEventContext("MyComponent", "MyOperation", new Dictionary<string, ILoggingFacade> { {"default", LoggingFacade.Instance} });
+            var context = new CompositeEventContext("MyComponent", "MyOperation", new Dictionary<string, ILoggingFacade> { {"default", DefaultLoggingFacade.Instance} });
             // Then:
             Assert.Equal("MyComponent", context.Component);
             Assert.Equal("MyOperation", context.Operation);
