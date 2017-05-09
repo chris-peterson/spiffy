@@ -12,26 +12,44 @@ namespace Spiffy.Monitoring
         public CompositeEventContext(string component, string operation, IDictionary<string, ILoggingFacade> loggerCollection) : base(component, operation)
         {
             if(null == loggerCollection)
-                throw new ArgumentNullException(nameof(loggerCollection));
-
-            LoggerCollection = loggerCollection;
+            {
+                LoggerCollection.Add("default", DefaultLoggingFacade.Instance);
+            }
+            else
+            {
+                LoggerCollection = new Dictionary<string, ILoggingFacade>(loggerCollection);
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public CompositeEventContext() : base()
+        public CompositeEventContext(IDictionary<string, ILoggingFacade> loggerCollection = null) : base()
         {
-            LoggerCollection.Add("default", DefaultLoggingFacade.Instance);
+            if(null == loggerCollection)
+            {
+                LoggerCollection.Add("default", DefaultLoggingFacade.Instance);
+            }
+            else
+            {
+                LoggerCollection = new Dictionary<string, ILoggingFacade>(loggerCollection);
+            }
         }
 
         public IDictionary<string, ILoggingFacade> LoggerCollection { get; protected set; } = new Dictionary<string, ILoggingFacade>();
 
-        protected override void Dispose(bool disposing) {
+        protected override void Dispose(bool disposing)
+        {
             if( !_disposed)
             {
                 this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
                 foreach(var logger in LoggerCollection) {
                     logger.Value.Log(Level, GetFormattedMessage(logger.Key));
                 }
+
+                if(disposing)
+                {
+                    LoggerCollection = null;
+                }
+
                 _disposed = true;
             }
         }

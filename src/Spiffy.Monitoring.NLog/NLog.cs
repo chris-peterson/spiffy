@@ -8,28 +8,6 @@ using NLog.Targets.Wrappers;
 
 namespace Spiffy.Monitoring
 {
-    public static class NLogFactory
-    {
-        public static ILoggingFacade Create(Action<NLogConfigurationApi> configure = null, string name = null) 
-        {
-            var config = new NLogConfigurationApi();
-            if(null != configure)
-            {
-                configure(config);
-            }
-
-            var logger = NLog.SetupNLog(config, name);
-
-            var loggingFacade = LoggingFacadeFactory.Create((level, message) =>
-            {
-                var nLogLevel = NLog.LevelToNLogLevel(level);
-                logger.Log(nLogLevel, message);
-            });
-
-            return loggingFacade;
-        }
-
-    }
     public static class NLog
     {
         private const string LoggerName = "Spiffy";
