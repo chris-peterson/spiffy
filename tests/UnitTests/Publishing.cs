@@ -57,7 +57,7 @@ namespace UnitTests
         {
             public PublishingTestContext()
             {
-                LoggingFacade.Initialize((level, msg) =>
+                DefaultLoggingFacade.Instance.Initialize((level, msg) =>
                     Messages.Add(new Tuple<Level, string>(level, msg)));
             }
 

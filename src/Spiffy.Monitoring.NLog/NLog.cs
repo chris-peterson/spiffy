@@ -26,14 +26,14 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            LoggingFacade.Initialize((level, message) =>
+            DefaultLoggingFacade.Instance.Initialize((level, message) =>
             {
                 var nLogLevel = LevelToNLogLevel(level);
                 _logger.Log(nLogLevel, message);
             });
         }
 
-        private static LogLevel LevelToNLogLevel(Level level)
+        internal static LogLevel LevelToNLogLevel(Level level)
         {
             var nLogLevel = LogLevel.Trace;
             switch (level)
@@ -51,8 +51,10 @@ namespace Spiffy.Monitoring
             return nLogLevel;
         }
 
-        private static Logger SetupNLog(NLogConfigurationApi config)
+        internal static Logger SetupNLog(NLogConfigurationApi config, string loggerName = null)
         {
+            loggerName = loggerName ?? LoggerName;
+
             var logDirectory = string.IsNullOrEmpty(config.LogDirectory) ? 
                 "${basedir}/Logs" : 
                 config.LogDirectory;
@@ -74,12 +76,12 @@ namespace Spiffy.Monitoring
             };
 
             var loggingConfiguration = new LoggingConfiguration();
-            loggingConfiguration.AddTarget(LoggerName, asyncWrapper);
+            loggingConfiguration.AddTarget(loggerName, asyncWrapper);
             loggingConfiguration.LoggingRules.Add(new LoggingRule("*", LevelToNLogLevel(config.MinimumLogLevel), asyncWrapper));
 
             LogManager.Configuration = loggingConfiguration;
 
-            return LogManager.GetLogger(LoggerName);
+            return LogManager.GetLogger(loggerName);
         }
     }
 }
