@@ -26,6 +26,15 @@ namespace TestConsoleApp
                     case "console":
                         LoggingFacade.Initialize(LoggingBehavior.Console);
                     break;
+                    case "combo":
+                        Spiffy.Monitoring.NLog.Initialize(c => c
+                            .ArchiveEvery(FileArchivePeriod.Minute)
+                            .KeepMaxArchiveFiles(5)
+                            .MinLogLevel(Level.Info)
+                            .LogToPath(@"Logs)"));
+                        Spiffy.Monitoring.NLog
+                            .WithAdditionalTarget(new ColoredConsoleTarget());
+                    break;
                 }
             }
             else
