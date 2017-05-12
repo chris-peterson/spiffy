@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NLog;
 using NLog.Config;
 using NLog.Layouts;
@@ -80,6 +81,17 @@ namespace Spiffy.Monitoring
             LogManager.Configuration = loggingConfiguration;
 
             return LogManager.GetLogger(LoggerName);
+        }
+
+        public static void WithAdditionalTarget(Target target, Level minimumLogLevel = Level.Info)
+        {
+            var loggingConfiguration = LogManager.Configuration;
+ 
+            var rule = new LoggingRule("*", LevelToNLogLevel(minimumLogLevel), target);
+            loggingConfiguration.AddTarget(LoggerName, target);
+            loggingConfiguration.LoggingRules.Add(rule);
+
+            LogManager.Configuration = loggingConfiguration;
         }
     }
 }
