@@ -107,3 +107,4 @@ Backup*/
 UpgradeLog*.XML
 project.lock.json
 .vs/
+.vscode/

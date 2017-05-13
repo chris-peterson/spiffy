@@ -303,5 +303,27 @@ namespace Spiffy.Monitoring
         {
             return string.Format("{0:F1}", milliseconds);
         }
+
+        public void AddValues (params KeyValuePair<string, string>[] values)
+        {
+            lock (_valuesSyncObject)
+            {
+                foreach (var kvp in values)
+                {
+                    _values[kvp.Key] = kvp.Value;
+                }
+            }
+        }
+
+        public void AddValues(IEnumerable<KeyValuePair<string, string>> values)
+        {
+            lock(_valuesSyncObject)
+            {
+                foreach(var kvp in values)
+                {
+                    _values[kvp.Key] = kvp.Value;
+                }
+            }
+        }
     }
 }
