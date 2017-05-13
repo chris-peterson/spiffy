@@ -119,9 +119,28 @@ namespace Spiffy.Monitoring
             }
         }
 
+        public void AddValues(params KeyValuePair<string, object>[] values)
+        {
+            lock (_valuesSyncObject)
+            {
+                foreach (var kvp in values)
+                {
+                    _values[kvp.Key] = kvp.Value;
+                }
+            }
+        }
+
+        public void AddValues(IEnumerable<KeyValuePair<string, object>> values)
+        {
+            AddValues(values.ToArray());
+        }
+
         public bool Contains(string key)
         {
-            return _values.ContainsKey(key);
+            lock (_valuesSyncObject)
+            {
+                return _values.ContainsKey(key);
+            }
         }
 
         public void AppendToValue(string key, string content, string delimiter)
@@ -130,8 +149,7 @@ namespace Spiffy.Monitoring
             {
                 if (_values.ContainsKey(key))
                 {
-                    _values[key] = string.Join(delimiter,
-                        new[] {_values[key].ToString(), content});
+                    _values[key] = string.Join(delimiter, _values[key].ToString(), content);
                 }
                 else
                 {
@@ -302,28 +320,6 @@ namespace Spiffy.Monitoring
         private static string GetTimeFor(double milliseconds)
         {
             return string.Format("{0:F1}", milliseconds);
-        }
-
-        public void AddValues (params KeyValuePair<string, string>[] values)
-        {
-            lock (_valuesSyncObject)
-            {
-                foreach (var kvp in values)
-                {
-                    _values[kvp.Key] = kvp.Value;
-                }
-            }
-        }
-
-        public void AddValues(IEnumerable<KeyValuePair<string, string>> values)
-        {
-            lock(_valuesSyncObject)
-            {
-                foreach(var kvp in values)
-                {
-                    _values[kvp.Key] = kvp.Value;
-                }
-            }
         }
     }
 }
