@@ -1,31 +1,39 @@
 ﻿using System;
 using System.Threading;
-using NLog.Targets;
 using Spiffy.Monitoring;
 
 namespace TestConsoleApp
 {
     class Program
     {
-        static void Main(string [] args)
+        static void Main(string[] args)
         {
             if (args?.Length > 0)
             {
                 switch (args[0].Trim().ToLower())
                 {
-                    case "file":
+                    case "nlog-file":
                         Spiffy.Monitoring.NLog.Initialize(c => c
-                            .ArchiveEvery(FileArchivePeriod.Minute)
-                            .KeepMaxArchiveFiles(5)
-                            .MinLogLevel(Level.Info)
-                            .LogToPath(@"Logs"));
-                    break;
+                            .Targets(t => t
+                                .File()));
+                        break;
+                    case "nlog-coloredconsole":
+                        Spiffy.Monitoring.NLog.Initialize(c => c
+                            .Targets(t => t
+                                .ColoredConsole()));
+                        break;
+                    case "nlog-all":
+                        Spiffy.Monitoring.NLog.Initialize(c => c
+                            .Targets(t => t
+                                .File()
+                                .ColoredConsole()));
+                        break;
                     case "trace":
                         LoggingFacade.Initialize(LoggingBehavior.Trace);
-                    break;
+                        break;
                     case "console":
                         LoggingFacade.Initialize(LoggingBehavior.Console);
-                    break;
+                        break;
                 }
             }
             else
@@ -38,29 +46,27 @@ namespace TestConsoleApp
                 .Set("Application", "TestConsole");
 
             Console.WriteLine("Running application.  Logs are either emitted here, or to 'Logs'");
-            
+
             // info:
             using (var context = new EventContext("Greetings", "Start"))
             {
                 context["Greeting"] = "Hello world!";
             }
-
-            // warning:
-            using (var context = new EventContext())
+            
+            while (true)
             {
-                context.SetToWarning("cause something sorta bad happened");
-            }
+                // warning:
+                using (var context = new EventContext())
+                {
+                    context.SetToWarning("cause something sorta bad happened");
+                }
 
-            // error:
-            using (var context = new EventContext())
-            {
-                context.SetToError("cause something very bad happened");
-            }
+                // error:
+                using (var context = new EventContext())
+                {
+                    context.SetToError("cause something very bad happened");
+                }
 
-            var cutOffTime = DateTime.UtcNow.AddMinutes(5);
-
-            while (DateTime.UtcNow < cutOffTime)
-            {
                 using (var context = new EventContext())
                 {
                     context["MyCustomValue"] = "foo";

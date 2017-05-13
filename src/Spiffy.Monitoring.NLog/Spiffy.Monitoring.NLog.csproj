@@ -3,7 +3,6 @@
   <PropertyGroup>
     <Copyright>2014-2017</Copyright>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
-    <VersionPrefix>3.1.0</VersionPrefix>
     <Authors>Chris Peterson</Authors>
     <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
     <DebugType>portable</DebugType>
@@ -12,6 +11,7 @@
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
     <PackageReleaseNotes>"full framework" build now targets .NET 4.0 rather than 3.5 (couldn't get it working with latest CLI tooling)
 Update to NLog 5 beta since netcore support wasn't released on 4.*
+Update Fluent Api to support multiple targets
 NOTE: Version is pre-release since NLog is still in beta.</PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
@@ -26,12 +26,13 @@ NOTE: Version is pre-release since NLog is still in beta.</PackageReleaseNotes>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>5.0.0-beta06</Version>
+    <Version>5.0.0-beta07</Version>
+    <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="NLog" Version="5.0.0-beta06" />
+    <PackageReference Include="NLog" Version="5.0.0-beta07" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">

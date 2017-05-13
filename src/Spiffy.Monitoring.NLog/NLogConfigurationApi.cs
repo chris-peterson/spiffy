@@ -1,47 +1,23 @@
-﻿using NLog.Targets;
+﻿using System;
 
 namespace Spiffy.Monitoring
 {
     public class NLogConfigurationApi
     {
-        public NLogConfigurationApi()
-        {
-            ArchivePeriod = FileArchivePeriod.Day;
-            MaxArchiveFiles = 2;
-            MinimumLogLevel = Level.Info;
-        }
+        internal NLogTargetsConfigurationApi TargetsConfiguration { get; private set; }
 
-        internal FileArchivePeriod ArchivePeriod { get; private set; }
-        internal int MaxArchiveFiles { get; private set; }
-        internal Level MinimumLogLevel { get; private set; }
-        internal string LogDirectory { get; private set; }
-
-        public NLogConfigurationApi ArchiveEvery(FileArchivePeriod archivePeriod)
+        public NLogConfigurationApi Targets(Action<NLogTargetsConfigurationApi> customize)
         {
-            ArchivePeriod = archivePeriod;
+            TargetsConfiguration = new NLogTargetsConfigurationApi();
+            customize(TargetsConfiguration);
             return this;
         }
 
-        public NLogConfigurationApi KeepMaxArchiveFiles(int maxArchiveFiles)
-        {
-            MaxArchiveFiles = maxArchiveFiles;
-            return this;
-        }
+        internal Level MinimumLogLevel { get; private set; } = Level.Info;
 
-        public NLogConfigurationApi LogToPath(string logDirectory)
+        public NLogConfigurationApi MinLevel(Level minLevel)
         {
-            LogDirectory = logDirectory;
-            return this;
-        }
-
-        /// <summary>
-        /// Log at the minLogLevel and below
-        /// </summary>
-        /// <param name="minLogLevel"></param>
-        /// <returns></returns>
-        public NLogConfigurationApi MinLogLevel(Level minLogLevel)
-        {
-            MinimumLogLevel = minLogLevel;
+            MinimumLogLevel = minLevel;
             return this;
         }
     }
