@@ -1,39 +1,37 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using FluentAssertions;
+using Kekiri.TestRunner.xUnit;
 using Spiffy.Monitoring;
-using Xunit;
 
 namespace UnitTests
 {
-    public class Publishing
+    public class Publishing : Scenarios
     {
-        readonly PublishingTestContext _context = new PublishingTestContext();
+        PublishingTestContext _context = new PublishingTestContext();
 
-        [Fact]
-        public void Single_publish()
+        [Scenario]
+        public void Events_are_published_on_disposal()
         {
-            // When:
-            Disposing_an_event_context();
-            // Then:
-            It_should_publish_the_log_message();
+            Given(A_publishing_context);
+            When(Disposing_an_event_context);
+            Then(It_should_publish_the_log_message);
         }
     
-        [Fact]
-        public void Double_publish()
+        [Scenario]
+        public void Events_are_only_published_once()
         {
-            // Given:
-            Event_has_already_been_disposed();
-            // When:
-            Disposing_an_event_context();
-            // Then:
-            It_should_not_publish_again();
+            Given(A_publishing_context)
+                .And(Disposing_an_event_context);
+            When(Disposing_an_event_context);
+            Then(It_should_publish_the_log_message)
+                .But(It_should_not_publish_again);
         }
 
-
-        void Event_has_already_been_disposed()
+        void A_publishing_context()
         {
-            _context.EventContext.Dispose();
+            _context =new PublishingTestContext();
         }
 
         void Disposing_an_event_context()
@@ -44,13 +42,13 @@ namespace UnitTests
         void It_should_publish_the_log_message()
         {
             var message = _context.Messages.Single();
-            Assert.Equal(Level.Info, message.Item1);
-            Assert.InRange(message.Item2.Length, 10, 100);
+            message.Item1.Should().Be(Level.Info);
+            message.Item2.Length.Should().BeInRange(10, 100);
         }
 
         void It_should_not_publish_again()
         {
-            Assert.Equal(1, _context.Messages.Count);
+            _context.Messages.Count.Should().Be(1);
         }
 
         class PublishingTestContext

@@ -58,9 +58,20 @@ namespace Spiffy.Monitoring
                     ArchiveFileName = new SimpleLayout(Path.Combine(logDirectory, "archive/{####}.log"))
                 });
             }
-            if (config.TargetsConfiguration.ColoredConsoleConfiguration != null)
+
+            var coloredConsole = config.TargetsConfiguration.ColoredConsoleConfiguration;
+            if (coloredConsole != null)
             {
                 targets.Add(new ColoredConsoleTarget());
+            }
+
+            var network = config.TargetsConfiguration.NetworkConfiguration;
+            if (network != null)
+            {
+                targets.Add(new NetworkTarget
+                {
+                    Address = network.Address
+                });
             }
 
             if (targets.Count == 0)

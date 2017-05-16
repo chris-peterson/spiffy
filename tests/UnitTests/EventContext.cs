@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Spiffy.Monitoring;
 using Kekiri.TestRunner.xUnit;
-using Xunit;
 
 namespace UnitTests
 {

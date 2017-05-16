@@ -51,5 +51,19 @@ namespace Spiffy.Monitoring
             customize?.Invoke(ColoredConsoleConfiguration);
             return this;
         }
+
+        public class NetworkConfigurationApi
+        {
+            public string Address { get; set; } = "udp://127.0.0.1:7071";
+        }
+
+        internal NetworkConfigurationApi NetworkConfiguration { get; private set; }
+
+        public NLogTargetsConfigurationApi Network(Action<NetworkConfigurationApi> customize = null)
+        {
+            NetworkConfiguration = new NetworkConfigurationApi();
+            customize?.Invoke(NetworkConfiguration);
+            return this;
+        }
     }
 }

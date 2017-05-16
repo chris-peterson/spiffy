@@ -26,7 +26,8 @@ namespace TestConsoleApp
                         Spiffy.Monitoring.NLog.Initialize(c => c
                             .Targets(t => t
                                 .File()
-                                .ColoredConsole()));
+                                .ColoredConsole()
+                                .Network()));
                         break;
                     case "trace":
                         LoggingFacade.Initialize(LoggingBehavior.Trace);
