@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Spiffy.Monitoring
@@ -82,6 +83,40 @@ namespace Spiffy.Monitoring
         public static bool IsNullOrWhiteSpace(this string value)
         {
             return value == null || value.All(char.IsWhiteSpace);
+        }
+    }
+
+    public static class EventContextExtensions
+    {
+        public static EventContext IncludeStructure(this EventContext eventContext, object structure, string keyPrefix = null, bool includeNullValues = true)
+        {
+            if (structure != null)
+            {
+#if NET4_0
+                foreach (var property in structure.GetType().GetProperties().Where(p => p.CanRead))
+#else
+                foreach (var property in structure.GetType().GetTypeInfo().DeclaredProperties.Where(p => p.CanRead))
+#endif
+                {
+                    try
+                    {
+                        var val = property.GetValue(structure, null);
+                        if (val == null && !includeNullValues)
+                        {
+                            continue;
+                        }
+                        string key = string.IsNullOrEmpty(keyPrefix)
+                            ? property.Name
+                            : string.Format("{0}_{1}", keyPrefix, property.Name);
+                        eventContext[key] = val;
+                    }
+                    catch // intentionally squashed
+                    {
+                    }
+                }
+            }
+
+            return eventContext;
         }
     }
 }

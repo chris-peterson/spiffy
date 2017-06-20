@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Spiffy.Monitoring;
 using Kekiri.TestRunner.xUnit;
@@ -42,7 +43,7 @@ namespace UnitTests
         {
             Given(An_event_context);
             When(Adding_values_via_params);
-            Then(The_context_contains_the_expected_key);
+            Then(The_context_contains_key_value_pairs);
         }
 
         [Scenario]
@@ -50,9 +51,24 @@ namespace UnitTests
         {
             Given(An_event_context);
             When(Adding_values_array);
-            Then(The_context_contains_the_expected_key);
+            Then(The_context_contains_key_value_pairs);
+        }
+        
+        [Scenario]
+        public void Can_include_exception()
+        {
+            Given(An_event_context);
+            When(Including_an_exception);
+            Then(The_context_contains_exception_data);
         }
 
+        [Scenario]
+        public void Can_include_structure()
+        {
+            Given(An_event_context);
+            When(Including_a_structure);
+            Then(The_context_contains_structure_data);
+        }
         void An_event_context()
         {
             Context.EventContext = new EventContext();
@@ -75,13 +91,47 @@ namespace UnitTests
                 });
         }
 
-        void The_context_contains_the_expected_key()
+        void The_context_contains_key_value_pairs()
         {
             var context = (EventContext) Context.EventContext;
             context.Contains("key1").Should().BeTrue();
             context.Contains("key2").Should().BeTrue();
             context["key1"].Should().Be("value1");
             context["key2"].Should().Be("value2");
+        }
+
+        void Including_an_exception()
+        {
+           ((EventContext) Context.EventContext).IncludeException(new NullReferenceException());
+        }
+
+        void The_context_contains_exception_data()
+        {
+            var context = (EventContext) Context.EventContext;
+            context.Contains("Exception_Type").Should().BeTrue();
+            context.Contains("Exception_Message").Should().BeTrue();
+            context.Contains("Exception_StackTrace").Should().BeTrue();
+            context.Contains("Exception").Should().BeTrue();
+        }
+
+        class TestStructure
+        {
+            public int Data1 { get; } = 1;
+            public string Data2 { get; } = "foo";
+        }
+
+        void Including_a_structure()
+        {
+            ((EventContext)Context.EventContext).IncludeStructure(new TestStructure(), "Prefix");
+        }
+
+        void The_context_contains_structure_data()
+        {
+            var context = (EventContext)Context.EventContext;
+            context.Contains("Prefix_Data1").Should().BeTrue();
+            context.Contains("Prefix_Data2").Should().BeTrue();
+            context["Prefix_Data1"].Should().Be(1);
+            context["Prefix_Data2"].Should().Be("foo");
         }
     }
 }
