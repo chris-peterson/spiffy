@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using FluentAssertions;
+using Kekiri;
 using Kekiri.TestRunner.xUnit;
 using Spiffy.Monitoring;
 
@@ -18,7 +19,16 @@ namespace UnitTests
             When(Disposing_an_event_context);
             Then(It_should_publish_the_log_message);
         }
-    
+
+        [Scenario]
+        public void Suppressed_events_are_not_published()
+        {
+            Given(A_publishing_context)
+            .And(EventContext_is_suppressed);
+            When(Disposing_an_event_context);
+            Then(It_should_not_publish_the_log_message);
+        }
+
         [Scenario]
         public void Events_are_only_published_once()
         {
@@ -32,6 +42,11 @@ namespace UnitTests
         void A_publishing_context()
         {
             _context =new PublishingTestContext();
+        }
+
+        void EventContext_is_suppressed()
+        {
+            _context.EventContext.Suppress();
         }
 
         void Disposing_an_event_context()
@@ -49,6 +64,11 @@ namespace UnitTests
         void It_should_not_publish_again()
         {
             _context.Messages.Count.Should().Be(1);
+        }
+
+        void It_should_not_publish_the_log_message()
+        {
+            _context.Messages.Count.Should().Be(0);
         }
 
         class PublishingTestContext

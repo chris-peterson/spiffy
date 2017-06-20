@@ -186,13 +186,24 @@ namespace Spiffy.Monitoring
             }
         }
 
+        public bool IsSuppressed { get; private set; }
+
+        public void Suppress()
+        {
+            IsSuppressed = true;
+        }
+
         volatile bool _disposed = false;
+
         public void Dispose()
         {
             if (!_disposed)
             {
-                this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                LoggingFacade.Log(Level, GetFormattedMessage());
+                if(!IsSuppressed)
+                {
+                    this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
+                    LoggingFacade.Log(Level, GetFormattedMessage());
+                }
                 _disposed = true;
             }
         }
