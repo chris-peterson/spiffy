@@ -246,8 +246,10 @@ namespace Spiffy.Monitoring
         private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
-                .Where(k => !k.Value.StartsWithQuote()
-                    && (k.Value.ContainsWhitespace() || k.Value.Contains('&')))
+                .Where(k => !k.Value.StartsWithQuote() && (
+                    k.Value.ContainsWhitespace() ||
+                    k.Value.Contains(',') ||
+                    k.Value.Contains('&')))
                 .ToList())
             {
                 keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes();
