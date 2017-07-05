@@ -9,12 +9,12 @@
         <AssemblyName>Spiffy.Monitoring</AssemblyName>
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
-        <PackageReleaseNotes>Encapsulate values with commas (i.e. wrap in quotes)</PackageReleaseNotes>
+        <PackageReleaseNotes>Republish with better package metadata</PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>4.0.4</Version>
+        <Version>4.0.5</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
