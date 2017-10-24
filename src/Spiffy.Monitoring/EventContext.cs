@@ -313,6 +313,14 @@ namespace Spiffy.Monitoring
             // escape them individually to minimize visual noise (as opposed to doing a full encode) 
             valueStr = valueStr.Replace("=", ":");
             valueStr = valueStr.Replace("\"", "''");
+
+            if (Behavior.RemoveNewlines)
+            {
+                valueStr = valueStr
+                    .Replace("\r", String.Empty)
+                    .Replace("\n", "\\n");
+            }
+
             return valueStr;
         }
 

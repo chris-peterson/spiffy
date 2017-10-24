@@ -7,6 +7,15 @@ namespace Spiffy.Monitoring
     {
         static Action<Level, string> _loggingAction;
 
+        /// <summary>
+        /// Whether or not to remove newline characters from logged values.
+        /// </summary>
+        /// <returns>
+        /// <code>true</code> if newline characters will be removed from logged
+        /// values, <code>false</code> otherwise.
+        /// </returns>
+        public static bool RemoveNewlines { get; set; }
+
         public static void UseBuiltInLogging(BuiltInLogging behavior)
         {
             switch (behavior)
