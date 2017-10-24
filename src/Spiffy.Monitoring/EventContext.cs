@@ -239,7 +239,7 @@ namespace Spiffy.Monitoring
 
             GenerateKeysIfNecessary(kvps);
 
-            ReplaceKeysThatHaveSpaces(kvps);
+            ReplaceKeysThatHaveWhiteSpace(kvps);
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
@@ -261,7 +261,7 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static void ReplaceKeysThatHaveSpaces(Dictionary<string, string> keyValuePairs)
+        private static void ReplaceKeysThatHaveWhiteSpace(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => k.Key.ContainsWhitespace())
