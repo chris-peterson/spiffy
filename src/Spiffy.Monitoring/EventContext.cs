@@ -252,7 +252,7 @@ namespace Spiffy.Monitoring
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => !k.Value.StartsWithQuote() && (
-                    k.Value.ContainsWhitespace() ||
+                    k.Value.ContainsWhiteSpace() ||
                     k.Value.Contains(',') ||
                     k.Value.Contains('&')))
                 .ToList())
@@ -264,11 +264,11 @@ namespace Spiffy.Monitoring
         private static void ReplaceKeysThatHaveWhiteSpace(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
-                .Where(k => k.Key.ContainsWhitespace())
+                .Where(k => k.Key.ContainsWhiteSpace())
                 .ToList())
             {
                 keyValuePairs.Remove(kvp.Key);
-                keyValuePairs[kvp.Key.RemoveWhitespace()] = kvp.Value;
+                keyValuePairs[kvp.Key.RemoveWhiteSpace()] = kvp.Value;
             }
         }
 
