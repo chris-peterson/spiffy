@@ -53,7 +53,8 @@ namespace Spiffy.Monitoring
 
     internal static class StringExtensions
     {
-        private const string WhitespaceRegexPattern = @"\s+";
+        private static readonly Regex WhitespaceRegex =
+            new Regex(@"\s+", RegexOptions.Compiled);
 
         public static bool StartsWithQuote(this string value)
         {
@@ -62,12 +63,12 @@ namespace Spiffy.Monitoring
 
         public static bool ContainsWhitespace(this string value)
         {
-            return value != null && Regex.IsMatch(value, WhitespaceRegexPattern);
+            return value != null && WhitespaceRegex.IsMatch(value);
         }
 
         public static string RemoveWhitespace(this string value)
         {
-            return value == null ? null : Regex.Replace(value.Trim(), WhitespaceRegexPattern, "_");
+            return value == null ? null : WhitespaceRegex.Replace(value.Trim(), "_");
         }
 
         public static string WrappedInQuotes(this string value)
