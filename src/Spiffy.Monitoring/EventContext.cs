@@ -239,7 +239,7 @@ namespace Spiffy.Monitoring
 
             GenerateKeysIfNecessary(kvps);
 
-            ReplaceKeysThatHaveSpaces(kvps);
+            ReplaceKeysThatHaveWhiteSpace(kvps);
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
@@ -252,7 +252,7 @@ namespace Spiffy.Monitoring
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => !k.Value.StartsWithQuote() && (
-                    k.Value.ContainsWhitespace() ||
+                    k.Value.ContainsWhiteSpace() ||
                     k.Value.Contains(',') ||
                     k.Value.Contains('&')))
                 .ToList())
@@ -261,14 +261,14 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static void ReplaceKeysThatHaveSpaces(Dictionary<string, string> keyValuePairs)
+        private static void ReplaceKeysThatHaveWhiteSpace(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
-                .Where(k => k.Key.ContainsWhitespace())
+                .Where(k => k.Key.ContainsWhiteSpace())
                 .ToList())
             {
                 keyValuePairs.Remove(kvp.Key);
-                keyValuePairs[kvp.Key.RemoveWhitespace()] = kvp.Value;
+                keyValuePairs[kvp.Key.RemoveWhiteSpace()] = kvp.Value;
             }
         }
 
@@ -313,6 +313,14 @@ namespace Spiffy.Monitoring
             // escape them individually to minimize visual noise (as opposed to doing a full encode) 
             valueStr = valueStr.Replace("=", ":");
             valueStr = valueStr.Replace("\"", "''");
+
+            if (Behavior.RemoveNewlines)
+            {
+                valueStr = valueStr
+                    .Replace("\r", String.Empty)
+                    .Replace("\n", "\\n");
+            }
+
             return valueStr;
         }
 

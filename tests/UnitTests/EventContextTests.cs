@@ -15,7 +15,6 @@ namespace UnitTests
             Then(Component_and_operation_should_be, GetType().Name, "Implicit_creation");
         }
 
-
         [Scenario]
         public void Explicit_creation()
         {
@@ -79,6 +78,61 @@ namespace UnitTests
             When(Including_a_structure);
             Then(The_context_contains_structure_data);
         }
+
+        [Scenario]
+        public void Does_not_remove_newline_characters_by_default()
+        {
+            Given(An_event_context);
+            When(Formatting_a_value_with_one_or_more_newline_characters);
+            Then(The_formatted_value_has_newline_characters);
+        }
+
+        private void The_formatted_value_has_newline_characters()
+        {
+            var result = (string) Context.FormattedMessage;
+
+            result.Should().MatchRegex(
+                "[\\r\\n]",
+                because: "formatted message should not contain newline characters");
+        }
+
+        [Scenario]
+        public void Can_remove_newline_characters()
+        {
+            Given(An_event_context_configured_for_newline_removal);
+            When(Formatting_a_value_with_one_or_more_newline_characters);
+            Then(The_formatted_value_has_no_newline_characters);
+        }
+
+        private void An_event_context_configured_for_newline_removal()
+        {
+            An_event_context();
+            Context.NewlineRemovalContext = new NewlineRemovalContext();
+        }
+
+        private void Formatting_a_value_with_one_or_more_newline_characters()
+        {
+            var context = (EventContext) Context.EventContext;
+
+            context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
+
+            Behavior.UseCustomLogging((level, msg) =>
+                Context.FormattedMessage = msg);
+
+            context.Dispose();
+        }
+
+        private void The_formatted_value_has_no_newline_characters()
+        {
+            var result = (string) Context.FormattedMessage;
+
+            result.Should().NotMatchRegex(
+                "[\\r\\n]",
+                because: "formatted message should not contain newline characters");
+
+            using(Context.NewlineRemovalContext) { }
+        }
+
         void An_event_context()
         {
             Context.EventContext = new EventContext();
@@ -153,6 +207,20 @@ namespace UnitTests
             context.Contains("Prefix_Data2").Should().BeTrue();
             context["Prefix_Data1"].Should().Be(1);
             context["Prefix_Data2"].Should().Be("foo");
+        }
+
+        private class NewlineRemovalContext : IDisposable
+        {
+            private readonly bool _oldValue;
+
+            public NewlineRemovalContext()
+            {
+                _oldValue = Behavior.RemoveNewlines;
+                Behavior.RemoveNewlines = true;
+            }
+
+            public void Dispose() =>
+                Behavior.RemoveNewlines = _oldValue;
         }
     }
 }
