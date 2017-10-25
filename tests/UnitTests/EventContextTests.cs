@@ -59,7 +59,17 @@ namespace UnitTests
         {
             Given(An_event_context);
             When(Including_an_exception);
-            Then(The_context_contains_exception_data);
+            Then(The_context_contains_exception_data, "Exception")
+                .And(The_context_level_is, Level.Error);
+        }
+
+        [Scenario]
+        public void Can_include_informational_exception()
+        {
+            Given(An_event_context);
+            When(Including_an_informational_exception);
+            Then(The_context_contains_exception_data, "InfoException")
+                .And(The_context_level_is, Level.Info);
         }
 
         [Scenario]
@@ -105,13 +115,24 @@ namespace UnitTests
            ((EventContext) Context.EventContext).IncludeException(new NullReferenceException());
         }
 
-        void The_context_contains_exception_data()
+        void Including_an_informational_exception()
+        {
+           ((EventContext) Context.EventContext).IncludeInformationalException(new NullReferenceException(), "InfoException");
+        }
+
+        void The_context_contains_exception_data(string keyPrefix)
         {
             var context = (EventContext) Context.EventContext;
-            context.Contains("Exception_Type").Should().BeTrue();
-            context.Contains("Exception_Message").Should().BeTrue();
-            context.Contains("Exception_StackTrace").Should().BeTrue();
-            context.Contains("Exception").Should().BeTrue();
+            context.Contains($"{keyPrefix}_Type").Should().BeTrue();
+            context.Contains($"{keyPrefix}_Message").Should().BeTrue();
+            context.Contains($"{keyPrefix}_StackTrace").Should().BeTrue();
+            context.Contains($"{keyPrefix}").Should().BeTrue();
+        }
+
+        void The_context_level_is(Level expectedLevel)
+        {
+            var context = (EventContext) Context.EventContext;
+            context.Level.Should().Be(expectedLevel);
         }
 
         class TestStructure

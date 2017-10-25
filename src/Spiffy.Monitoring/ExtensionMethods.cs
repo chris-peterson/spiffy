@@ -10,7 +10,17 @@ namespace Spiffy.Monitoring
         public static void IncludeException(this EventContext target, Exception ex, string keyPrefix = "Exception")
         {
             target.SetToError("An exception has ocurred");
+            IncludeExceptionHelper(target, ex, keyPrefix);       
+        }
 
+        public static void IncludeInformationalException(this EventContext target, Exception ex, string keyPrefix)
+        {
+            IncludeExceptionHelper(target, ex, keyPrefix);      
+        }
+
+
+        static void IncludeExceptionHelper(EventContext target, Exception ex, string keyPrefix)
+        {
             if (ex == null)
             {
                 // we don't expect to be called with a null exception, but we should emit something:
