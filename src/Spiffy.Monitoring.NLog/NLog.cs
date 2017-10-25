@@ -26,7 +26,7 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            LoggingFacade.Initialize((level, message) =>
+            Behavior.UseCustomLogging((level, message) =>
             {
                 _logger.Log(level.ToNLogLevel(), message);
             });

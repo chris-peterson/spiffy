@@ -201,8 +201,13 @@ namespace Spiffy.Monitoring
             {
                 if(!IsSuppressed)
                 {
-                    this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                    LoggingFacade.Log(Level, GetFormattedMessage());
+                    var logAction = Behavior.GetLoggingAction();
+
+                    if (logAction != null)
+                    {
+                        this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
+                        logAction(Level, GetFormattedMessage());
+                    }
                 }
                 _disposed = true;
             }

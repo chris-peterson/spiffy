@@ -10,7 +10,8 @@ namespace TestConsoleApp
         {
             if (args?.Length > 0)
             {
-                switch (args[0].Trim().ToLower())
+                var loggingFlag = args[0].Trim().ToLower();
+                switch (loggingFlag)
                 {
                     case "nlog-file":
                         Spiffy.Monitoring.NLog.Initialize(c => c
@@ -30,16 +31,18 @@ namespace TestConsoleApp
                                 .Network()));
                         break;
                     case "trace":
-                        LoggingFacade.Initialize(LoggingBehavior.Trace);
+                        Behavior.UseBuiltInLogging(BuiltInLogging.Trace);
                         break;
                     case "console":
-                        LoggingFacade.Initialize(LoggingBehavior.Console);
+                        Behavior.UseBuiltInLogging(BuiltInLogging.Console);
                         break;
+                    default:
+                        throw new NotSupportedException($"{loggingFlag} did not match any supported value");
                 }
             }
             else
             {
-                // default behavior if nothing is specified (should be console)
+                throw new Exception("This test application requires a single string parameter for testing various logging behavior");
             }
 
             // key-value-pairs set here appear in every event message

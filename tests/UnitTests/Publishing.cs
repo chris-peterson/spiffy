@@ -108,7 +108,7 @@ namespace UnitTests
         {
             public PublishingTestContext()
             {
-                LoggingFacade.Initialize((level, msg) =>
+                Behavior.UseCustomLogging((level, msg) =>
                     Messages.Add(new Tuple<Level, string>(level, msg)));
             }
 
