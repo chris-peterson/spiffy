@@ -9,12 +9,16 @@
         <AssemblyName>Spiffy.Monitoring</AssemblyName>
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
-        <PackageReleaseNotes>Republish with better package metadata</PackageReleaseNotes>
+        <PackageReleaseNotes>
+           Remove LoggingFacade -- Consumers must now explicitly opt-in to either a built-in (Behavior.UseBuiltInLogging) or use a provider package (e.g. NLog.Initialize)
+           Support "informational" exceptions
+           Support for forcing multi-line messages to a single line
+        </PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>4.0.5</Version>
+        <Version>5.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
