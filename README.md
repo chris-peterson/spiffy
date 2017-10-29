@@ -35,30 +35,27 @@ NOTE: the provider package need only be installed for your application's entry p
 ## Example
 
 ```c#
-    static void Main()
-    {
+    static void Main() {
         // this should be the first line of your application
-        Spiffy.Monitoring.NLog.Initialize();
+         Spiffy.Monitoring.NLog.Initialize(config => {
+            config.Targets(t => t.ColoredConsole());
+         });
 
         // key-value-pairs set here appear in every event message
         GlobalEventContext.Instance
             .Set("Application", "MyApplication");
 
-        using (var context = new EventContext())
-        {
+        using (var context = new EventContext()) {
             context["Key"] = "Value";
 
-            using (context.Time("LongRunning"))
-            {
+            using (context.Time("LongRunning")) {
                 DoSomethingLongRunning();
             }
 
-            try
-            {
+            try {
                 DoSomethingDangerous();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 context.IncludeException(ex);
             }
         }
