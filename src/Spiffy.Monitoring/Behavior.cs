@@ -21,15 +21,41 @@ namespace Spiffy.Monitoring
             switch (behavior)
             {
                 case Monitoring.BuiltInLogging.Console:
-                    _loggingAction = (level, message) => Console.WriteLine(message);
+                    _loggingAction = (level, message) =>
+                    {
+                        if (level == Level.Error)
+                        {
+                            Console.Error.WriteLine(message);
+                        }
+                        else
+                        {
+                            Console.WriteLine(message);
+                        }
+                    };
                     break;
                 case Monitoring.BuiltInLogging.Trace:
-                    _loggingAction = (level, message) => Trace.WriteLine(message);
+                    _loggingAction = (level, message) =>
+                    {
+                        switch (level)
+                        {
+                            case Level.Info:
+                                Trace.TraceInformation(message);
+                                break;
+                            case Level.Warning:
+                                Trace.TraceWarning(message);
+                                break;
+                            case Level.Error:
+                                Trace.TraceError(message);
+                                break;
+                            default:
+                                Trace.WriteLine(message);
+                                break;
+                        }
+                    };
                     break;
                 default:
                     throw new NotSupportedException($"{behavior} is not supported");
             }
-
         }
 
         public static void UseCustomLogging(Action<Level, string> loggingAction)
