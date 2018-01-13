@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Copyright>2014-2017</Copyright>
+        <Copyright>2014-2018</Copyright>
         <Authors>Chris Peterson</Authors>
         <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
         <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
@@ -10,15 +10,13 @@
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
         <PackageReleaseNotes>
-           Remove LoggingFacade -- Consumers must now explicitly opt-in to either a built-in (Behavior.UseBuiltInLogging) or use a provider package (e.g. NLog.Initialize)
-           Support "informational" exceptions
-           Support for forcing multi-line messages to a single line
+           Update Console and Trace implementations to route messages based on level (e.g. errors to Console.Error)
         </PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>5.0.0</Version>
+        <Version>5.1.0</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
