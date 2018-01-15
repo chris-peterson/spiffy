@@ -1,0 +1,11 @@
+version: 5.1.{build}
+image: Visual Studio 2017
+build_script:
+- ps: >-
+    dotnet restore
+
+    dotnet build -c Release
+test_script:
+- ps: dotnet test tests/UnitTests/UnitTests.csproj
+artifacts:
+- path: src\**\*.nupkg
