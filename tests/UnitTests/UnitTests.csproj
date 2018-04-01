@@ -14,9 +14,9 @@
     
     <ItemGroup>
         <ProjectReference Include="..\..\src\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-        <PackageReference Include="FluentAssertions" Version="4.19.2" />
-        <PackageReference Include="Kekiri" Version="4.0.0-rc1" />
-        <PackageReference Include="Kekiri.TestRunner.xUnit" Version="1.0.0-rc1" />
+        <PackageReference Include="FluentAssertions" Version="5.2.*" />
+        <PackageReference Include="Kekiri" Version="4.1.*" />
+        <PackageReference Include="Kekiri.Xunit" Version="1.1.*" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.*" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.2.*" />
         <PackageReference Include="xunit" Version="2.2.*" />

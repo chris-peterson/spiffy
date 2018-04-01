@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using Spiffy.Monitoring;
-using Kekiri.TestRunner.xUnit;
+using Kekiri.Xunit;
 
 namespace UnitTests
 {

@@ -4,26 +4,29 @@
     <Copyright>2014-2018</Copyright>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
     <Authors>Chris Peterson</Authors>
-    <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard1.5;net40</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring.NLog</AssemblyName>
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
-    <PackageReleaseNotes>"full framework" build now targets .NET 4.0 rather than 3.5 (couldn't get it working with latest CLI tooling)
-Update Fluent Api to support multiple targets
-NOTE: Version is pre-release since NLog 4.5 is not yet released.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+New features:
+
+- Support for NLog 4.5
+- Fluent Api to support multiple targets
+- Add Network Target
+
+    </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>4.5.0-rc03</Version>
-    <RootNamespace>Spiffy.Monitoring</RootNamespace>
+    <Version>4.5.0</Version>
+    <RootNamespace>Spiffy.Monitoring.NLog</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="NLog" Version="4.5.0-rc03" />
+    <PackageReference Include="NLog" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
