@@ -1,13 +1,15 @@
-# Spiffy
+# Overview
 
-A logging framework for .NET that supports log aggregation, e.g. Splunk
+A structured logging framework for .NET that supports log aggregation, e.g. Splunk
 
 ## Status
 
-Package | Build Status | Latest Release
-:-------- | :------------ | :------------
-Spiffy.Monitoring | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/v/Spiffy.Monitoring.svg)](https://badge.fury.io/nu/spiffy.monitoring)
-Spiffy.Monitoring.NLog | [![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy) | [![NuGet version](https://img.shields.io/nuget/vpre/Spiffy.Monitoring.NLog.svg)](https://badge.fury.io/nu/spiffy.monitoring.nlog)
+[![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy)
+
+Package | Latest Release |
+:-------- | :------------ |
+Spiffy.Monitoring | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.svg)](https://www.nuget.org/packages/spiffy.monitoring)
+Spiffy.Monitoring.NLog | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.NLog.svg)](https://www.nuget.org/packages/spiffy.monitoring.nlog)
 
 ## Setup
 
