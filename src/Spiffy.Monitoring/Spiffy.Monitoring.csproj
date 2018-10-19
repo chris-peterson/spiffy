@@ -10,13 +10,13 @@
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
         <PackageReleaseNotes>
-           Update Console and Trace implementations to route messages based on level (e.g. errors to Console.Error)
+            If multiple timings (EventContext.Time) are performed using the same key, accumulate total time elapsed
         </PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>5.1.0</Version>
+        <Version>5.1.1</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
