@@ -88,17 +88,21 @@ namespace Spiffy.Monitoring
 
         public IDisposable Time(string key)
         {
-            key = string.Format("TimeElapsed_{0}", key);
-
+            AutoTimer timer;
             lock (_timersSyncObject)
             {
-                if (!_timers.ContainsKey(key))
+                if (_timers.ContainsKey(key))
                 {
-                    _timers[key] = new AutoTimer();
+                    timer = _timers[key];
+                    timer.Resume();
                 }
-
-                return _timers[key];
+                else
+                {
+                    timer = _timers[key] = new AutoTimer();
+                }
             }
+
+            return timer;
         }
 
         public object this[string key]
@@ -331,16 +335,21 @@ namespace Spiffy.Monitoring
 
         private IEnumerable<KeyValuePair<string, string>> GetTimeValues()
         {
-            Dictionary<string, string> timings;
+            var times = new Dictionary<string, string>();
 
             lock (_timersSyncObject)
             {
-                timings = _timers.ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => GetTimeFor(kvp.Value.TotalMilliseconds));
+                foreach (var kvp in _timers)
+                {
+                    times[$"TimeElapsed_{kvp.Key}"] = GetTimeFor(kvp.Value.TotalMilliseconds);
+                    if (kvp.Value.Count > 1)
+                    {
+                        times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();
+                    }
+                }
             }
 
-            return timings;
+            return times;
         }
 
         private static string GetTimeFor(double milliseconds)

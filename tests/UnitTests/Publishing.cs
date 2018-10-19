@@ -61,6 +61,60 @@ namespace UnitTests
                 .And(The_value_should_be_encapsulated_in_quotes, str);
         }
 
+        [Scenario]
+        public void Single_timing()
+        {
+            Given(A_publishing_context)
+                .And(A_code_block_is_timed);
+            When(Disposing_an_event_context);
+            Then(It_should_publish_the_log_message)
+                .And(The_message_contains_TimeElapsed)
+                .But(The_nessage_contains_Count, false);
+        }
+
+        [Scenario]
+        public void Multiple_timings()
+        {
+            Given(A_publishing_context)
+                .And(A_code_block_is_timed)
+                .And(The_same_block_is_timed_again);
+            When(Disposing_an_event_context);
+            Then(It_should_publish_the_log_message)
+                .And(The_message_contains_TimeElapsed)
+                .But(The_nessage_contains_Count, true);
+        }
+
+        void A_code_block_is_timed()
+        {
+            using (_context.EventContext.Time("TimingKey"))
+            {
+            }
+        }
+
+        void The_same_block_is_timed_again()
+        {
+            A_code_block_is_timed();
+        }
+
+        void The_message_contains_TimeElapsed()
+        {
+            _context.Messages.Single().Item2.Contains("TimingKey");
+        }
+
+        void The_nessage_contains_Count(bool shouldContain)
+        {
+            const string CountKey = "Count_TimingKey";
+            var message = _context.Messages.Single().Item2;
+            if (shouldContain)
+            {
+                message.Should().Contain(CountKey);
+            }
+            else
+            {
+                message.Should().NotContain(CountKey);
+            }
+        }
+
         void A_publishing_context()
         {
             _context =new PublishingTestContext();
