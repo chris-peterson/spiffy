@@ -2,7 +2,7 @@
 
 A structured logging framework for .NET that supports log aggregation, e.g. Splunk.
 
-Handled over **120,000,000,000** production requests (and counting!)
+Handled over **155,000,000,000** production requests (and counting!)
 
 ## Status
 
