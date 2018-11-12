@@ -36,8 +36,8 @@ namespace Spiffy.Monitoring
 
             foreach (var f in frames)
             {
-                var assembly = f.GetMethod().DeclaringType.GetTypeInfo().Assembly;
-                if (!FrameworkAssembly(assembly))
+                var assembly = f.GetMethod().DeclaringType?.GetTypeInfo().Assembly;
+                if (assembly != null && !FrameworkAssembly(assembly))
                 {
                     stackFrame = f;
                     break;
