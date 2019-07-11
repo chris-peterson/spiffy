@@ -9,7 +9,7 @@ namespace Spiffy.Monitoring
     {
         public static void IncludeException(this EventContext target, Exception ex, string keyPrefix = "Exception")
         {
-            target.SetToError("An exception has ocurred");
+            target.SetToError("An exception has occurred");
             IncludeExceptionHelper(target, ex, keyPrefix);       
         }
 
