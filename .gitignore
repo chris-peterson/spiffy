@@ -3,6 +3,8 @@
 [Bb]in/
 [Oo]bj/
 
+.idea/
+
 # mstest test results
 TestResults
 

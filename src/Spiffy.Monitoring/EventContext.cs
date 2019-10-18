@@ -78,9 +78,11 @@ namespace Spiffy.Monitoring
         public Level Level { get; private set; }
 
         readonly Dictionary<string, object> _values = new Dictionary<string, object>();
+        readonly Dictionary<string, uint> _counts = new Dictionary<string, uint>();
         readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
 
         readonly object _valuesSyncObject = new object();
+        readonly object _countsSyncObject = new object();
         readonly object _timersSyncObject = new object();
         
         readonly DateTime _timestamp;
@@ -103,6 +105,21 @@ namespace Spiffy.Monitoring
             }
 
             return timer;
+        }
+
+        public void Count(string key)
+        {
+            lock (_countsSyncObject)
+            {
+                if (_counts.ContainsKey(key))
+                {
+                    _counts[key]++;
+                }
+                else
+                {
+                    _counts[key] = 1;
+                }
+            }
         }
 
         public object this[string key]
@@ -236,6 +253,11 @@ namespace Spiffy.Monitoring
                     kvp => GetValue(kvp.Value));
             }
 
+            foreach (var kvp in GetCountValues())
+            {
+                kvps.Add(kvp.Key, kvp.Value);
+            }
+
             foreach (var kvp in GetTimeValues())
             {
                 kvps.Add(kvp.Key, kvp.Value);
@@ -331,6 +353,21 @@ namespace Spiffy.Monitoring
         private string GetSplunkFormattedTime()
         {
             return _timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
+        }
+
+        private IEnumerable<KeyValuePair<string, string>> GetCountValues()
+        {
+            var counts = new Dictionary<string, string>();
+
+            lock (_countsSyncObject)
+            {
+                foreach (var kvp in _counts)
+                {
+                    counts[$"{kvp.Key}"] = kvp.Value.ToString();
+                }
+            }
+
+            return counts;
         }
 
         private IEnumerable<KeyValuePair<string, string>> GetTimeValues()

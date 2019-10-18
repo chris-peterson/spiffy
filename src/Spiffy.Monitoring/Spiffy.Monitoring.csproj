@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Copyright>2014-2018</Copyright>
+        <Copyright>2014-2019</Copyright>
         <Authors>Chris Peterson</Authors>
         <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
         <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
@@ -10,15 +10,15 @@
         <PackageId>Spiffy.Monitoring</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
         <PackageReleaseNotes>
-Bug fixes:
+New features:
 
-- https://github.com/chris-peterson/spiffy/pull/22
+- Support for counting subevents (EventContext.Count)
         </PackageReleaseNotes>
         <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
         <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>5.1.2</Version>
+        <Version>5.2.0</Version>
     </PropertyGroup>
 
     <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">

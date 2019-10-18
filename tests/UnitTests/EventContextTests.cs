@@ -54,6 +54,14 @@ namespace UnitTests
         }
         
         [Scenario]
+        public void Can_count()
+        {
+            Given(An_event_context);
+            When(Adding_counts);
+            Then(The_context_contains_counts);
+        }
+
+        [Scenario]
         public void Can_include_exception()
         {
             Given(An_event_context);
@@ -164,6 +172,19 @@ namespace UnitTests
             context["key2"].Should().Be("value2");
         }
 
+        void The_context_contains_counts()
+        {
+            string result = string.Empty;
+            var context = (EventContext) Context.EventContext;
+
+            Behavior.UseCustomLogging((level, msg) =>
+                result = msg);
+
+            context.Dispose();
+
+            result.Contains("foo=1").Should().BeTrue();
+            result.Contains("bar=2").Should().BeTrue();
+        }
         void Including_an_exception()
         {
            ((EventContext) Context.EventContext).IncludeException(new NullReferenceException());
@@ -207,6 +228,14 @@ namespace UnitTests
             context.Contains("Prefix_Data2").Should().BeTrue();
             context["Prefix_Data1"].Should().Be(1);
             context["Prefix_Data2"].Should().Be("foo");
+        }
+
+        void Adding_counts()
+        {
+            var context = (EventContext) Context.EventContext;
+            context.Count("foo");
+            context.Count("bar");
+            context.Count("bar");
         }
 
         private class NewlineRemovalContext : IDisposable
