@@ -6,7 +6,7 @@ Handled over **219,000,000,000** production requests (and counting!)
 
 ## Status
 
-[![Build status](https://ci.appveyor.com/api/projects/status/251sp958bhrbxpwk?svg=true)](https://ci.appveyor.com/project/chris-peterson/spiffy)
+[![Build status](https://gitlab.com/chris-peterson/spiffy/badges/master/pipeline.svg)](https://gitlab.com/chris-peterson/spiffy/-/pipelines)
 
 Package | Latest Release |
 :-------- | :------------ |
