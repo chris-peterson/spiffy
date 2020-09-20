@@ -1,38 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <Copyright>2014-2019</Copyright>
-        <Authors>Chris Peterson</Authors>
-        <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
-        <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
-        <DebugType>portable</DebugType>
-        <AssemblyName>Spiffy.Monitoring</AssemblyName>
-        <PackageId>Spiffy.Monitoring</PackageId>
-        <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
-        <PackageReleaseNotes>
+  <PropertyGroup>
+    <Copyright>2014-2020</Copyright>
+    <Authors>Chris Peterson</Authors>
+    <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
+    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Spiffy.Monitoring</AssemblyName>
+    <PackageId>Spiffy.Monitoring</PackageId>
+    <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
+    <PackageReleaseNotes>
+Breaking changes:
+
+- Drop support for legacy .NET framework (net40)
+
 New features:
 
-- Support for counting subevents (EventContext.Count)
-        </PackageReleaseNotes>
-        <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-        <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
-        <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard1.3' ">1.6.0</NetStandardImplicitPackageVersion>
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>5.2.0</Version>
-    </PropertyGroup>
+- TBD 
+    </PackageReleaseNotes>
+    <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
+    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Version>6.0.0</Version>
+    <RootNamespace>Spiffy.Monitoring</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
-        <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />
-        <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.1" />
-        <PackageReference Include="System.Reflection" Version="4.1.0" />
-    </ItemGroup>
-
-    <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
-        <DefineConstants>$(DefineConstants);NET4_0</DefineConstants>
-    </PropertyGroup>
-
-    <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-        <Reference Include="System" />
-    </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />
+    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.1" />
+  </ItemGroup>
 </Project>

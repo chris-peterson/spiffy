@@ -103,11 +103,7 @@ namespace Spiffy.Monitoring
         {
             if (structure != null)
             {
-#if NET4_0
-                foreach (var property in structure.GetType().GetProperties().Where(p => p.CanRead))
-#else
                 foreach (var property in structure.GetType().GetTypeInfo().DeclaredProperties.Where(p => p.CanRead))
-#endif
                 {
                     try
                     {

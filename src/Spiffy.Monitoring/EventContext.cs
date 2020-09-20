@@ -28,9 +28,6 @@ namespace Spiffy.Monitoring
 
             StackFrame stackFrame = null;
 
-#if NET4_0
-            stackFrame = new StackFrame(1, false);
-#else
             var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
             var frames = stackTrace.GetFrames();
 
@@ -43,7 +40,7 @@ namespace Spiffy.Monitoring
                     break;
                 }
             }
-#endif
+
             var method = stackFrame?.GetMethod();
             if (method != null)
             {
@@ -66,11 +63,7 @@ namespace Spiffy.Monitoring
 
         Assembly AssemblyFor<T>()
         {
-#if NET4_0
-        return typeof(T).Assembly;
-#else
-        return typeof(T).GetTypeInfo().Assembly;
-#endif
+            return typeof(T).GetTypeInfo().Assembly;
         }
 
         public string Component { get; private set; }

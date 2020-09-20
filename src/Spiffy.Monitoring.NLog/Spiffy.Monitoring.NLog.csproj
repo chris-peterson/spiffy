@@ -1,45 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2018</Copyright>
-    <Description>The NLog adapter for Spiffy.Monitoring</Description>
+    <Copyright>2014-2020</Copyright>
     <Authors>Chris Peterson</Authors>
-    <TargetFrameworks>netstandard1.5;net40</TargetFrameworks>
+    <Description>The NLog adapter for Spiffy.Monitoring</Description>
+    <TargetFrameworks>netstandard1.5</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring.NLog</AssemblyName>
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
     <PackageReleaseNotes>
+Breaking changes:
+
+- Drop support for legacy .NET framework (net40)
+
 New features:
 
-- Support for NLog 4.5
-- Fluent Api to support multiple targets
-- Add Network Target
-
+- TBD 
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>4.5.0</Version>
+    <Version>6.0.0</Version>
     <RootNamespace>Spiffy.Monitoring.NLog</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.5' ">
+  <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
     <PackageReference Include="NLog" Version="4.5.0" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="NLog" Version="2.0.0.2000" />
-    <Reference Include="System" />
-  </ItemGroup>
-
-  <ItemGroup>
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net40' ">
-    <DefineConstants>$(DefineConstants);NET4_0</DefineConstants>
-  </PropertyGroup>
 
 </Project>
