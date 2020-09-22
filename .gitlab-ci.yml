@@ -2,7 +2,7 @@ image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 stages:
 - build
-- publish
+- publish to nuget
 
 variables:
   Configuration: Release
@@ -15,3 +15,25 @@ build:
   artifacts:
     paths:
       - "src/**/*.nupkg"
+
+Monitoring:
+  stage: publish to nuget
+  script:
+  - dotnet nuget push $(ls src/Spiffy.Monitoring/bin/$Configuration/*.nupkg) -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+  environment:
+    name: nuget.org
+    url: https://nuget.org/packages/Spiffy.Monitoring/
+  when: manual
+  only:
+  - master
+
+Monitoring.NLog:
+  stage: publish to nuget
+  script:
+  - dotnet nuget push $(ls src/Spiffy.Monitoring.NLog/bin/$Configuration/*.nupkg) -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+  environment:
+    name: nuget.org
+    url: https://nuget.org/packages/Spiffy.Monitoring.NLog/
+  when: manual
+  only:
+  - master
