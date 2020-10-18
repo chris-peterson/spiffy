@@ -124,8 +124,8 @@ namespace UnitTests
 
             context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
 
-            Behavior.UseCustomLogging((level, msg) =>
-                Context.FormattedMessage = msg);
+            Behavior.AddCustomLogging(logEvent =>
+                Context.FormattedMessage = logEvent.MessageWithTime);
 
             context.Dispose();
         }
@@ -174,16 +174,15 @@ namespace UnitTests
 
         void The_context_contains_counts()
         {
-            string result = string.Empty;
+            LogEvent logEvent = null;
             var context = (EventContext) Context.EventContext;
 
-            Behavior.UseCustomLogging((level, msg) =>
-                result = msg);
+            Behavior.AddCustomLogging(l => logEvent = l);
 
             context.Dispose();
 
-            result.Contains("foo=1").Should().BeTrue();
-            result.Contains("bar=2").Should().BeTrue();
+            logEvent.Message.Contains("foo=1").Should().BeTrue();
+            logEvent.Message.Contains("bar=2").Should().BeTrue();
         }
         void Including_an_exception()
         {

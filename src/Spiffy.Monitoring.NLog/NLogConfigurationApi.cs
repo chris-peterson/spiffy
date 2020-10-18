@@ -5,6 +5,7 @@ namespace Spiffy.Monitoring
     public class NLogConfigurationApi
     {
         internal NLogTargetsConfigurationApi TargetsConfiguration { get; private set; }
+        internal bool EnableAsyncLogging { get; private set; } = true;
 
         public NLogConfigurationApi Targets(Action<NLogTargetsConfigurationApi> customize)
         {
@@ -14,6 +15,12 @@ namespace Spiffy.Monitoring
         }
 
         internal Level MinimumLogLevel { get; private set; } = Level.Info;
+
+        public NLogConfigurationApi DisableAsyncLogging()
+        {
+            EnableAsyncLogging = false;
+            return this;
+        }
 
         public NLogConfigurationApi MinLevel(Level minLevel)
         {

@@ -23,7 +23,19 @@ namespace TestConsoleApp
                             .Targets(t => t
                                 .ColoredConsole()));
                         break;
-                    case "nlog-all":
+                    case "nlog-splunk":
+                        Spiffy.Monitoring.NLog.Initialize(c => 
+                        c
+                            .Targets(t => t.Splunk(s => {
+                                s.ServerUrl = "http://splunkhec.lower-getty.cloud:8088";
+                                s.Token = "dff26f7e-e188-4f75-a54f-d5fdcf8412a4";
+                                s.Index = "appdev";
+                                s.SourceType = "entsvc";
+                                s.Source = "testconsoleapp";
+                            }))
+                            .DisableAsyncLogging());
+                        break;
+                    case "nlog-multiple":
                         Spiffy.Monitoring.NLog.Initialize(c => c
                             .Targets(t => t
                                 .File()
@@ -31,10 +43,10 @@ namespace TestConsoleApp
                                 .Network()));
                         break;
                     case "trace":
-                        Behavior.UseBuiltInLogging(BuiltInLogging.Trace);
+                        Behavior.AddBuiltInLogging(BuiltInLogging.Trace);
                         break;
                     case "console":
-                        Behavior.UseBuiltInLogging(BuiltInLogging.Console);
+                        Behavior.AddBuiltInLogging(BuiltInLogging.Console);
                         break;
                     default:
                         throw new NotSupportedException($"{loggingFlag} did not match any supported value");

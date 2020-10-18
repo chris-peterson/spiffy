@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -215,12 +215,19 @@ namespace Spiffy.Monitoring
             {
                 if(!IsSuppressed)
                 {
-                    var logAction = Behavior.GetLoggingAction();
+                    var logActions = Behavior.GetLoggingActions();
 
-                    if (logAction != null)
+                    if (logActions.Any())
                     {
-                        this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                        logAction(Level, GetFormattedMessage());
+                        var message = Render();
+                        foreach (var logAction in logActions)
+                        {
+                            if (logAction != null)
+                            {
+                                this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
+                                logAction(message);
+                            }
+                        }
                     }
                 }
                 _disposed = true;
@@ -235,7 +242,7 @@ namespace Spiffy.Monitoring
             this["Operation"] = Operation;
         }
 
-        private string GetFormattedMessage()
+        private LogEvent Render()
         {
             Dictionary<string, string> kvps;
             
@@ -262,9 +269,12 @@ namespace Spiffy.Monitoring
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
-            return string.Format("{0} {1}",
-                                 GetSplunkFormattedTime(),
-                                 GetKeyValuePairsAsDelimitedString(kvps));
+            return new LogEvent(
+                Level,
+                _timestamp,
+                GetSplunkFormattedTime(),
+                GetKeyValuePairsAsDelimitedString(kvps),
+                kvps);
         }
 
         private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)

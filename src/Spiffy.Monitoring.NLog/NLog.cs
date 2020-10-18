@@ -26,9 +26,23 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            Behavior.UseCustomLogging((level, message) =>
+            Behavior.AddCustomLogging(logEvent =>
             {
-                _logger.Log(level.ToNLogLevel(), message);
+                var logLevel = logEvent.Level.ToNLogLevel();
+                var logEventInfo = new LogEventInfo
+                {
+                    Level = logLevel,
+                    Message = logEvent.Message,
+                    TimeStamp = logEvent.Time
+                };
+                foreach (var kvp in logEvent.Properties)
+                {
+                    if (!logEventInfo.Properties.ContainsKey(kvp.Key))
+                    {
+                        logEventInfo.Properties.Add(kvp.Key, kvp.Value);
+                    }
+                }
+                _logger.Log(logEventInfo);
             });
         }
 
@@ -74,21 +88,40 @@ namespace Spiffy.Monitoring
                 });
             }
 
+            var splunk = config.TargetsConfiguration.SplunkConfiguration;
+            if (splunk != null)
+            {
+                throw new NotSupportedException();
+                // cpeterson TODO:
+                // targets.Add(new SplunkHttpEventCollector {
+                //     ServerUrl = splunk.ServerUrl,
+                //     Token = splunk.Token,
+                //     Index = splunk.Index,
+                //     SourceType = splunk.SourceType,
+                //     Source = splunk.Source,
+                //     BatchSizeBytes = 0,
+                //     BatchSizeCount = 0
+                // });
+            }
+
             if (targets.Count == 0)
             {
-                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole)");
+                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole/Network/Splunk)");
             }
 
             var target = targets.Count == 1 ? targets.Single() : new SplitGroupTarget(targets.ToArray());
 
-            var asyncWrapper = new AsyncTargetWrapper(target)
+            if (config.EnableAsyncLogging)
             {
-                Name = "AsyncWrapper"
-            };
+                target = new AsyncTargetWrapper(target)
+                {
+                    Name = "AsyncWrapper"
+                };
+            }
 
             var loggingConfiguration = new LoggingConfiguration();
-            loggingConfiguration.AddTarget(LoggerName, asyncWrapper);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", config.MinimumLogLevel.ToNLogLevel(), asyncWrapper));
+            loggingConfiguration.AddTarget(LoggerName, target);
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", config.MinimumLogLevel.ToNLogLevel(), target));
 
             LogManager.Configuration = loggingConfiguration;
 

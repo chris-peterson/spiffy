@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static Action<Level, string> _loggingAction;
+        static readonly List<Action<LogEvent>> _loggingActions = new List<Action<LogEvent>>();
 
         /// <summary>
         /// Whether or not to remove newline characters from logged values.
@@ -16,27 +17,28 @@ namespace Spiffy.Monitoring
         /// </returns>
         public static bool RemoveNewlines { get; set; }
 
-        public static void UseBuiltInLogging(BuiltInLogging behavior)
+        public static void AddBuiltInLogging(BuiltInLogging behavior)
         {
             switch (behavior)
             {
                 case Monitoring.BuiltInLogging.Console:
-                    _loggingAction = (level, message) =>
+                    _loggingActions.Add(logEvent =>
                     {
-                        if (level == Level.Error)
+                        if (logEvent.Level == Level.Error)
                         {
-                            Console.Error.WriteLine(message);
+                            Console.Error.WriteLine(logEvent.MessageWithTime);
                         }
                         else
                         {
-                            Console.WriteLine(message);
+                            Console.WriteLine(logEvent.MessageWithTime);
                         }
-                    };
+                    });
                     break;
                 case Monitoring.BuiltInLogging.Trace:
-                    _loggingAction = (level, message) =>
+                    _loggingActions.Add(logEvent =>
                     {
-                        switch (level)
+                        var message = logEvent.Message;
+                        switch (logEvent.Level)
                         {
                             case Level.Info:
                                 Trace.TraceInformation(message);
@@ -51,21 +53,21 @@ namespace Spiffy.Monitoring
                                 Trace.WriteLine(message);
                                 break;
                         }
-                    };
+                    });
                     break;
                 default:
                     throw new NotSupportedException($"{behavior} is not supported");
             }
         }
 
-        public static void UseCustomLogging(Action<Level, string> loggingAction)
+        public static void AddCustomLogging(Action<LogEvent> loggingAction)
         {
-            _loggingAction = loggingAction;
+            _loggingActions.Add(loggingAction);
         }
 
-        internal static Action<Level, string> GetLoggingAction()
+        internal static IList<Action<LogEvent>> GetLoggingActions()
         {
-            return _loggingAction;
+            return _loggingActions;
         }
     }
 

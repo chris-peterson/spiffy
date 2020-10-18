@@ -13,10 +13,11 @@
 Breaking changes:
 
 - Drop support for legacy .NET framework (net40)
+- Custom logging signature now receives LogEvent rather than a raw string
 
 New features:
 
-- TBD 
+- Support for splunk HEC target
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
@@ -24,7 +25,6 @@ New features:
     <Version>6.0.0</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />
     <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.1" />
