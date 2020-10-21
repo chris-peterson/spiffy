@@ -33,7 +33,7 @@ namespace Spiffy.Monitoring
                 {
                     Level = logLevel,
                     Message = logEvent.Message,
-                    TimeStamp = logEvent.Time
+                    TimeStamp = logEvent.Timestamp
                 };
                 foreach (var kvp in logEvent.Properties)
                 {

@@ -5,17 +5,19 @@ namespace Spiffy.Monitoring
 {
     public class LogEvent
     {
-        public LogEvent(Level level, DateTime time, string formattedTime, string message, IDictionary<string, string> properties)
+        public LogEvent(Level level, DateTime timestamp, TimeSpan timeElapsed, string formattedTime, string message, IDictionary<string, string> properties)
         {
             Level = level;
-            Time = time;
+            Timestamp = timestamp;
+            TimeElapsed = timeElapsed;
             FormattedTime = formattedTime;
             Message = message;
             Properties = properties;
         }
 
         public Level Level { get; }
-        public DateTime Time { get; }
+        public DateTime Timestamp { get; }
+        public TimeSpan TimeElapsed { get; }
         public string FormattedTime { get; }
         public string Message { get; }
         

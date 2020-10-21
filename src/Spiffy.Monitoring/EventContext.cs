@@ -224,7 +224,6 @@ namespace Spiffy.Monitoring
                         {
                             if (logAction != null)
                             {
-                                this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
                                 logAction(message);
                             }
                         }
@@ -269,9 +268,13 @@ namespace Spiffy.Monitoring
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
+            var timeElapsedMs = _timer.TotalMilliseconds;
+            this["TimeElapsed"] = GetTimeFor(timeElapsedMs);
+
             return new LogEvent(
                 Level,
                 _timestamp,
+                TimeSpan.FromMilliseconds(timeElapsedMs),
                 GetSplunkFormattedTime(),
                 GetKeyValuePairsAsDelimitedString(kvps),
                 kvps);
