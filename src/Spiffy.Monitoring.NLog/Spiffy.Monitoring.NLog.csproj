@@ -14,11 +14,6 @@ Breaking changes:
 
 - Drop support for legacy .NET framework (net40)
 - Custom logging signature now receives LogEvent rather than a raw string
-
-New features:
-
-- Support for multiple targets
-- Splunk HEC target
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>

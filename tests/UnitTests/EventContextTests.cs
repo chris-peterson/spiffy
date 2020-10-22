@@ -124,8 +124,11 @@ namespace UnitTests
 
             context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
 
-            Behavior.AddCustomLogging(logEvent =>
-                Context.FormattedMessage = logEvent.MessageWithTime);
+            Behavior.Initialize(customize =>
+            {
+                customize.Providers.AddLoggingAction("test", logEvent =>
+                    Context.FormattedMessage = logEvent.MessageWithTime);
+            });
 
             context.Dispose();
         }
@@ -177,8 +180,10 @@ namespace UnitTests
             LogEvent logEvent = null;
             var context = (EventContext) Context.EventContext;
 
-            Behavior.AddCustomLogging(l => logEvent = l);
-
+            Behavior.Initialize(customize =>
+            {
+                customize.Providers.AddLoggingAction("test", l => logEvent = l);
+            });
             context.Dispose();
 
             logEvent.Message.Contains("foo=1").Should().BeTrue();

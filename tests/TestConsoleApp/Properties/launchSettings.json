@@ -2,7 +2,7 @@
   "profiles": {
     "TestConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "nlog-all"
+      "commandLineArgs": "mix-and-match"
     }
   }
 }

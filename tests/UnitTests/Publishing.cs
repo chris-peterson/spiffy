@@ -162,7 +162,10 @@ namespace UnitTests
         {
             public PublishingTestContext()
             {
-                Behavior.AddCustomLogging(logEvent => LogEvents.Add(logEvent));
+                Behavior.Initialize(customize =>
+                {
+                    customize.Providers.AddLoggingAction("test", logEvent => LogEvents.Add(logEvent));
+                });
             }
 
             public EventContext EventContext { get; } = new EventContext("MyComponent", "MyOperation");

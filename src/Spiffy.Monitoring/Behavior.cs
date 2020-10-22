@@ -1,12 +1,13 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 
 namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static readonly List<Action<LogEvent>> _loggingActions = new List<Action<LogEvent>>();
+        static readonly ConcurrentDictionary<string, Action<LogEvent>> LoggingActions = new ConcurrentDictionary<string, Action<LogEvent>>();
 
         /// <summary>
         /// Whether or not to remove newline characters from logged values.
@@ -17,63 +18,24 @@ namespace Spiffy.Monitoring
         /// </returns>
         public static bool RemoveNewlines { get; set; }
 
-        public static void AddBuiltInLogging(BuiltInLogging behavior)
+        public static void Initialize(Action<InitializationApi> customize)
         {
-            switch (behavior)
+            if (customize == null)
             {
-                case Monitoring.BuiltInLogging.Console:
-                    _loggingActions.Add(logEvent =>
-                    {
-                        if (logEvent.Level == Level.Error)
-                        {
-                            Console.Error.WriteLine(logEvent.MessageWithTime);
-                        }
-                        else
-                        {
-                            Console.WriteLine(logEvent.MessageWithTime);
-                        }
-                    });
-                    break;
-                case Monitoring.BuiltInLogging.Trace:
-                    _loggingActions.Add(logEvent =>
-                    {
-                        var message = logEvent.Message;
-                        switch (logEvent.Level)
-                        {
-                            case Level.Info:
-                                Trace.TraceInformation(message);
-                                break;
-                            case Level.Warning:
-                                Trace.TraceWarning(message);
-                                break;
-                            case Level.Error:
-                                Trace.TraceError(message);
-                                break;
-                            default:
-                                Trace.WriteLine(message);
-                                break;
-                        }
-                    });
-                    break;
-                default:
-                    throw new NotSupportedException($"{behavior} is not supported");
+                throw new Exception("Configuration callback is required");
             }
+            LoggingActions.Clear();
+            customize(new InitializationApi());
         }
 
-        public static void AddCustomLogging(Action<LogEvent> loggingAction)
+        internal static void AddLoggingAction(string id, Action<LogEvent> loggingAction)
         {
-            _loggingActions.Add(loggingAction);
+            LoggingActions.GetOrAdd(id, loggingAction);
         }
 
         internal static IList<Action<LogEvent>> GetLoggingActions()
         {
-            return _loggingActions;
+            return LoggingActions.Values.ToList();
         }
-    }
-
-    public enum BuiltInLogging
-    {
-        Trace,
-        Console
     }
 }

@@ -219,13 +219,10 @@ namespace Spiffy.Monitoring
 
                     if (logActions.Any())
                     {
-                        var message = Render();
+                        var logEvent = Render();
                         foreach (var logAction in logActions)
                         {
-                            if (logAction != null)
-                            {
-                                logAction(message);
-                            }
+                            logAction(logEvent);
                         }
                     }
                 }

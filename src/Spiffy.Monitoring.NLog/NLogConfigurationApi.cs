@@ -10,7 +10,10 @@ namespace Spiffy.Monitoring
         public NLogConfigurationApi Targets(Action<NLogTargetsConfigurationApi> customize)
         {
             TargetsConfiguration = new NLogTargetsConfigurationApi();
-            customize(TargetsConfiguration);
+            if (customize != null)
+            {
+                customize(TargetsConfiguration);
+            }
             return this;
         }
 

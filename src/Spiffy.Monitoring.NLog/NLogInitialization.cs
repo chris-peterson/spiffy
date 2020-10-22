@@ -11,12 +11,12 @@ using NLog.Targets.Wrappers;
 
 namespace Spiffy.Monitoring
 {
-    public static class NLog
+    public static class NLogInitialization
     {
         const string LoggerName = "Spiffy";
         static Logger _logger;
 
-        public static void Initialize(Action<NLogConfigurationApi> configure)
+        public static void NLog(this InitializationApi.ProvidersApi api, Action<NLogConfigurationApi> configure)
         {
             if (_logger != null) 
                 return;
@@ -26,7 +26,7 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            Behavior.AddCustomLogging(logEvent =>
+            api.AddLoggingAction("nlog", logEvent =>
             {
                 var logLevel = logEvent.Level.ToNLogLevel();
                 var logEventInfo = new LogEventInfo
@@ -88,25 +88,9 @@ namespace Spiffy.Monitoring
                 });
             }
 
-            var splunk = config.TargetsConfiguration.SplunkConfiguration;
-            if (splunk != null)
-            {
-                throw new NotSupportedException();
-                // cpeterson TODO:
-                // targets.Add(new SplunkHttpEventCollector {
-                //     ServerUrl = splunk.ServerUrl,
-                //     Token = splunk.Token,
-                //     Index = splunk.Index,
-                //     SourceType = splunk.SourceType,
-                //     Source = splunk.Source,
-                //     BatchSizeBytes = 0,
-                //     BatchSizeCount = 0
-                // });
-            }
-
             if (targets.Count == 0)
             {
-                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole/Network/Splunk)");
+                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole/Network)");
             }
 
             var target = targets.Count == 1 ? targets.Single() : new SplitGroupTarget(targets.ToArray());
