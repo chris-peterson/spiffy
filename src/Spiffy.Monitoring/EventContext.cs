@@ -222,7 +222,13 @@ namespace Spiffy.Monitoring
                         var logEvent = Render();
                         foreach (var logAction in logActions)
                         {
-                            logAction(logEvent);
+                            try
+                            {
+                                logAction(logEvent);
+                            }
+                            catch
+                            {
+                            }
                         }
                     }
                 }

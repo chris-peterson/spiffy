@@ -6,7 +6,7 @@ namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static ImmutableArray<Action<LogEvent>> _loggingActions;
+        static ImmutableArray<Action<LogEvent>> _loggingActions = new ImmutableArray<Action<LogEvent>>();
 
         public static void Initialize(Action<InitializationApi> customize)
         {
