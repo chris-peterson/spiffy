@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NLog;
-using NLog.Conditions;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
+using Spiffy.Monitoring.Config;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.NLog
 {
     public static class NLogInitialization
     {

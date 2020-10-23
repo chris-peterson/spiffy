@@ -1,9 +1,10 @@
 using System;
 using System.Diagnostics;
+using Spiffy.Monitoring.Config;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.BuiltIn
 {
-    public static class BuiltInProviderInitialization
+    public static class BuiltInProviders
     {
         public static void BuiltIn(this InitializationApi.ProvidersApi providers, Action<BuiltInProvidersConfigurationApi> customize)
         {
@@ -11,7 +12,7 @@ namespace Spiffy.Monitoring
             customize?.Invoke(config);
             if (config.TargetsConfiguration.TraceEnabled)
             {
-                Behavior.AddLoggingAction("trace", logEvent =>
+                providers.AddLoggingAction("trace", logEvent =>
                 {
                     var message = logEvent.Message;
                     switch (logEvent.Level)
@@ -33,7 +34,7 @@ namespace Spiffy.Monitoring
             }
             if (config.TargetsConfiguration.ConsoleEnabled)
             {
-                Behavior.AddLoggingAction("console", logEvent =>
+                providers.AddLoggingAction("console", logEvent =>
                 {
                     if (logEvent.Level == Level.Error)
                     {
@@ -48,7 +49,7 @@ namespace Spiffy.Monitoring
 
             if (config.TargetsConfiguration.SplunkConfiguration != null)
             {
-                Behavior.AddLoggingAction("splunk", logEvent =>
+                providers.AddLoggingAction("splunk", logEvent =>
                 {
                     // TODO: implement
                     // new SplunkHttpEventCollector {
@@ -62,56 +63,6 @@ namespace Spiffy.Monitoring
                     //     // 
                 });
             }
-        }
-    }
-
-    public class BuiltInProvidersConfigurationApi
-    {
-        internal BuiltInTargetsConfigurationApi TargetsConfiguration { get; private set; }
-
-        public BuiltInProvidersConfigurationApi Targets(Action<BuiltInTargetsConfigurationApi> customize)
-        {
-            TargetsConfiguration = new BuiltInTargetsConfigurationApi();
-            if (customize != null)
-            {
-                customize(TargetsConfiguration);
-            }
-            return this;
-        }
-    }
-
-    public class BuiltInTargetsConfigurationApi
-    {
-        internal bool TraceEnabled { get; private set; } = false;
-        public BuiltInTargetsConfigurationApi Trace()
-        {
-            TraceEnabled = true;
-            return this;
-        }
-
-        internal bool ConsoleEnabled { get; private set; } = false;
-        public BuiltInTargetsConfigurationApi Console()
-        {
-            ConsoleEnabled = true;
-            return this;
-        }
-
-        internal SplunkConfigurationApi SplunkConfiguration { get; set; }
-
-        public class SplunkConfigurationApi
-        {
-            public string ServerUrl { get; set; }
-            public string Token { get; set; }
-            public string Index { get; set; }
-            public string SourceType { get; set; }
-            public string Source { get; set; }
-        }
-
-        public BuiltInTargetsConfigurationApi Splunk(Action<SplunkConfigurationApi> customize = null)
-        {
-            SplunkConfiguration = new SplunkConfigurationApi();
-            customize?.Invoke(SplunkConfiguration);
-            return this;
         }
     }
 }

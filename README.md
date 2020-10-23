@@ -17,16 +17,21 @@ Spiffy.Monitoring.NLog | [![NuGet version](https://img.shields.io/nuget/dt/Spiff
 
 `PM> Install-Package Spiffy.Monitoring`
 
-### Built-In Logging
+### Built-In Logging Providers
 
-`Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace` and `Console`).  There is no default logging behavior, you must
-initialize logging.  Early in your application's entry point, call:
+`Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace`. `Console`. and `Splunk`).  There is no default logging behavior, you must
+initialize logging.  Early in your application's entry point, call `Spiffy.Monitoring.Behavior.Initialize`
+
+**Example**
 
 ```c#
-    Behavior.UseBuiltInLogging(BuiltInLogging.Trace)
+    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+        spiffy.Providers.BuiltIn(builtin => builtin
+            .Targets(t => t
+                .Console()));
 ```
 
-### Custom Logging
+### Extended Providers
 
 For extended functionality, you'll need to install a "provider package".
 
@@ -36,14 +41,16 @@ NOTE: the provider package need only be installed for your application's entry p
 
 `PM> Install-Package Spiffy.Monitoring.NLog`
 
-## Example
+**Example**
 
 ```c#
     static void Main() {
         // this should be the first line of your application
-         Spiffy.Monitoring.NLog.Initialize(config => {
-            config.Targets(t => t.ColoredConsole());
-         });
+        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+            spiffy.Providers.NLog(nlog => nlog
+                .Targets(t => t
+                    .File()));
+        });
 
         // key-value-pairs set here appear in every event message
         GlobalEventContext.Instance
@@ -64,6 +71,23 @@ NOTE: the provider package need only be installed for your application's entry p
             }
         }
     }
+```
+
+### Multiple Providers
+
+Multiple providers can be provied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)
+
+**Example**
+
+```c#
+    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+        spiffy.Providers.BuiltIn(builtin => builtin.
+            Targets(t => t
+                .Console()));
+        spiffy.Providers.NLog(nlog => nlog
+            .Targets(t => t
+                .File()));
+    });
 ```
 
 ## Log

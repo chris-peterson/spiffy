@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.NLog
 {
     public class NLogConfigurationApi
     {

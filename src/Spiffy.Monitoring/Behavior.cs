@@ -1,41 +1,31 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
+using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static readonly ConcurrentDictionary<string, Action<LogEvent>> LoggingActions = new ConcurrentDictionary<string, Action<LogEvent>>();
-
-        /// <summary>
-        /// Whether or not to remove newline characters from logged values.
-        /// </summary>
-        /// <returns>
-        /// <code>true</code> if newline characters will be removed from logged
-        /// values, <code>false</code> otherwise.
-        /// </returns>
-        public static bool RemoveNewlines { get; set; }
+        static ImmutableArray<Action<LogEvent>> _loggingActions;
 
         public static void Initialize(Action<InitializationApi> customize)
         {
+            var api = new InitializationApi();
             if (customize == null)
             {
                 throw new Exception("Configuration callback is required");
             }
-            LoggingActions.Clear();
-            customize(new InitializationApi());
+            customize(api);
+
+            _loggingActions = api.GetLoggingActions();
+            RemoveNewLines = api.RemoveNewlines;
         }
 
-        internal static void AddLoggingAction(string id, Action<LogEvent> loggingAction)
+        internal static ImmutableArray<Action<LogEvent>> GetLoggingActions()
         {
-            LoggingActions.GetOrAdd(id, loggingAction);
+            return _loggingActions;
         }
 
-        internal static IList<Action<LogEvent>> GetLoggingActions()
-        {
-            return LoggingActions.Values.ToList();
-        }
+        internal static bool RemoveNewLines { get; set; }
     }
 }

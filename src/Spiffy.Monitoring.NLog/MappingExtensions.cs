@@ -1,6 +1,6 @@
 ﻿using NLog;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.NLog
 {
     static class MappingExtensions
     {

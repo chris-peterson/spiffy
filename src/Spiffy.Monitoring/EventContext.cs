@@ -343,7 +343,7 @@ namespace Spiffy.Monitoring
             valueStr = valueStr.Replace("=", ":");
             valueStr = valueStr.Replace("\"", "''");
 
-            if (Behavior.RemoveNewlines)
+            if (Behavior.RemoveNewLines)
             {
                 valueStr = valueStr
                     .Replace("\r", String.Empty)

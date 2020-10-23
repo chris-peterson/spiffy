@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using Spiffy.Monitoring;
+using Spiffy.Monitoring.BuiltIn;
+using Spiffy.Monitoring.Config;
+using Spiffy.Monitoring.NLog;
 
 namespace TestConsoleApp
 {
@@ -13,20 +16,6 @@ namespace TestConsoleApp
                 var loggingFlag = args[0].Trim().ToLower();
                 switch (loggingFlag)
                 {
-                    case "nlog-file":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-                            spiffy.Providers.NLog(nlog => nlog
-                                .Targets(t => t
-                                    .File()));
-                         });
-                        break;
-                    case "nlog-coloredconsole":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-                            spiffy.Providers.NLog(nlog => nlog
-                                .Targets(t => t
-                                    .ColoredConsole()));
-                        });
-                        break;
                     case "trace":
                         Spiffy.Monitoring.Behavior.Initialize(spiffy => {
                             spiffy.Providers.BuiltIn(builtin => builtin
@@ -55,16 +44,28 @@ namespace TestConsoleApp
                                 })));
                         });
                         break;
+                    case "nlog-file":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.NLog(nlog => nlog
+                                .Targets(t => t
+                                    .File()));
+                         });
+                        break;
+                    case "nlog-coloredconsole":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.NLog(nlog => nlog
+                                .Targets(t => t
+                                    .ColoredConsole()));
+                        });
+                        break;
                     case "mix-and-match":
                         Spiffy.Monitoring.Behavior.Initialize(spiffy => {
                             spiffy.Providers.BuiltIn(builtin => builtin.
                                 Targets(t => t
-                                    .Trace()
                                     .Console()));
                             spiffy.Providers.NLog(nlog => nlog
                                 .Targets(t => t
-                                    .File()
-                                    .Network()));
+                                    .File()));
                         });
                         break;
                     default:
