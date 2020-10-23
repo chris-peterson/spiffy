@@ -36,10 +36,10 @@ namespace TestConsoleApp
                             spiffy.Providers.BuiltIn(builtIn => builtIn
                                 .Targets(t => t.Splunk(s =>
                                 {
-                                    s.ServerUrl = "http://splunkhec.lower-getty.cloud:8088";
-                                    s.Token = "dff26f7e-e188-4f75-a54f-d5fdcf8412a4";
-                                    s.Index = "appdev";
-                                    s.SourceType = "entsvc";
+                                    s.ServerUrl = "http://splunkhec.yourdomain:8088";
+                                    s.Token = "<secret token>";
+                                    s.Index = "apps";
+                                    s.SourceType = "spiffy";
                                     s.Source = "testconsoleapp";
                                 })));
                         });

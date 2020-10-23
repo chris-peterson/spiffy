@@ -18,7 +18,7 @@ namespace Spiffy.Monitoring.BuiltIn
             return this;
         }
 
-        internal SplunkConfigurationApi SplunkConfiguration { get; set; }
+        internal SplunkConfigurationApi SplunkConfiguration { get; private set; }
 
         public class SplunkConfigurationApi
         {

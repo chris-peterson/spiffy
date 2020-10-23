@@ -47,22 +47,24 @@ namespace Spiffy.Monitoring.BuiltIn
                 });
             }
 
-            if (config.TargetsConfiguration.SplunkConfiguration != null)
+            var splunk = config.TargetsConfiguration.SplunkConfiguration;
+            if (splunk != null)
             {
+                _splunkHttpEventCollector = new SplunkHttpEventCollector
+                {
+                    ServerUrl = config.TargetsConfiguration.SplunkConfiguration.ServerUrl,
+                    Token = splunk.Token,
+                    Index = splunk.Index,
+                    SourceType = splunk.SourceType,
+                    Source = splunk.Source
+                };
                 providers.AddLoggingAction("splunk", logEvent =>
                 {
-                    // TODO: implement
-                    // new SplunkHttpEventCollector {
-                    //     //     ServerUrl = splunk.ServerUrl,
-                    //     //     Token = splunk.Token,
-                    //     //     Index = splunk.Index,
-                    //     //     SourceType = splunk.SourceType,
-                    //     //     Source = splunk.Source,
-                    //     //     BatchSizeBytes = 0,
-                    //     //     BatchSizeCount = 0
-                    //     // 
+                    _splunkHttpEventCollector.Log(logEvent);
                 });
             }
         }
+        
+        static SplunkHttpEventCollector _splunkHttpEventCollector;
     }
 }
