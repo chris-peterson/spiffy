@@ -1,77 +1,31 @@
 using System;
-using System.Diagnostics;
+using System.Collections.Immutable;
+using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static Action<Level, string> _loggingAction;
+        static ImmutableArray<Action<LogEvent>> _loggingActions;
 
-        /// <summary>
-        /// Whether or not to remove newline characters from logged values.
-        /// </summary>
-        /// <returns>
-        /// <code>true</code> if newline characters will be removed from logged
-        /// values, <code>false</code> otherwise.
-        /// </returns>
-        public static bool RemoveNewlines { get; set; }
-
-        public static void UseBuiltInLogging(BuiltInLogging behavior)
+        public static void Initialize(Action<InitializationApi> customize)
         {
-            switch (behavior)
+            var api = new InitializationApi();
+            if (customize == null)
             {
-                case Monitoring.BuiltInLogging.Console:
-                    _loggingAction = (level, message) =>
-                    {
-                        if (level == Level.Error)
-                        {
-                            Console.Error.WriteLine(message);
-                        }
-                        else
-                        {
-                            Console.WriteLine(message);
-                        }
-                    };
-                    break;
-                case Monitoring.BuiltInLogging.Trace:
-                    _loggingAction = (level, message) =>
-                    {
-                        switch (level)
-                        {
-                            case Level.Info:
-                                Trace.TraceInformation(message);
-                                break;
-                            case Level.Warning:
-                                Trace.TraceWarning(message);
-                                break;
-                            case Level.Error:
-                                Trace.TraceError(message);
-                                break;
-                            default:
-                                Trace.WriteLine(message);
-                                break;
-                        }
-                    };
-                    break;
-                default:
-                    throw new NotSupportedException($"{behavior} is not supported");
+                throw new Exception("Configuration callback is required");
             }
+            customize(api);
+
+            _loggingActions = api.GetLoggingActions();
+            RemoveNewLines = api.RemoveNewlines;
         }
 
-        public static void UseCustomLogging(Action<Level, string> loggingAction)
+        internal static ImmutableArray<Action<LogEvent>> GetLoggingActions()
         {
-            _loggingAction = loggingAction;
+            return _loggingActions;
         }
 
-        internal static Action<Level, string> GetLoggingAction()
-        {
-            return _loggingAction;
-        }
-    }
-
-    public enum BuiltInLogging
-    {
-        Trace,
-        Console
+        internal static bool RemoveNewLines { get; set; }
     }
 }

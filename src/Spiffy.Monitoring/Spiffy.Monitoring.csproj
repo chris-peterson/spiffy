@@ -4,7 +4,7 @@
     <Copyright>2014-2020</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
-    <TargetFrameworks>netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring</AssemblyName>
     <PackageId>Spiffy.Monitoring</PackageId>
@@ -13,10 +13,12 @@
 Breaking changes:
 
 - Drop support for legacy .NET framework (net40)
+- Require netstandard >= 2.0
+- Custom logging signature now receives LogEvent rather than a raw string
 
 New features:
 
-- TBD 
+- Support for splunk HEC target
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
@@ -24,9 +26,11 @@ New features:
     <Version>6.0.0</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.0" />
-    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.1" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.*" />
+    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.*" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.*" />
+    <PackageReference Include="System.Net.Http.Json" Version="3.2.*" />
+    <PackageReference Include="System.Text.Json" Version="4.7.*"/>
   </ItemGroup>
 </Project>

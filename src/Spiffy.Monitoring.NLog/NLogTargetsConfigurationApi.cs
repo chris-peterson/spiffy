@@ -1,7 +1,7 @@
 ﻿using System;
 using NLog.Targets;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.NLog
 {
     public class NLogTargetsConfigurationApi
     {

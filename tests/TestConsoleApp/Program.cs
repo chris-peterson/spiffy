@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using Spiffy.Monitoring;
+using Spiffy.Monitoring.BuiltIn;
+using Spiffy.Monitoring.Config;
+using Spiffy.Monitoring.NLog;
 
 namespace TestConsoleApp
 {
@@ -13,28 +16,57 @@ namespace TestConsoleApp
                 var loggingFlag = args[0].Trim().ToLower();
                 switch (loggingFlag)
                 {
-                    case "nlog-file":
-                        Spiffy.Monitoring.NLog.Initialize(c => c
-                            .Targets(t => t
-                                .File()));
-                        break;
-                    case "nlog-coloredconsole":
-                        Spiffy.Monitoring.NLog.Initialize(c => c
-                            .Targets(t => t
-                                .ColoredConsole()));
-                        break;
-                    case "nlog-all":
-                        Spiffy.Monitoring.NLog.Initialize(c => c
-                            .Targets(t => t
-                                .File()
-                                .ColoredConsole()
-                                .Network()));
-                        break;
                     case "trace":
-                        Behavior.UseBuiltInLogging(BuiltInLogging.Trace);
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.BuiltIn(builtin => builtin
+                                .Targets(t => t
+                                    .Trace()));
+                        });
                         break;
                     case "console":
-                        Behavior.UseBuiltInLogging(BuiltInLogging.Console);
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.BuiltIn(builtin => builtin
+                                .Targets(t => t
+                                    .Console()));
+                        });
+                        break;
+                    case "splunk":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        {
+                            spiffy.Providers.BuiltIn(builtIn => builtIn
+                                .Targets(t => t.Splunk(s =>
+                                {
+                                    s.ServerUrl = "http://splunkhec.yourdomain:8088";
+                                    s.Token = "<secret token>";
+                                    s.Index = "apps";
+                                    s.SourceType = "spiffy";
+                                    s.Source = "testconsoleapp";
+                                })));
+                        });
+                        break;
+                    case "nlog-file":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.NLog(nlog => nlog
+                                .Targets(t => t
+                                    .File()));
+                         });
+                        break;
+                    case "nlog-coloredconsole":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.NLog(nlog => nlog
+                                .Targets(t => t
+                                    .ColoredConsole()));
+                        });
+                        break;
+                    case "mix-and-match":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                            spiffy.Providers.BuiltIn(builtin => builtin.
+                                Targets(t => t
+                                    .Console()));
+                            spiffy.Providers.NLog(nlog => nlog
+                                .Targets(t => t
+                                    .File()));
+                        });
                         break;
                     default:
                         throw new NotSupportedException($"{loggingFlag} did not match any supported value");

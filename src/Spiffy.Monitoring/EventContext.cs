@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -215,12 +215,15 @@ namespace Spiffy.Monitoring
             {
                 if(!IsSuppressed)
                 {
-                    var logAction = Behavior.GetLoggingAction();
+                    var logActions = Behavior.GetLoggingActions();
 
-                    if (logAction != null)
+                    if (logActions.Any())
                     {
-                        this["TimeElapsed"] = GetTimeFor(_timer.TotalMilliseconds);
-                        logAction(Level, GetFormattedMessage());
+                        var logEvent = Render();
+                        foreach (var logAction in logActions)
+                        {
+                            logAction(logEvent);
+                        }
                     }
                 }
                 _disposed = true;
@@ -235,7 +238,7 @@ namespace Spiffy.Monitoring
             this["Operation"] = Operation;
         }
 
-        private string GetFormattedMessage()
+        private LogEvent Render()
         {
             Dictionary<string, string> kvps;
             
@@ -262,9 +265,16 @@ namespace Spiffy.Monitoring
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
-            return string.Format("{0} {1}",
-                                 GetSplunkFormattedTime(),
-                                 GetKeyValuePairsAsDelimitedString(kvps));
+            var timeElapsedMs = _timer.TotalMilliseconds;
+            this["TimeElapsed"] = GetTimeFor(timeElapsedMs);
+
+            return new LogEvent(
+                Level,
+                _timestamp,
+                TimeSpan.FromMilliseconds(timeElapsedMs),
+                GetSplunkFormattedTime(),
+                GetKeyValuePairsAsDelimitedString(kvps),
+                kvps);
         }
 
         private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)
@@ -333,7 +343,7 @@ namespace Spiffy.Monitoring
             valueStr = valueStr.Replace("=", ":");
             valueStr = valueStr.Replace("\"", "''");
 
-            if (Behavior.RemoveNewlines)
+            if (Behavior.RemoveNewLines)
             {
                 valueStr = valueStr
                     .Replace("\r", String.Empty)

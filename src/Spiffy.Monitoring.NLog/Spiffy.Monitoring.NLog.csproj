@@ -4,7 +4,7 @@
     <Copyright>2014-2020</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
-    <TargetFrameworks>netstandard1.5</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring.NLog</AssemblyName>
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
@@ -13,10 +13,8 @@
 Breaking changes:
 
 - Drop support for legacy .NET framework (net40)
-
-New features:
-
-- TBD 
+- Custom logging signature now receives LogEvent rather than a raw string
+- Move classes into NLog namespace
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
@@ -27,7 +25,6 @@ New features:
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="NLog" Version="4.5.0" />
+    <PackageReference Include="NLog" Version="4.5.*" />
   </ItemGroup>
-
 </Project>

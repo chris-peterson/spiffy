@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NLog;
-using NLog.Conditions;
 using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
 using NLog.Targets.Wrappers;
+using Spiffy.Monitoring.Config;
 
-namespace Spiffy.Monitoring
+namespace Spiffy.Monitoring.NLog
 {
-    public static class NLog
+    public static class NLogInitialization
     {
         const string LoggerName = "Spiffy";
         static Logger _logger;
 
-        public static void Initialize(Action<NLogConfigurationApi> configure)
+        public static void NLog(this InitializationApi.ProvidersApi api, Action<NLogConfigurationApi> configure)
         {
             if (_logger != null) 
                 return;
@@ -26,9 +26,23 @@ namespace Spiffy.Monitoring
 
             _logger = SetupNLog(config);
 
-            Behavior.UseCustomLogging((level, message) =>
+            api.AddLoggingAction("nlog", logEvent =>
             {
-                _logger.Log(level.ToNLogLevel(), message);
+                var logLevel = logEvent.Level.ToNLogLevel();
+                var logEventInfo = new LogEventInfo
+                {
+                    Level = logLevel,
+                    Message = logEvent.Message,
+                    TimeStamp = logEvent.Timestamp
+                };
+                foreach (var kvp in logEvent.Properties)
+                {
+                    if (!logEventInfo.Properties.ContainsKey(kvp.Key))
+                    {
+                        logEventInfo.Properties.Add(kvp.Key, kvp.Value);
+                    }
+                }
+                _logger.Log(logEventInfo);
             });
         }
 
@@ -76,19 +90,22 @@ namespace Spiffy.Monitoring
 
             if (targets.Count == 0)
             {
-                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole)");
+                throw new NotSupportedException("Need to specify at least 1 target (e.g. File/ColoredConsole/Network)");
             }
 
             var target = targets.Count == 1 ? targets.Single() : new SplitGroupTarget(targets.ToArray());
 
-            var asyncWrapper = new AsyncTargetWrapper(target)
+            if (config.EnableAsyncLogging)
             {
-                Name = "AsyncWrapper"
-            };
+                target = new AsyncTargetWrapper(target)
+                {
+                    Name = "AsyncWrapper"
+                };
+            }
 
             var loggingConfiguration = new LoggingConfiguration();
-            loggingConfiguration.AddTarget(LoggerName, asyncWrapper);
-            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", config.MinimumLogLevel.ToNLogLevel(), asyncWrapper));
+            loggingConfiguration.AddTarget(LoggerName, target);
+            loggingConfiguration.LoggingRules.Add(new LoggingRule("*", config.MinimumLogLevel.ToNLogLevel(), target));
 
             LogManager.Configuration = loggingConfiguration;
 

@@ -37,6 +37,8 @@ namespace UnitTests
 
     public class EventContextValues : Scenarios
     {
+        bool _removeNewlines = false;
+        
         [Scenario]
         public void Can_add_multiple_values_via_params()
         {
@@ -107,27 +109,29 @@ namespace UnitTests
         [Scenario]
         public void Can_remove_newline_characters()
         {
-            Given(An_event_context_configured_for_newline_removal);
+            Given(Newline_removal_enabled);
             When(Formatting_a_value_with_one_or_more_newline_characters);
             Then(The_formatted_value_has_no_newline_characters);
         }
 
-        private void An_event_context_configured_for_newline_removal()
+        private void Newline_removal_enabled()
         {
-            An_event_context();
-            Context.NewlineRemovalContext = new NewlineRemovalContext();
+            _removeNewlines = true;
         }
 
         private void Formatting_a_value_with_one_or_more_newline_characters()
         {
-            var context = (EventContext) Context.EventContext;
+            using (var context = new EventContext())
+            {
+                context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
 
-            context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
-
-            Behavior.UseCustomLogging((level, msg) =>
-                Context.FormattedMessage = msg);
-
-            context.Dispose();
+                Behavior.Initialize(customize =>
+                {
+                    customize.RemoveNewlines = _removeNewlines;
+                    customize.Providers.AddLoggingAction("test", logEvent =>
+                        Context.FormattedMessage = logEvent.MessageWithTime);
+                });
+            }
         }
 
         private void The_formatted_value_has_no_newline_characters()
@@ -137,8 +141,6 @@ namespace UnitTests
             result.Should().NotMatchRegex(
                 "[\\r\\n]",
                 because: "formatted message should not contain newline characters");
-
-            using(Context.NewlineRemovalContext) { }
         }
 
         void An_event_context()
@@ -174,16 +176,18 @@ namespace UnitTests
 
         void The_context_contains_counts()
         {
-            string result = string.Empty;
+            LogEvent logEvent = null;
             var context = (EventContext) Context.EventContext;
 
-            Behavior.UseCustomLogging((level, msg) =>
-                result = msg);
-
+            Behavior.Initialize(customize =>
+            {
+                customize.RemoveNewlines = _removeNewlines;
+                customize.Providers.AddLoggingAction("test", l => logEvent = l);
+            });
             context.Dispose();
 
-            result.Contains("foo=1").Should().BeTrue();
-            result.Contains("bar=2").Should().BeTrue();
+            logEvent.Message.Contains("foo=1").Should().BeTrue();
+            logEvent.Message.Contains("bar=2").Should().BeTrue();
         }
         void Including_an_exception()
         {
@@ -236,20 +240,6 @@ namespace UnitTests
             context.Count("foo");
             context.Count("bar");
             context.Count("bar");
-        }
-
-        private class NewlineRemovalContext : IDisposable
-        {
-            private readonly bool _oldValue;
-
-            public NewlineRemovalContext()
-            {
-                _oldValue = Behavior.RemoveNewlines;
-                Behavior.RemoveNewlines = true;
-            }
-
-            public void Dispose() =>
-                Behavior.RemoveNewlines = _oldValue;
         }
     }
 }

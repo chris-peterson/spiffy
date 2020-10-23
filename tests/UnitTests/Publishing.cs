@@ -98,13 +98,13 @@ namespace UnitTests
 
         void The_message_contains_TimeElapsed()
         {
-            _context.Messages.Single().Item2.Contains("TimingKey");
+            _context.LogEvents.Single().Message.Contains("TimingKey");
         }
 
         void The_nessage_contains_Count(bool shouldContain)
         {
             const string CountKey = "Count_TimingKey";
-            var message = _context.Messages.Single().Item2;
+            var message = _context.LogEvents.Single().Message;
             if (shouldContain)
             {
                 message.Should().Contain(CountKey);
@@ -132,19 +132,19 @@ namespace UnitTests
 
         void It_should_publish_the_log_message()
         {
-            var message = _context.Messages.Single();
-            message.Item1.Should().Be(Level.Info);
-            message.Item2.Length.Should().BeInRange(10, 200);
+            var logEvent = _context.LogEvents.Single();
+            logEvent.Level.Should().Be(Level.Info);
+            logEvent.MessageWithTime.Length.Should().BeInRange(10, 200);
         }
 
         void It_should_not_publish_again()
         {
-            _context.Messages.Count.Should().Be(1);
+            _context.LogEvents.Count.Should().Be(1);
         }
 
         void It_should_not_publish_the_log_message()
         {
-            _context.Messages.Count.Should().Be(0);
+            _context.LogEvents.Count.Should().Be(0);
         }
 
         void Context_contains_value(string value)
@@ -154,7 +154,7 @@ namespace UnitTests
 
         void The_value_should_be_encapsulated_in_quotes(string value)
         {
-            _context.Messages.Single().Item2.Should()
+            _context.LogEvents.Single().Message.Should()
                 .Contain($"\"{value}\"");
         }
 
@@ -162,12 +162,14 @@ namespace UnitTests
         {
             public PublishingTestContext()
             {
-                Behavior.UseCustomLogging((level, msg) =>
-                    Messages.Add(new Tuple<Level, string>(level, msg)));
+                Behavior.Initialize(customize =>
+                {
+                    customize.Providers.AddLoggingAction("test", logEvent => LogEvents.Add(logEvent));
+                });
             }
 
             public EventContext EventContext { get; } = new EventContext("MyComponent", "MyOperation");
-            public List<Tuple<Level, string>> Messages { get; } = new List<Tuple<Level, string>>();
+            public List<LogEvent> LogEvents { get; } = new List<LogEvent>();
         }
     }
 }
