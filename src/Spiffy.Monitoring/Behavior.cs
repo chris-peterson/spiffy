@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Immutable;
 using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring
 {
     public static class Behavior
     {
-        static ImmutableArray<Action<LogEvent>> _loggingActions = new ImmutableArray<Action<LogEvent>>();
+        static Action<LogEvent>[] _loggingActions = new Action<LogEvent>[] {};
 
         public static void Initialize(Action<InitializationApi> customize)
         {
@@ -21,7 +20,7 @@ namespace Spiffy.Monitoring
             RemoveNewLines = api.RemoveNewlines;
         }
 
-        internal static ImmutableArray<Action<LogEvent>> GetLoggingActions()
+        internal static Action<LogEvent> [] GetLoggingActions()
         {
             return _loggingActions;
         }

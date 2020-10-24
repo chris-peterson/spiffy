@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Immutable;
+using System.Linq;
 
 namespace Spiffy.Monitoring.Config
 {
@@ -45,9 +45,9 @@ namespace Spiffy.Monitoring.Config
             _loggingActions.GetOrAdd(id, loggingAction);
         }
 
-        internal ImmutableArray<Action<LogEvent>> GetLoggingActions()
+        internal Action<LogEvent> [] GetLoggingActions()
         {
-            return _loggingActions.Values.ToImmutableArray();
+            return _loggingActions.Values.ToArray();
         }
     }
 }
