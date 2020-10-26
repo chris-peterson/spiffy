@@ -37,3 +37,14 @@ Monitoring.NLog:
   when: manual
   only:
   - master
+
+Monitoring.Prometheus:
+  stage: publish to nuget
+  script:
+  - dotnet nuget push $(ls src/Spiffy.Monitoring.Prometheus/bin/$Configuration/*.nupkg) -k $NUGET_API_KEY -s https://api.nuget.org/v3/index.json
+  environment:
+    name: nuget.org
+    url: https://nuget.org/packages/Spiffy.Monitoring.Prometheus/
+  when: manual
+  only:
+  - master
