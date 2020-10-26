@@ -18,6 +18,7 @@ namespace Spiffy.Monitoring.Prometheus
             readonly string _component;
             readonly string _operation;
             readonly List<string> _labels = new List<string>();
+            Action<LogEvent> _callback;
 
             public EventContextApi(string component, string operation)
             {
@@ -25,16 +26,22 @@ namespace Spiffy.Monitoring.Prometheus
                 _operation = operation;
             }
 
-            public EventContextApi ToCounter(string counterName, string description)
-            {
-                var rule = new CounterRule(_component, _operation, counterName, description, _labels.ToArray());
-                CounterRules.GetOrAdd(rule.GetKey(), rule);
-                return this;
-            }
-
             public EventContextApi IncludeLabels(params string [] labelNames)
             {
                 _labels.AddRange(labelNames);
+                return this;
+            }
+
+            public EventContextApi Callback(Action<LogEvent> callback)
+            {
+                _callback = callback;
+                return this;
+            }
+
+            public EventContextApi ToCounter(string counterName, string description)
+            {
+                var rule = new CounterRule(_component, _operation, counterName, description, _labels.ToArray(), _callback);
+                CounterRules.GetOrAdd(rule.GetKey(), rule);
                 return this;
             }
         }
@@ -48,6 +55,7 @@ namespace Spiffy.Monitoring.Prometheus
             {
                 try
                 {
+                    rule.Callback?.Invoke(logEvent);
                     rule.Counter
                         .WithLabels(rule.AdditionalLabels
                             .Select(label => logEvent.Properties
@@ -77,13 +85,14 @@ namespace Spiffy.Monitoring.Prometheus
 
     public class CounterRule
     {
-        public CounterRule(string component, string operation, string metricName, string description, string[] additionalLabels)
+        public CounterRule(string component, string operation, string metricName, string description, string[] additionalLabels, Action<LogEvent> callback)
         {
             Component = component;
             Operation = operation;
             MetricName = metricName;
             Description = description;
             AdditionalLabels = additionalLabels;
+            Callback = callback;
             Counter = CreateCounter();
         }
         
@@ -114,6 +123,8 @@ namespace Spiffy.Monitoring.Prometheus
         /// Get/set additional labels to include in the metric.
         /// </summary>
         public string [] AdditionalLabels { get; }
+
+        public Action<LogEvent> Callback { get; }
 
         public Counter Counter { get; private set; }
     }

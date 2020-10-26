@@ -66,6 +66,7 @@ namespace TestConsoleApp
                         PrometheusRules
                             .FromEventContext("myclass", "mymethod")
                                 .IncludeLabels("interesting_field")
+                                .Callback(BeforeCounting)
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
                     case "mix-and-match":
@@ -151,6 +152,10 @@ namespace TestConsoleApp
             {
                 throw new Exception("you were unlucky!", new NullReferenceException());
             }
+        }
+
+        static void BeforeCounting(LogEvent logEvent)
+        {
         }
     }
 }
