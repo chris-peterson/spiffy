@@ -27,9 +27,9 @@ New features:
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.0.*" />
-    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.0.*" />
-    <PackageReference Include="System.Net.Http.Json" Version="3.2.*" />
-    <PackageReference Include="System.Text.Json" Version="4.7.*"/>
+    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.*" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.*" />
+    <PackageReference Include="System.Net.Http.Json" Version="3.*" />
+    <PackageReference Include="System.Text.Json" Version="4.*"/>
   </ItemGroup>
 </Project>

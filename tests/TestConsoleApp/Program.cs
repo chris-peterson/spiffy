@@ -2,7 +2,7 @@
 using System.Threading;
 using Spiffy.Monitoring;
 using Spiffy.Monitoring.BuiltIn;
-using Spiffy.Monitoring.Config;
+using Spiffy.Monitoring.Prometheus;
 using Spiffy.Monitoring.NLog;
 
 namespace TestConsoleApp
@@ -58,6 +58,16 @@ namespace TestConsoleApp
                                     .ColoredConsole()));
                         });
                         break;
+                    case "prometheus":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        {
+                            spiffy.Providers.Prometheus();
+                        });
+                        PrometheusRules
+                            .FromEventContext("myclass", "mymethod")
+                                .IncludeLabels("interesting_field")
+                            .ToCounter("my_app_my_counter", "Counter Help String");
+                        break;
                     case "mix-and-match":
                         Spiffy.Monitoring.Behavior.Initialize(spiffy => {
                             spiffy.Providers.BuiltIn(builtin => builtin.
@@ -101,6 +111,12 @@ namespace TestConsoleApp
                 using (var context = new EventContext())
                 {
                     context.SetToError("cause something very bad happened");
+                }
+
+                // prometheus counter:
+                using (var context = new EventContext("myclass", "mymethod"))
+                {
+                    context["interesting_field"] = "hello world";
                 }
 
                 using (var context = new EventContext())

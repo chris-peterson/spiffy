@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\..\src\Spiffy.Monitoring.Prometheus\Spiffy.Monitoring.Prometheus.csproj" />
         <ProjectReference Include="..\..\src\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
         <ProjectReference Include="..\..\src\Spiffy.Monitoring.NLog\Spiffy.Monitoring.NLog.csproj" />
     </ItemGroup>
