@@ -8,7 +8,7 @@
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring</AssemblyName>
     <PackageId>Spiffy.Monitoring</PackageId>
-    <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
+    <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk;prometheus</PackageTags>
     <PackageReleaseNotes>
 Breaking changes:
 
@@ -18,12 +18,13 @@ Breaking changes:
 
 New features:
 
-- Support for splunk HEC target
+- Splunk provider
+- Prometheus provider
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.0-rc4</Version>
+    <Version>6.0.0-rc5</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
