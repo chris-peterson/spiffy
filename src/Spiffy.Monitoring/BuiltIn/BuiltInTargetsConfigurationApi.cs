@@ -1,5 +1,3 @@
-using System;
-
 namespace Spiffy.Monitoring.BuiltIn
 {
     public class BuiltInTargetsConfigurationApi
@@ -15,24 +13,6 @@ namespace Spiffy.Monitoring.BuiltIn
         public BuiltInTargetsConfigurationApi Console()
         {
             ConsoleEnabled = true;
-            return this;
-        }
-
-        internal SplunkConfigurationApi SplunkConfiguration { get; private set; }
-
-        public class SplunkConfigurationApi
-        {
-            public string ServerUrl { get; set; }
-            public string Token { get; set; }
-            public string Index { get; set; }
-            public string SourceType { get; set; }
-            public string Source { get; set; }
-        }
-
-        public BuiltInTargetsConfigurationApi Splunk(Action<SplunkConfigurationApi> customize = null)
-        {
-            SplunkConfiguration = new SplunkConfigurationApi();
-            customize?.Invoke(SplunkConfiguration);
             return this;
         }
     }

@@ -2,8 +2,9 @@
 using System.Threading;
 using Spiffy.Monitoring;
 using Spiffy.Monitoring.BuiltIn;
-using Spiffy.Monitoring.Prometheus;
 using Spiffy.Monitoring.NLog;
+using Spiffy.Monitoring.Prometheus;
+using Spiffy.Monitoring.Splunk;
 
 namespace TestConsoleApp
 {
@@ -33,15 +34,14 @@ namespace TestConsoleApp
                     case "splunk":
                         Spiffy.Monitoring.Behavior.Initialize(spiffy =>
                         {
-                            spiffy.Providers.BuiltIn(builtIn => builtIn
-                                .Targets(t => t.Splunk(s =>
-                                {
-                                    s.ServerUrl = "http://splunkhec.yourdomain:8088";
-                                    s.Token = "<secret token>";
-                                    s.Index = "apps";
-                                    s.SourceType = "spiffy";
-                                    s.Source = "testconsoleapp";
-                                })));
+                            spiffy.Providers.Splunk(s =>
+                            {
+                                s.ServerUrl = "http://splunkhec.yourdomain:8088";
+                                s.Token = "<secret token>";
+                                s.Index = "apps";
+                                s.SourceType = "spiffy";
+                                s.Source = "testconsoleapp";
+                            });
                         });
                         break;
                     case "nlog-file":

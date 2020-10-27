@@ -46,25 +46,6 @@ namespace Spiffy.Monitoring.BuiltIn
                     }
                 });
             }
-
-            var splunk = config.TargetsConfiguration.SplunkConfiguration;
-            if (splunk != null)
-            {
-                _splunkHttpEventCollector = new SplunkHttpEventCollector
-                {
-                    ServerUrl = config.TargetsConfiguration.SplunkConfiguration.ServerUrl,
-                    Token = splunk.Token,
-                    Index = splunk.Index,
-                    SourceType = splunk.SourceType,
-                    Source = splunk.Source
-                };
-                providers.AddLoggingAction("splunk", logEvent =>
-                {
-                    _splunkHttpEventCollector.Log(logEvent);
-                });
-            }
         }
-        
-        static SplunkHttpEventCollector _splunkHttpEventCollector;
     }
 }

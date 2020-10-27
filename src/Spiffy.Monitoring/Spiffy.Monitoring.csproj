@@ -23,13 +23,11 @@ New features:
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.0-rc3</Version>
+    <Version>6.0.0-rc4</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.StackTrace" Version="4.*" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.*" />
-    <PackageReference Include="System.Net.Http.Json" Version="3.*" />
-    <PackageReference Include="System.Text.Json" Version="4.*"/>
   </ItemGroup>
 </Project>
