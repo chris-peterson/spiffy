@@ -10,8 +10,10 @@ Handled over **360,000,000,000** production requests (and counting!)
 
 Package | Latest Release |
 :-------- | :------------ |
-Spiffy.Monitoring | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.svg)](https://www.nuget.org/packages/spiffy.monitoring)
-Spiffy.Monitoring.NLog | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.NLog.svg)](https://www.nuget.org/packages/spiffy.monitoring.nlog)
+`Spiffy.Monitoring` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.svg)](https://www.nuget.org/packages/spiffy.monitoring)
+`Spiffy.Monitoring.NLog` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.NLog.svg)](https://www.nuget.org/packages/spiffy.monitoring.nlog)
+`Spiffy.Monitoring.Prometheus` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.Prometheus.svg)](https://www.nuget.org/packages/spiffy.monitoring.prometheus)
+`Spiffy.Monitoring.Splunk` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.Splunk.svg)](https://www.nuget.org/packages/spiffy.monitoring.splunk)
 
 ## Setup
 
@@ -19,8 +21,11 @@ Spiffy.Monitoring.NLog | [![NuGet version](https://img.shields.io/nuget/dt/Spiff
 
 ### Built-In Logging Providers
 
-`Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace`. `Console`. and `Splunk`).  There is no default logging behavior, you must
-initialize logging.  Early in your application's entry point, call `Spiffy.Monitoring.Behavior.Initialize`
+`Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace` and `Console`).
+
+There is no default logging behavior, you must initialize by calling `Spiffy.Monitoring.Behavior.Initialize`.
+
+Any published `EventContext` before initialization goes nowhere, so it is recommended that initialization be as early as possible when your application is starting.
 
 **Example**
 
