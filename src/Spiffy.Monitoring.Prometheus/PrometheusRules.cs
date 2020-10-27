@@ -28,7 +28,10 @@ namespace Spiffy.Monitoring.Prometheus
 
             public EventContextApi IncludeLabels(params string [] labelNames)
             {
-                _labels.AddRange(labelNames);
+                if (labelNames != null && labelNames.Any())
+                {
+                    _labels.AddRange(labelNames);
+                }
                 return this;
             }
 
@@ -66,9 +69,9 @@ namespace Spiffy.Monitoring.Prometheus
                     }
 
                     var counter = rule.Counter;
-                    if (rule.AdditionalLabels != null && rule.AdditionalLabels.Any())
+                    if (rule.LabelNames != null && rule.LabelNames.Any())
                     {
-                        counter.WithLabels(rule.AdditionalLabels
+                        counter.WithLabels(rule.LabelNames
                             .Select(label => properties
                                 .Single(p =>
                                     string.Compare(label, p.Key, StringComparison.OrdinalIgnoreCase) == 0)
@@ -97,13 +100,13 @@ namespace Spiffy.Monitoring.Prometheus
 
     public class CounterRule
     {
-        public CounterRule(string component, string operation, string metricName, string description, string[] additionalLabels, Func<LogEvent, IDictionary<string, string>> overrideValues)
+        public CounterRule(string component, string operation, string metricName, string description, string[] labelNames, Func<LogEvent, IDictionary<string, string>> overrideValues)
         {
             Component = component;
             Operation = operation;
             MetricName = metricName;
             Description = description;
-            AdditionalLabels = additionalLabels;
+            LabelNames = labelNames;
             OverrideValues = overrideValues;
             Counter = CreateCounter();
         }
@@ -113,7 +116,7 @@ namespace Spiffy.Monitoring.Prometheus
             var counter = Metrics.CreateCounter(
                 MetricName, Description, new CounterConfiguration
                 {
-                    LabelNames = AdditionalLabels
+                    LabelNames = LabelNames
                 });
             Counter = counter;
             return counter;
@@ -122,23 +125,15 @@ namespace Spiffy.Monitoring.Prometheus
         public string Component { get; }
         public string Operation { get; }
 
-        /// <summary>
-        /// Get/set the metric name to increment.  NOTE: this should follow a
-        /// `gyi_{service-name}_{domain-function}_total convention` e.g.
-        /// `gyi_purchase_checkout_total`
-        /// </summary>
-        public string MetricName { get; }
-
-        public string Description { get; }
-
-        /// <summary>
-        /// Get/set additional labels to include in the metric.
-        /// </summary>
-        public string [] AdditionalLabels { get; }
+        public string [] LabelNames { get; }
 
         public Func<LogEvent, IDictionary<string, string>> OverrideValues { get; }
 
         public Counter Counter { get; private set; }
+
+        string MetricName { get; }
+
+        string Description { get; }
     }
 
     static class KeyExtensions
