@@ -1,51 +1,49 @@
-using System;
-using System.Diagnostics;
+using SD = System.Diagnostics;
 using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring.BuiltIn
 {
     public static class BuiltInProviders
     {
-        public static void BuiltIn(this InitializationApi.ProvidersApi providers, Action<BuiltInProvidersConfigurationApi> customize)
+        public static InitializationApi.ProvidersApi Trace(this InitializationApi.ProvidersApi providers)
         {
-            var config = new BuiltInProvidersConfigurationApi();
-            customize?.Invoke(config);
-            if (config.TargetsConfiguration.TraceEnabled)
+            providers.AddLoggingAction("trace", logEvent =>
             {
-                providers.AddLoggingAction("trace", logEvent =>
+                var message = logEvent.Message;
+                switch (logEvent.Level)
                 {
-                    var message = logEvent.Message;
-                    switch (logEvent.Level)
-                    {
-                        case Level.Info:
-                            Trace.TraceInformation(message);
-                            break;
-                        case Level.Warning:
-                            Trace.TraceWarning(message);
-                            break;
-                        case Level.Error:
-                            Trace.TraceError(message);
-                            break;
-                        default:
-                            Trace.WriteLine(message);
-                            break;
-                    }
-                });
-            }
-            if (config.TargetsConfiguration.ConsoleEnabled)
+                    case Level.Info:
+                        SD.Trace.TraceInformation(message);
+                        break;
+                    case Level.Warning:
+                        SD.Trace.TraceWarning(message);
+                        break;
+                    case Level.Error:
+                        SD.Trace.TraceError(message);
+                        break;
+                    default:
+                        SD.Trace.WriteLine(message);
+                        break;
+                }
+            });
+            return providers;
+        }
+
+        public static InitializationApi.ProvidersApi Console(this InitializationApi.ProvidersApi providers)
+        {
+            providers.AddLoggingAction("console", logEvent =>
             {
-                providers.AddLoggingAction("console", logEvent =>
+                if (logEvent.Level == Level.Error)
                 {
-                    if (logEvent.Level == Level.Error)
-                    {
-                        Console.Error.WriteLine(logEvent.MessageWithTime);
-                    }
-                    else
-                    {
-                        Console.WriteLine(logEvent.MessageWithTime);
-                    }
-                });
-            }
+                    System.Console.Error.WriteLine(logEvent.MessageWithTime);
+                }
+                else
+                {
+                    System.Console.WriteLine(logEvent.MessageWithTime);
+                }
+            });
+            return providers;
         }
     }
 }
+

@@ -19,17 +19,14 @@ namespace TestConsoleApp
                 switch (loggingFlag)
                 {
                     case "trace":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-                            spiffy.Providers.BuiltIn(builtin => builtin
-                                .Targets(t => t
-                                    .Trace()));
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        {
+                            spiffy.Providers.Trace();
                         });
                         break;
                     case "console":
                         Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-                            spiffy.Providers.BuiltIn(builtin => builtin
-                                .Targets(t => t
-                                    .Console()));
+                            spiffy.Providers.Console();
                         });
                         break;
                     case "splunk":
@@ -70,14 +67,15 @@ namespace TestConsoleApp
                                 .OverrideValues(OverrideValues)
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
-                    case "mix-and-match":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-                            spiffy.Providers.BuiltIn(builtin => builtin.
-                                Targets(t => t
-                                    .Console()));
-                            spiffy.Providers.NLog(nlog => nlog
-                                .Targets(t => t
-                                    .File()));
+                    case "all-the-things":
+                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        {
+                            spiffy.Providers
+                                .Trace()
+                                .Console()
+                                .Prometheus()
+                                .Splunk(cfg => {})
+                                .NLog(cfg => {});
                         });
                         break;
                     default:

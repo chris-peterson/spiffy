@@ -23,17 +23,15 @@ Package | Latest Release |
 
 `Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace` and `Console`).
 
-There is no default logging behavior, you must initialize by calling `Spiffy.Monitoring.Behavior.Initialize`.
+There is no default logging behavior, you must initialize provider(s) by calling `Spiffy.Monitoring.Behavior.Initialize`.
 
-Any published `EventContext` before initialization goes nowhere, so it is recommended that initialization be as early as possible when your application is starting.
+Until initialized, any published `EventContext` will not be observable, so it is recommended that initialization be as early as possible when your application is starting (i.e. in the entry point).
 
 **Example**
 
 ```c#
     Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-        spiffy.Providers.BuiltIn(builtin => builtin
-            .Targets(t => t
-                .Console()));
+        spiffy.Providers.Console()));
 ```
 
 ### Extended Providers
@@ -52,11 +50,31 @@ NOTE: the provider package need only be installed for your application's entry p
     static void Main() {
         // this should be the first line of your application
         Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-            spiffy.Providers.NLog(nlog => nlog
-                .Targets(t => t
-                    .File()));
+            spiffy.Providers
+                .NLog(nlog => nlog.Targets(t => t.File()));
         });
+    }
+```
 
+### Multiple Providers
+
+Multiple providers can be provied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)
+
+**Example**
+
+```c#
+    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+        spiffy.Providers
+            .Console()
+            .NLog(nlog => nlog.Targets(t => t.File()));
+    });
+```
+
+## Log
+
+### Example Program
+
+```c#
         // key-value-pairs set here appear in every event message
         GlobalEventContext.Instance
             .Set("Application", "MyApplication");
@@ -75,29 +93,7 @@ NOTE: the provider package need only be installed for your application's entry p
                 context.IncludeException(ex);
             }
         }
-    }
 ```
-
-### Multiple Providers
-
-Multiple providers can be provied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)
-
-**Example**
-
-```c#
-    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
-        spiffy.Providers.BuiltIn(builtin => builtin.
-            Targets(t => t
-                .Console()));
-        spiffy.Providers.NLog(nlog => nlog
-            .Targets(t => t
-                .File()));
-    });
-```
-
-## Log
-
-The example above creates a file named `current.log` in a `Logs` subfolder of the application's running directory.  It contains entries like the following:
 
 ### Normal Entry
 
