@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -132,6 +133,12 @@ namespace Spiffy.Monitoring
                 }
             }
         }
+
+        /// <summary>
+        /// Data that is attached to the EventContext but is not published.  This could be useful for
+        /// stashing relevant contextual information, e.g. metric labels.
+        /// </summary>
+        public ConcurrentDictionary<string, string> PrivateData { get; } = new ConcurrentDictionary<string, string>();
 
         public void AddValues(params KeyValuePair<string, object>[] values)
         {
