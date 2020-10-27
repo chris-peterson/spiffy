@@ -287,8 +287,7 @@ namespace Spiffy.Monitoring
                 TimeSpan.FromMilliseconds(timeElapsedMs),
                 GetSplunkFormattedTime(),
                 GetKeyValuePairsAsDelimitedString(kvps),
-                kvps,
-                PrivateData);
+                kvps);
         }
 
         private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)

@@ -5,7 +5,7 @@ namespace Spiffy.Monitoring
 {
     public class LogEvent
     {
-        public LogEvent(Level level, DateTime timestamp, TimeSpan timeElapsed, string formattedTime, string message, IDictionary<string, string> properties, IDictionary<string, string> privateData)
+        public LogEvent(Level level, DateTime timestamp, TimeSpan timeElapsed, string formattedTime, string message, IDictionary<string, string> properties)
         {
             Level = level;
             Timestamp = timestamp;
@@ -13,7 +13,6 @@ namespace Spiffy.Monitoring
             FormattedTime = formattedTime;
             Message = message;
             Properties = properties;
-            PrivateData = privateData;
         }
 
         public Level Level { get; }
@@ -24,6 +23,5 @@ namespace Spiffy.Monitoring
         
         public string MessageWithTime => $"{FormattedTime} {Message}";
         public IDictionary<string, string> Properties { get; }
-        public IDictionary<string, string> PrivateData { get; }
     }
 }

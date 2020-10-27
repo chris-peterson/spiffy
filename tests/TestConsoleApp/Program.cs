@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Spiffy.Monitoring;
 using Spiffy.Monitoring.BuiltIn;
@@ -66,7 +67,7 @@ namespace TestConsoleApp
                         PrometheusRules
                             .FromEventContext("myclass", "mymethod")
                                 .IncludeLabels("interesting_field")
-                                .Callback(BeforeCounting)
+                                .OverrideValues(BeforeCounting)
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
                     case "mix-and-match":
@@ -154,8 +155,12 @@ namespace TestConsoleApp
             }
         }
 
-        static void BeforeCounting(LogEvent logEvent)
+        static IDictionary<string, string> BeforeCounting(LogEvent logEvent)
         {
+            return new Dictionary<string, string>
+            {
+                {"wait", "here's one more"}
+            };
         }
     }
 }

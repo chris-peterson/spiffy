@@ -18,7 +18,7 @@ namespace Spiffy.Monitoring.Prometheus
             readonly string _component;
             readonly string _operation;
             readonly List<string> _labels = new List<string>();
-            Action<LogEvent> _callback;
+            Func<LogEvent, IDictionary<string, string>> _overrideValuesCallback;
 
             public EventContextApi(string component, string operation)
             {
@@ -32,15 +32,15 @@ namespace Spiffy.Monitoring.Prometheus
                 return this;
             }
 
-            public EventContextApi Callback(Action<LogEvent> callback)
+            public EventContextApi OverrideValues(Func<LogEvent, IDictionary<string, string>> overrideValuesCallback)
             {
-                _callback = callback;
+                _overrideValuesCallback = overrideValuesCallback;
                 return this;
             }
 
             public EventContextApi ToCounter(string counterName, string description)
             {
-                var rule = new CounterRule(_component, _operation, counterName, description, _labels.ToArray(), _callback);
+                var rule = new CounterRule(_component, _operation, counterName, description, _labels.ToArray(), _overrideValuesCallback);
                 CounterRules.GetOrAdd(rule.GetKey(), rule);
                 return this;
             }
@@ -55,10 +55,19 @@ namespace Spiffy.Monitoring.Prometheus
             {
                 try
                 {
-                    rule.Callback?.Invoke(logEvent);
+                    var properties = logEvent.Properties;
+                    var overrides = rule.OverrideValues?.Invoke(logEvent);
+                    if (overrides != null && overrides.Any())
+                    {
+                        foreach (var kvp in overrides)
+                        {
+                            properties[kvp.Key] = kvp.Value;
+                        }
+                    }
+
                     rule.Counter
                         .WithLabels(rule.AdditionalLabels
-                            .Select(label => logEvent.Properties
+                            .Select(label => properties
                                 .Single(p =>
                                     string.Compare(label, p.Key, StringComparison.OrdinalIgnoreCase) == 0)
                                 .Value).ToArray())
@@ -85,14 +94,14 @@ namespace Spiffy.Monitoring.Prometheus
 
     public class CounterRule
     {
-        public CounterRule(string component, string operation, string metricName, string description, string[] additionalLabels, Action<LogEvent> callback)
+        public CounterRule(string component, string operation, string metricName, string description, string[] additionalLabels, Func<LogEvent, IDictionary<string, string>> overrideValues)
         {
             Component = component;
             Operation = operation;
             MetricName = metricName;
             Description = description;
             AdditionalLabels = additionalLabels;
-            Callback = callback;
+            OverrideValues = overrideValues;
             Counter = CreateCounter();
         }
         
@@ -124,7 +133,7 @@ namespace Spiffy.Monitoring.Prometheus
         /// </summary>
         public string [] AdditionalLabels { get; }
 
-        public Action<LogEvent> Callback { get; }
+        public Func<LogEvent, IDictionary<string, string>> OverrideValues { get; }
 
         public Counter Counter { get; private set; }
     }
