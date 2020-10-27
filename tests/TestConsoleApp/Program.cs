@@ -67,7 +67,7 @@ namespace TestConsoleApp
                         PrometheusRules
                             .FromEventContext("myclass", "mymethod")
                                 .IncludeLabels("interesting_field")
-                                .OverrideValues(BeforeCounting)
+                                .OverrideValues(OverrideValues)
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
                     case "mix-and-match":
@@ -155,11 +155,11 @@ namespace TestConsoleApp
             }
         }
 
-        static IDictionary<string, string> BeforeCounting(LogEvent logEvent)
+        static IDictionary<string, string> OverrideValues(LogEvent logEvent)
         {
             return new Dictionary<string, string>
             {
-                {"wait", "here's one more"}
+                {"mylabel", "my key"}
             };
         }
     }
