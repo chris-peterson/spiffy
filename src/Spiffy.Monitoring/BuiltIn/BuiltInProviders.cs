@@ -7,7 +7,7 @@ namespace Spiffy.Monitoring.BuiltIn
     {
         public static InitializationApi.ProvidersApi Trace(this InitializationApi.ProvidersApi providers)
         {
-            providers.AddLoggingAction("trace", logEvent =>
+            providers.Add("trace", logEvent =>
             {
                 var message = logEvent.Message;
                 switch (logEvent.Level)
@@ -31,7 +31,7 @@ namespace Spiffy.Monitoring.BuiltIn
 
         public static InitializationApi.ProvidersApi Console(this InitializationApi.ProvidersApi providers)
         {
-            providers.AddLoggingAction("console", logEvent =>
+            providers.Add("console", logEvent =>
             {
                 if (logEvent.Level == Level.Error)
                 {

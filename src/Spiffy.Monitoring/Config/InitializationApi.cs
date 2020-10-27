@@ -6,7 +6,7 @@ namespace Spiffy.Monitoring.Config
 {
     public class InitializationApi
     {
-        readonly ConcurrentDictionary<string, Action<LogEvent>> _loggingActions = new ConcurrentDictionary<string, Action<LogEvent>>();
+        readonly ConcurrentDictionary<string, Action<LogEvent>> _providers = new ConcurrentDictionary<string, Action<LogEvent>>();
 
         // Custom providers should extend this API by way of extension methods
         public class ProvidersApi
@@ -18,9 +18,9 @@ namespace Spiffy.Monitoring.Config
                 _parent = parent;
             }
 
-            public void AddLoggingAction(string id, Action<LogEvent> loggingAction)
+            public void Add(string id, Action<LogEvent> loggingAction)
             {
-                _parent.AddLoggingAction(id, loggingAction);
+                _parent.AddProvider(id, loggingAction);
             }
         }
 
@@ -40,14 +40,14 @@ namespace Spiffy.Monitoring.Config
         /// </returns>
         public bool RemoveNewlines { get; set; }
 
-        void AddLoggingAction(string id, Action<LogEvent> loggingAction)
+        void AddProvider(string id, Action<LogEvent> loggingAction)
         {
-            _loggingActions[id] = loggingAction;
+            _providers[id] = loggingAction;
         }
 
         internal Action<LogEvent> [] GetLoggingActions()
         {
-            return _loggingActions.Values.ToArray();
+            return _providers.Values.ToArray();
         }
     }
 }

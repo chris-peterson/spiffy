@@ -128,7 +128,7 @@ namespace UnitTests
                 Behavior.Initialize(customize =>
                 {
                     customize.RemoveNewlines = _removeNewlines;
-                    customize.Providers.AddLoggingAction("test", logEvent =>
+                    customize.Providers.Add("test", logEvent =>
                         Context.FormattedMessage = logEvent.MessageWithTime);
                 });
             }
@@ -182,7 +182,7 @@ namespace UnitTests
             Behavior.Initialize(customize =>
             {
                 customize.RemoveNewlines = _removeNewlines;
-                customize.Providers.AddLoggingAction("test", l => logEvent = l);
+                customize.Providers.Add("test", l => logEvent = l);
             });
             context.Dispose();
 

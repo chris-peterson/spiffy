@@ -164,7 +164,7 @@ namespace UnitTests
             {
                 Behavior.Initialize(customize =>
                 {
-                    customize.Providers.AddLoggingAction("test", logEvent => LogEvents.Add(logEvent));
+                    customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
                 });
             }
 

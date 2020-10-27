@@ -16,7 +16,7 @@ namespace Spiffy.Monitoring.NLog
         const string LoggerName = "Spiffy";
         static Logger _logger;
 
-        public static void NLog(this InitializationApi.ProvidersApi api, Action<NLogConfigurationApi> configure)
+        public static void NLog(this InitializationApi.ProvidersApi providers, Action<NLogConfigurationApi> configure)
         {
             if (_logger != null) 
                 return;
@@ -26,7 +26,7 @@ namespace Spiffy.Monitoring.NLog
 
             _logger = SetupNLog(config);
 
-            api.AddLoggingAction("nlog", logEvent =>
+            providers.Add("nlog", logEvent =>
             {
                 var logLevel = logEvent.Level.ToNLogLevel();
                 var logEventInfo = new LogEventInfo

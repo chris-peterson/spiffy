@@ -6,7 +6,7 @@ namespace Spiffy.Monitoring.Prometheus
     {
         public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api)
         {
-            api.AddLoggingAction("Prometheus", PrometheusRules.Process);
+            api.Add("Prometheus", PrometheusRules.Process);
             return api;
         }
     }

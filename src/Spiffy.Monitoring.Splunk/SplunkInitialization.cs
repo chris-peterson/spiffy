@@ -18,11 +18,16 @@ namespace Spiffy.Monitoring.Splunk
     {
         static SplunkHttpEventCollector _splunkHttpEventCollector;
 
-        public static InitializationApi.ProvidersApi Splunk(this InitializationApi.ProvidersApi api,
-            Action<SplunkConfigurationApi> customize = null)
+        public static InitializationApi.ProvidersApi Splunk(
+            this InitializationApi.ProvidersApi providers,
+            Action<SplunkConfigurationApi> customize)
         {
             var config = new SplunkConfigurationApi();
-            customize?.Invoke(config);
+            if (customize == null)
+            {
+                throw new NotSupportedException("Need to configure splunk properties through customization callback");
+            }
+            customize.Invoke(config);
             var splunk = config.SplunkConfiguration;
             _splunkHttpEventCollector = new SplunkHttpEventCollector
             {
@@ -33,8 +38,8 @@ namespace Spiffy.Monitoring.Splunk
                 Source = splunk.Source
             };
 
-            api.AddLoggingAction("Splunk", logEvent => { _splunkHttpEventCollector.Log(logEvent); });
-            return api;
+            providers.Add("splunk", logEvent => { _splunkHttpEventCollector.Log(logEvent); });
+            return providers;
         }
     }
 }

@@ -15,7 +15,7 @@ First release
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.0-rc6</Version>
+    <Version>1.0.0-rc7</Version>
     <RootNamespace>Spiffy.Monitoring.Prometheus</RootNamespace>
   </PropertyGroup>
 
