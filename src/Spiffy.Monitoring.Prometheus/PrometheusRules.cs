@@ -65,13 +65,16 @@ namespace Spiffy.Monitoring.Prometheus
                         }
                     }
 
-                    rule.Counter
-                        .WithLabels(rule.AdditionalLabels
+                    var counter = rule.Counter;
+                    if (rule.AdditionalLabels != null && rule.AdditionalLabels.Any())
+                    {
+                        counter.WithLabels(rule.AdditionalLabels
                             .Select(label => properties
                                 .Single(p =>
                                     string.Compare(label, p.Key, StringComparison.OrdinalIgnoreCase) == 0)
-                                .Value).ToArray())
-                        .Inc();
+                                .Value).ToArray());
+                    }
+                    counter.Inc();
                 }
                 catch (Exception ex)
                 {
