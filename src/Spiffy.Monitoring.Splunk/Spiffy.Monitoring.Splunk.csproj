@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Copyright>2020</Copyright>
     <Authors>Chris Peterson</Authors>
-    <Description>The Splunk adapter for Spiffy.Monitoring</Description>
+    <Description>The Splunk provider for Spiffy.Monitoring</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring.Splunk</AssemblyName>
