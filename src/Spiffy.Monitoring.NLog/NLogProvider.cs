@@ -11,11 +11,8 @@ using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring.NLog
 {
-    public static class NLogInitialization
+    public static class NLogProvider
     {
-        const string LoggerName = "Spiffy";
-        static Logger _logger;
-
         public static void NLog(this InitializationApi.ProvidersApi providers, Action<NLogConfigurationApi> configure)
         {
             if (_logger != null) 
@@ -45,6 +42,9 @@ namespace Spiffy.Monitoring.NLog
                 _logger.Log(logEventInfo);
             });
         }
+
+        const string LoggerName = "Spiffy";
+        static Logger _logger;
 
         static Logger SetupNLog(NLogConfigurationApi config)
         {

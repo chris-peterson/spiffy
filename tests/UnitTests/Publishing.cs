@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
 using FluentAssertions;
-using Kekiri;
 using Kekiri.Xunit;
 using Spiffy.Monitoring;
 
@@ -162,7 +160,7 @@ namespace UnitTests
         {
             public PublishingTestContext()
             {
-                Behavior.Initialize(customize =>
+                Configuration.Initialize(customize =>
                 {
                     customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
                 });

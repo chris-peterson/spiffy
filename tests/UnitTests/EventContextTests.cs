@@ -125,7 +125,7 @@ namespace UnitTests
             {
                 context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
 
-                Behavior.Initialize(customize =>
+                Configuration.Initialize(customize =>
                 {
                     customize.RemoveNewlines = _removeNewlines;
                     customize.Providers.Add("test", logEvent =>
@@ -179,7 +179,7 @@ namespace UnitTests
             LogEvent logEvent = null;
             var context = (EventContext) Context.EventContext;
 
-            Behavior.Initialize(customize =>
+            Configuration.Initialize(customize =>
             {
                 customize.RemoveNewlines = _removeNewlines;
                 customize.Providers.Add("test", l => logEvent = l);

@@ -2,11 +2,11 @@
 
 namespace Spiffy.Monitoring.Prometheus
 {
-    public static class PrometheusInitialization
+    public static class PrometheusProvider
     {
         public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api)
         {
-            api.Add("Prometheus", PrometheusRules.Process);
+            api.Add("prometheus", PrometheusRules.Process);
             return api;
         }
     }

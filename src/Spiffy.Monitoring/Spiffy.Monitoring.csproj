@@ -15,7 +15,7 @@ Breaking changes:
 - Drop support for legacy .NET framework (net40)
 - Require netstandard &gt;= 2.0
 - Custom logging signature now receives LogEvent rather than a raw string
-- Unify initialization API across built in and custom providers
+- Unify configuration API across built in and custom providers
 
 New features:
 

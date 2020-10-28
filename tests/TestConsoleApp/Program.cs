@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Threading;
 using Spiffy.Monitoring;
-using Spiffy.Monitoring.BuiltIn;
+using Spiffy.Monitoring.Console;
 using Spiffy.Monitoring.NLog;
 using Spiffy.Monitoring.Prometheus;
 using Spiffy.Monitoring.Splunk;
+using Spiffy.Monitoring.Trace;
 
 namespace TestConsoleApp
 {
@@ -19,18 +20,18 @@ namespace TestConsoleApp
                 switch (loggingFlag)
                 {
                     case "trace":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        Configuration.Initialize(spiffy =>
                         {
                             spiffy.Providers.Trace();
                         });
                         break;
                     case "console":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                        Configuration.Initialize(spiffy => {
                             spiffy.Providers.Console();
                         });
                         break;
                     case "splunk":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        Configuration.Initialize(spiffy =>
                         {
                             spiffy.Providers.Splunk(s =>
                             {
@@ -43,21 +44,21 @@ namespace TestConsoleApp
                         });
                         break;
                     case "nlog-file":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                        Configuration.Initialize(spiffy => {
                             spiffy.Providers.NLog(nlog => nlog
                                 .Targets(t => t
                                     .File()));
                          });
                         break;
                     case "nlog-coloredconsole":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+                        Configuration.Initialize(spiffy => {
                             spiffy.Providers.NLog(nlog => nlog
                                 .Targets(t => t
                                     .ColoredConsole()));
                         });
                         break;
                     case "prometheus":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        Configuration.Initialize(spiffy =>
                         {
                             spiffy.Providers.Prometheus();
                         });
@@ -68,7 +69,7 @@ namespace TestConsoleApp
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
                     case "all-the-things":
-                        Spiffy.Monitoring.Behavior.Initialize(spiffy =>
+                        Configuration.Initialize(spiffy =>
                         {
                             spiffy.Providers
                                 .Trace()

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Spiffy.Monitoring
 {
-    public class EventContext : IDisposable
+    partial class EventContext : IDisposable
     {
         public EventContext(string component, string operation) 
         {
@@ -222,7 +222,7 @@ namespace Spiffy.Monitoring
             {
                 if(!IsSuppressed)
                 {
-                    var logActions = Behavior.GetLoggingActions();
+                    var logActions = Configuration.GetLoggingActions();
 
                     if (logActions.Any())
                     {
@@ -233,6 +233,7 @@ namespace Spiffy.Monitoring
                             {
                                 logAction(logEvent);
                             }
+                            // ReSharper disable once EmptyGeneralCatchClause -- intentionally squashed
                             catch
                             {
                             }
@@ -357,7 +358,7 @@ namespace Spiffy.Monitoring
             valueStr = valueStr.Replace("=", ":");
             valueStr = valueStr.Replace("\"", "''");
 
-            if (Behavior.RemoveNewLines)
+            if (Configuration.RemoveNewLines)
             {
                 valueStr = valueStr
                     .Replace("\r", String.Empty)

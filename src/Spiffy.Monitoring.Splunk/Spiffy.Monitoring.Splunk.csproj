@@ -22,6 +22,6 @@ First release
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
     <PackageReference Include="System.Net.Http.Json" Version="3.*" />
-    <PackageReference Include="System.Text.Json" Version="4.*"/>
+    <PackageReference Include="System.Text.Json" Version="4.*" />
   </ItemGroup>
 </Project>

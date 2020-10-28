@@ -1,9 +1,10 @@
 using System;
 using Spiffy.Monitoring.Config;
 
+// ReSharper disable once CheckNamespace -- this is intentional to avoid additional nesting
 namespace Spiffy.Monitoring
 {
-    public static class Behavior
+    public static class Configuration
     {
         static Action<LogEvent>[] _loggingActions = new Action<LogEvent>[] {};
 
@@ -25,6 +26,6 @@ namespace Spiffy.Monitoring
             return _loggingActions;
         }
 
-        internal static bool RemoveNewLines { get; set; }
+        internal static bool RemoveNewLines { get; private set; }
     }
 }

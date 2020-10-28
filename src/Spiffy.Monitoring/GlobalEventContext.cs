@@ -4,16 +4,13 @@ namespace Spiffy.Monitoring
 {
     public class GlobalEventContext
     {
-        private GlobalEventContext()
+        GlobalEventContext()
         {
         }
 
         static GlobalEventContext _instance;
 
-        public static GlobalEventContext Instance
-        {
-            get { return _instance ?? (_instance = new GlobalEventContext()); }
-        }
+        public static GlobalEventContext Instance => _instance ?? (_instance = new GlobalEventContext());
 
         private readonly Dictionary<string, object> _values = new Dictionary<string, object>();
 

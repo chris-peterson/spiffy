@@ -23,14 +23,14 @@ Package | Latest Release |
 
 `Spiffy.Monitoring` includes "built-in" logging mechanisms (`Trace` and `Console`).
 
-There is no default logging behavior, you must initialize provider(s) by calling `Spiffy.Monitoring.Behavior.Initialize`.
+There is no default logging behavior, you must initialize provider(s) by calling `Spiffy.Monitoring.Configuration.Initialize`.
 
 Until initialized, any published `EventContext` will not be observable, so it is recommended that initialization be as early as possible when your application is starting (i.e. in the entry point).
 
 **Example**
 
 ```c#
-    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+    Spiffy.Monitoring.Configuration.Initialize(spiffy => {
         spiffy.Providers.Console()));
 ```
 
@@ -49,7 +49,7 @@ NOTE: the provider package need only be installed for your application's entry p
 ```c#
     static void Main() {
         // this should be the first line of your application
-        Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+        Spiffy.Monitoring.Configuration.Initialize(spiffy => {
             spiffy.Providers
                 .NLog(nlog => nlog.Targets(t => t.File()));
         });
@@ -63,7 +63,7 @@ Multiple providers can be provied, for example, this application uses both `Cons
 **Example**
 
 ```c#
-    Spiffy.Monitoring.Behavior.Initialize(spiffy => {
+    Spiffy.Monitoring.Configuration.Initialize(spiffy => {
         spiffy.Providers
             .Console()
             .NLog(nlog => nlog.Targets(t => t.File()));

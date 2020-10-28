@@ -1,9 +1,10 @@
-using SD = System.Diagnostics;
 using Spiffy.Monitoring.Config;
+using SD = System.Diagnostics;
 
-namespace Spiffy.Monitoring.BuiltIn
+// ReSharper disable once CheckNamespace -- intentional deviation
+namespace Spiffy.Monitoring.Trace
 {
-    public static class BuiltInProviders
+    public static class TraceProvider
     {
         public static InitializationApi.ProvidersApi Trace(this InitializationApi.ProvidersApi providers)
         {
@@ -24,22 +25,6 @@ namespace Spiffy.Monitoring.BuiltIn
                     default:
                         SD.Trace.WriteLine(message);
                         break;
-                }
-            });
-            return providers;
-        }
-
-        public static InitializationApi.ProvidersApi Console(this InitializationApi.ProvidersApi providers)
-        {
-            providers.Add("console", logEvent =>
-            {
-                if (logEvent.Level == Level.Error)
-                {
-                    System.Console.Error.WriteLine(logEvent.MessageWithTime);
-                }
-                else
-                {
-                    System.Console.WriteLine(logEvent.MessageWithTime);
                 }
             });
             return providers;
