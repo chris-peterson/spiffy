@@ -10,6 +10,7 @@ namespace Spiffy.Monitoring
 {
     partial class EventContext : IDisposable
     {
+        const string TimeElapsedKey = "TimeElapsed";
         public EventContext(string component, string operation) 
         {
             GlobalEventContext.Instance.CopyTo(this);
@@ -18,7 +19,7 @@ namespace Spiffy.Monitoring
             SetToInfo();
             Initialize(component, operation);
             // reserve this spot for later...
-            this["TimeElapsed"] = 0;
+            this[TimeElapsedKey] = 0;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -280,7 +281,9 @@ namespace Spiffy.Monitoring
             EncapsulateValuesIfNecessary(kvps);
 
             var timeElapsedMs = _timer.TotalMilliseconds;
-            this["TimeElapsed"] = GetTimeFor(timeElapsedMs);
+            var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
+            this[TimeElapsedKey] = formattedTimeElapsed;
+            kvps[TimeElapsedKey] = formattedTimeElapsed;
 
             return new LogEvent(
                 Level,
@@ -409,7 +412,7 @@ namespace Spiffy.Monitoring
 
         private static string GetTimeFor(double milliseconds)
         {
-            return string.Format("{0:F1}", milliseconds);
+            return $"{milliseconds:F1}";
         }
     }
 }

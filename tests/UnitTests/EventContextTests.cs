@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using Spiffy.Monitoring;
 using Kekiri.Xunit;
@@ -38,7 +40,38 @@ namespace UnitTests
     public class EventContextValues : Scenarios
     {
         bool _removeNewlines = false;
-        
+
+        [Scenario]
+        public void TimeElapsed_works()
+        {
+            Given(An_event_context);
+            When(Measuring_something_slow);
+            Then(The_published_log_message_has_expected_TimeElapsed);
+        }
+
+        void Measuring_something_slow()
+        {
+            Configuration.Initialize(customize =>
+            {
+                customize.Providers.Add("test", logEvent =>
+                    Context.FormattedMessage = logEvent.MessageWithTime);
+            });
+
+            using ((EventContext) Context.EventContext)
+            {
+                Thread.Sleep(100);
+            }
+        }
+
+        void The_published_log_message_has_expected_TimeElapsed()
+        {
+            var kvps = (string []) Context.FormattedMessage.Split(' ');
+            var timeElapsed = kvps.Single(k => k.StartsWith("TimeElapsed="));
+            var timeElapsedSplit = timeElapsed.Split('=');
+            var timeElapsedValue = float.Parse(timeElapsedSplit[1]);
+            timeElapsedValue.Should().BeGreaterThan(50);
+        }
+
         [Scenario]
         public void Can_add_multiple_values_via_params()
         {
