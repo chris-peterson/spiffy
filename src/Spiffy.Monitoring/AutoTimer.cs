@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
-    internal class AutoTimer : IDisposable
+    internal class AutoTimer : ITimedContext
     {
         readonly Stopwatch _stopwatch = new Stopwatch();
 
@@ -14,7 +14,7 @@ namespace Spiffy.Monitoring
             Start();
         }
 
-        public double TotalMilliseconds => _stopwatch.Elapsed.TotalMilliseconds;
+        public double ElapsedMilliseconds => _stopwatch.Elapsed.TotalMilliseconds;
 
         public void Dispose()
         {

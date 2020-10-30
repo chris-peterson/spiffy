@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Spiffy.Monitoring
 {
-    partial class EventContext : IDisposable
+    partial class EventContext : ITimedContext
     {
         const string TimeElapsedKey = "TimeElapsed";
         public EventContext(string component, string operation) 
@@ -56,6 +56,8 @@ namespace Spiffy.Monitoring
 
             Initialize(component, operation);
         }
+
+        public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
 
         bool FrameworkAssembly(Assembly assembly)
         {
@@ -280,7 +282,7 @@ namespace Spiffy.Monitoring
             ReplaceKeysThatHaveDots(kvps);
             EncapsulateValuesIfNecessary(kvps);
 
-            var timeElapsedMs = _timer.TotalMilliseconds;
+            var timeElapsedMs = _timer.ElapsedMilliseconds;
             var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
             this[TimeElapsedKey] = formattedTimeElapsed;
             kvps[TimeElapsedKey] = formattedTimeElapsed;
@@ -399,7 +401,7 @@ namespace Spiffy.Monitoring
             {
                 foreach (var kvp in _timers)
                 {
-                    times[$"TimeElapsed_{kvp.Key}"] = GetTimeFor(kvp.Value.TotalMilliseconds);
+                    times[$"TimeElapsed_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
                     if (kvp.Value.Count > 1)
                     {
                         times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();
