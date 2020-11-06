@@ -85,7 +85,7 @@ namespace Spiffy.Monitoring
         readonly DateTime _timestamp;
         readonly AutoTimer _timer = new AutoTimer();
 
-        public IDisposable Time(string key)
+        public ITimedContext Time(string key)
         {
             AutoTimer timer;
             lock (_timersSyncObject)

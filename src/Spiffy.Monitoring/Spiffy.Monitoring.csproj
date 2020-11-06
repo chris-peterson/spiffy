@@ -21,11 +21,12 @@ New features:
 
 - Splunk provider
 - Prometheus provider
+- Introduce ITimedContext in order to extend timing blocks (e.g. intercept the elapsed duration)
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.3</Version>
+    <Version>6.0.4</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
