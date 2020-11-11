@@ -15,7 +15,6 @@ namespace Spiffy.Monitoring
         }
 
         public double ElapsedMilliseconds => _stopwatch.Elapsed.TotalMilliseconds;
-        public bool IsRunning => _stopwatch.IsRunning;
 
         public void Dispose()
         {
@@ -36,6 +35,10 @@ namespace Spiffy.Monitoring
 
         void Start()
         {
+            if (_stopwatch.IsRunning)
+            {
+                return;
+            }
             Count++;
             _stopwatch.Start();
         }

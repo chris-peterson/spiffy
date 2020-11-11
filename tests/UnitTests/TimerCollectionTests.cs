@@ -27,7 +27,7 @@ namespace UnitTests
 
         void A_code_block_timed_once()
         {
-            using (EventContext.Timers.Replace(TimerKey))
+            using (EventContext.Timers.TimeOnce(TimerKey))
             {
                 Thread.Sleep(10);
             }

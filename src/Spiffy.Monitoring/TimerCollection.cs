@@ -9,7 +9,7 @@ namespace Spiffy.Monitoring
     {
         readonly ConcurrentDictionary<string, AutoTimer> _timers = new ConcurrentDictionary<string, AutoTimer>();
         
-        public ITimedContext Replace(string key)
+        public ITimedContext TimeOnce(string key)
         {
             var timer = GetTimer(key);
             timer.StartOver();
@@ -19,10 +19,7 @@ namespace Spiffy.Monitoring
         public ITimedContext Accumulate(string key)
         {
             var timer = GetTimer(key);
-            if (!timer.IsRunning)
-            {
-                timer.Resume();
-            }
+            timer.Resume();
             return timer;
         }
         internal Dictionary<string, AutoTimer> ShallowClone() => new Dictionary<string, AutoTimer>(_timers);
