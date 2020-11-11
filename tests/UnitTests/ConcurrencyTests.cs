@@ -27,7 +27,7 @@ namespace UnitTests
             Configuration.Initialize(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
             eventContext.Dispose();
 
-            Assert.InRange(int.Parse(logEvent.Properties["Count_accum"]), numTasks*.65, numTasks*.95);
+            Assert.InRange(int.Parse(logEvent.Properties["Count_accum"]), numTasks*.65, numTasks*.99);
             Assert.DoesNotContain("Count_once", logEvent.Properties);
             Assert.True(double.Parse(logEvent.Properties["TimeElapsed_accum"]) > double.Parse(logEvent.Properties["TimeElapsed_once"]));
         }
