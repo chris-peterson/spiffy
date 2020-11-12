@@ -26,8 +26,19 @@ namespace Spiffy.Monitoring
             Start();
         }
 
+        public void StartOver()
+        {
+            _stopwatch.Reset();
+            Count = 0;
+            Start();
+        }
+
         void Start()
         {
+            if (_stopwatch.IsRunning)
+            {
+                return;
+            }
             Count++;
             _stopwatch.Start();
         }

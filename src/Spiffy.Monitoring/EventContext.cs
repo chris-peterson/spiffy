@@ -76,33 +76,19 @@ namespace Spiffy.Monitoring
 
         readonly Dictionary<string, object> _values = new Dictionary<string, object>();
         readonly Dictionary<string, uint> _counts = new Dictionary<string, uint>();
-        readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
 
         readonly object _valuesSyncObject = new object();
         readonly object _countsSyncObject = new object();
-        readonly object _timersSyncObject = new object();
         
         readonly DateTime _timestamp;
         readonly AutoTimer _timer = new AutoTimer();
 
         public IDisposable Time(string key)
         {
-            AutoTimer timer;
-            lock (_timersSyncObject)
-            {
-                if (_timers.ContainsKey(key))
-                {
-                    timer = _timers[key];
-                    timer.Resume();
-                }
-                else
-                {
-                    timer = _timers[key] = new AutoTimer();
-                }
-            }
-
-            return timer;
+            return Timers.Accumulate(key);
         }
+
+        public TimerCollection Timers { get; } = new TimerCollection();
 
         public void Count(string key)
         {
@@ -397,15 +383,12 @@ namespace Spiffy.Monitoring
         {
             var times = new Dictionary<string, string>();
 
-            lock (_timersSyncObject)
+            foreach (var kvp in Timers.ShallowClone())
             {
-                foreach (var kvp in _timers)
+                times[$"{TimeElapsedKey}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
+                if (kvp.Value.Count > 1)
                 {
-                    times[$"TimeElapsed_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
-                    if (kvp.Value.Count > 1)
-                    {
-                        times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();
-                    }
+                    times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();
                 }
             }
 
