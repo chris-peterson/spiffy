@@ -2,7 +2,7 @@
 
 A structured logging framework for .NET that supports log aggregation, e.g. Splunk.
 
-Handled over **360,000,000,000** production requests (and counting!)
+Handled over **500,000,000,000** production requests (and counting!)
 
 ## Status
 
@@ -97,9 +97,25 @@ Multiple providers can be provied, for example, this application uses both `Cons
 
 ### Normal Entry
 
-[2014-06-13 00:05:17.634Z] Application=MyApplication **Level=Info** Component=Program Operation=Main TimeElapsed=1004.2 **Key=Value** TimeElapsed_LongRunning=1000.2
+> [2014-06-13 00:05:17.634Z] Application=MyApplication **Level=Info** Component=Program Operation=Main TimeElapsed=1004.2 **Key=Value** TimeElapsed_LongRunning=1000.2
 
 ### Exception Entry
 
-[2014-06-13 00:12:52.038Z] Application=MyApplication **Level=Error** Component=Program Operation=Main TimeElapsed=1027.0 Key=Value **ErrorReason="An exception has ocurred"** **Exception_Type=ApplicationException Exception_Message="you were unlucky!"** Exception_StackTrace="   at TestConsoleApp.Program.DoSomethingDangerous() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 47
+> [2014-06-13 00:12:52.038Z] Application=MyApplication **Level=Error** Component=Program Operation=Main TimeElapsed=1027.0 Key=Value **ErrorReason="An exception has ocurred"** **Exception_Type=ApplicationException Exception_Message="you were unlucky!"** Exception_StackTrace="   at TestConsoleApp.Program.DoSomethingDangerous() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 47
    at TestConsoleApp.Program.Main() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 29" InnermostException_Type=NullReferenceException **InnermostException_Message="Object reference not set to an instance of an object."** InnermostException_StackTrace={null} Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
+
+## Hosting Frameworks
+
+`Spiffy.Monitoring` is designed to be easy to use in any context.
+
+The most basic usage is to instrument a specific method.
+This can be achieved by "newing up" an `EventContext`.
+This usage mode results in `Component` being set to the containing code's
+class name, and `Operation` is set to the containing code's method name
+
+There are times when you may want to instrument something that's not
+a specific method.  One such example is an API -- in this context,
+you might want to have 1 log event per request.  Consider setting
+`Component` to be the controller name, and `Operation`
+the action name.  To acheive this, add middleware that calls
+`EventContext.Initialize` with the desired labels.
