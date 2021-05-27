@@ -30,8 +30,7 @@ Until initialized, any published `EventContext` will not be observable, so it is
 **Example**
 
 ```c#
-    Spiffy.Monitoring.Configuration.Initialize(spiffy => {
-        spiffy.Providers.Console()));
+  Configuration.Initialize(spiffy => { spiffy.Providers.Console(); });
 ```
 
 ### Extended Providers
