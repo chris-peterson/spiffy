@@ -331,23 +331,9 @@ namespace Spiffy.Monitoring
 
         private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
-            var prioritizedValues = new List<KeyValuePair<string, string>>();
-            var dePrioritizedValues = new List<KeyValuePair<string, string>>();
-
-            foreach (var keyValuePair in keyValuePairs)
-            {
-                if (keyValuePair.Value.Length > Configuration.DeprioritizedValueLength)
-                {
-                    prioritizedValues.Add(keyValuePair);
-                }
-                else
-                {
-                    dePrioritizedValues.Add(keyValuePair);
-                }
-            }
-
-            return string.Join(" ", prioritizedValues
-                .Concat(dePrioritizedValues)
+            return string.Join(" ", keyValuePairs
+                // Values with length over DeprioritizedValueLength will come later (true > false).
+                .OrderBy(pair => pair.Value.Length > Configuration.DeprioritizedValueLength)
                 .Select(kvp =>
                 string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
         }
