@@ -333,11 +333,21 @@ namespace Spiffy.Monitoring
         {
             const int SomeLongLengthCutoff = 1024;
 
-            var prioritizedValues = keyValuePairs
-                .Where(pair => pair.Value.Length <= SomeLongLengthCutoff);
-            var dePrioritizedValues = keyValuePairs
-                .Where(pair => pair.Value.Length > SomeLongLengthCutoff);
-            
+            var prioritizedValues = new List<KeyValuePair<string, string>>();
+            var dePrioritizedValues = new List<KeyValuePair<string, string>>();
+
+            foreach (var keyValuePair in keyValuePairs)
+            {
+                if (keyValuePair.Value.Length > SomeLongLengthCutoff)
+                {
+                    prioritizedValues.Add(keyValuePair);
+                }
+                else
+                {
+                    dePrioritizedValues.Add(keyValuePair);
+                }
+            }
+
             return string.Join(" ", prioritizedValues
                 .Concat(dePrioritizedValues)
                 .Select(kvp =>
