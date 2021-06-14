@@ -19,6 +19,7 @@ namespace Spiffy.Monitoring
 
             _loggingActions = api.GetLoggingActions();
             RemoveNewLines = api.RemoveNewlines;
+            DeprioritizedValueLength = api.DeprioritizedValueLength;
         }
 
         internal static Action<LogEvent> [] GetLoggingActions()
@@ -27,5 +28,7 @@ namespace Spiffy.Monitoring
         }
 
         internal static bool RemoveNewLines { get; private set; }
+
+        internal static int DeprioritizedValueLength { get; private set; } = 1024;
     }
 }

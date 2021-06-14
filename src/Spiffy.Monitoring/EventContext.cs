@@ -331,14 +331,12 @@ namespace Spiffy.Monitoring
 
         private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
-            const int SomeLongLengthCutoff = 1024;
-
             var prioritizedValues = new List<KeyValuePair<string, string>>();
             var dePrioritizedValues = new List<KeyValuePair<string, string>>();
 
             foreach (var keyValuePair in keyValuePairs)
             {
-                if (keyValuePair.Value.Length > SomeLongLengthCutoff)
+                if (keyValuePair.Value.Length > Configuration.DeprioritizedValueLength)
                 {
                     prioritizedValues.Add(keyValuePair);
                 }
