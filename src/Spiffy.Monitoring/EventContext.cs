@@ -331,7 +331,16 @@ namespace Spiffy.Monitoring
 
         private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
-            return string.Join(" ", keyValuePairs.Select(kvp =>
+            const int SomeLongLengthCutoff = 1024;
+
+            var prioritizedValues = keyValuePairs
+                .Where(pair => pair.Value.Length <= SomeLongLengthCutoff);
+            var dePrioritizedValues = keyValuePairs
+                .Where(pair => pair.Value.Length > SomeLongLengthCutoff);
+            
+            return string.Join(" ", prioritizedValues
+                .Concat(dePrioritizedValues)
+                .Select(kvp =>
                 string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
         }
 
