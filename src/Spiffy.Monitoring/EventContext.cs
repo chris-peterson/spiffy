@@ -331,9 +331,7 @@ namespace Spiffy.Monitoring
 
         private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
-            return string.Join(" ", keyValuePairs
-                .OrderBy(pair => pair.Value.Length)
-                .Select(kvp =>
+            return string.Join(" ", keyValuePairs.Select(kvp =>
                 string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
         }
 
