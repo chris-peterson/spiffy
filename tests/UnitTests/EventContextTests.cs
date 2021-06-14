@@ -161,7 +161,7 @@ namespace UnitTests
         public void Long_values_are_deprioritized_in_log_messages()
         {
             Given(An_event_context);
-            When(An_event_has_a_mix_of_short_and_log_values);
+            When(An_event_has_a_mix_of_short_and_long_values);
             Then(The_long_values_are_deprioritized);
         }
         
@@ -235,7 +235,7 @@ namespace UnitTests
             }
         }
         
-        private void An_event_has_a_mix_of_short_and_log_values()
+        private void An_event_has_a_mix_of_short_and_long_values()
         {
             using (var context = new EventContext())
             {
