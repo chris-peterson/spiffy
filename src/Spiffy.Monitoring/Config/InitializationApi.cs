@@ -29,8 +29,6 @@ namespace Spiffy.Monitoring.Config
         public InitializationApi()
         {
             Providers = new ProvidersApi(this);
-            
-            DeprioritizedValueLength = 1024;
         }
         
         /// <summary>
@@ -51,7 +49,7 @@ namespace Spiffy.Monitoring.Config
         /// Key/value pairs with values whose length exceeds this value will be output after those
         /// pairs whose values do not.
         /// </remarks>
-        public int DeprioritizedValueLength { get; set; }
+        public int DeprioritizedValueLength { get; set; } = 1024;
 
         void AddProvider(string id, Action<LogEvent> loggingAction)
         {
