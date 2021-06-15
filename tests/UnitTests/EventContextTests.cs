@@ -138,6 +138,44 @@ namespace UnitTests
                 "[\\r\\n]",
                 because: "formatted message should not contain newline characters");
         }
+        
+        [Scenario]
+        public void Logs_with_short_values_are_slotted_in_order()
+        {
+            Given(An_event_context);
+            When(An_event_is_comprised_of_short_values);
+            Then(The_values_are_in_the_order_assigned);
+        }
+        
+        private void The_values_are_in_the_order_assigned()
+        {
+            var result = (string) Context.FormattedMessage;
+
+            var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
+            var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
+
+            indexOfKey1.Should().BeLessThan(indexOfKey2);
+        }
+        
+        [Scenario]
+        public void Long_values_are_deprioritized_in_log_messages()
+        {
+            Given(An_event_context);
+            When(An_event_has_a_mix_of_short_and_long_values);
+            Then(The_long_values_are_deprioritized);
+        }
+        
+        private void The_long_values_are_deprioritized()
+        {
+            var result = (string) Context.FormattedMessage;
+
+            var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
+            var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
+            var indexOfKey3 = result.IndexOf(" Key3=", StringComparison.InvariantCultureIgnoreCase);
+
+            indexOfKey1.Should().BeLessThan(indexOfKey2);
+            indexOfKey3.Should().BeLessThan(indexOfKey2);
+        }
 
         [Scenario]
         public void Can_remove_newline_characters()
@@ -180,7 +218,40 @@ namespace UnitTests
         {
             Context.EventContext = new EventContext();
         }
+        
+        private void An_event_is_comprised_of_short_values()
+        {
+            using (var context = new EventContext())
+            {
+                context["Key1"] = "A short message";
+                context["Key2"] = "Another short message";
 
+                Configuration.Initialize(customize =>
+                {
+                    customize.DeprioritizedValueLength = 30;
+                    customize.Providers.Add("test", logEvent =>
+                        Context.FormattedMessage = logEvent.MessageWithTime);
+                });
+            }
+        }
+        
+        private void An_event_has_a_mix_of_short_and_long_values()
+        {
+            using (var context = new EventContext())
+            {
+                context["Key1"] = "A short message";
+                context["Key2"] = "A very very very very very very very very very very very very long message";
+                context["Key3"] = "Another short message";
+
+                Configuration.Initialize(customize =>
+                {
+                    customize.DeprioritizedValueLength = 30;
+                    customize.Providers.Add("test", logEvent =>
+                        Context.FormattedMessage = logEvent.MessageWithTime);
+                });
+            }
+        }
+        
         void Adding_values_via_params()
         {
             Context.EventContext.AddValues(

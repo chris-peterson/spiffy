@@ -39,6 +39,17 @@ namespace Spiffy.Monitoring.Config
         /// values, <code>false</code> otherwise.
         /// </returns>
         public bool RemoveNewlines { get; set; }
+        
+        /// <summary>
+        /// Values over this length will be deprioritized in the <see cref="LogEvent.Message"/>.
+        /// Defaults to 1024.
+        /// </summary>
+        /// <remarks>
+        /// In some logging scenarios, long values can result in some key/value pairs being cut off.
+        /// Key/value pairs with values whose length exceeds this value will be output after those
+        /// pairs whose values do not.
+        /// </remarks>
+        public int DeprioritizedValueLength { get; set; } = 1024;
 
         void AddProvider(string id, Action<LogEvent> loggingAction)
         {
