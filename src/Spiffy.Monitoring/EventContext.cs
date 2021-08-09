@@ -159,7 +159,7 @@ namespace Spiffy.Monitoring
             {
                 if (_values.ContainsKey(key))
                 {
-                    _values[key] = string.Join(delimiter, _values[key].ToString(), content);
+                    _values[key] = string.Join(delimiter, _values[key]?.ToString(), content);
                 }
                 else
                 {

@@ -146,7 +146,29 @@ namespace UnitTests
             When(An_event_is_comprised_of_short_values);
             Then(The_values_are_in_the_order_assigned);
         }
-        
+
+        [ScenarioOutline]
+        [Example("foo", "bar", "foo,bar")]
+        [Example("foo", null, "foo,")]
+        [Example(null, "foo", ",foo")]
+        [Example(null, null, ",")]
+        public void Can_append_to_value(string value1, string value2, string expectedOutput)
+        {
+            When(Appending_values, value1, value2);
+            Then(The_value_is_present, expectedOutput);
+
+            const string Key = "key";
+            void Appending_values(string str1, string str2)
+             {
+                 Context.EventContext.AppendToValue(Key, str1, ",");
+                 Context.EventContext.AppendToValue(Key, str2, ",");
+             }
+             void The_value_is_present(string expectedOutput)
+             {
+                 ((string) Context.EventContext[Key].ToString()).Should().Be(expectedOutput);
+             }
+        }
+
         private void The_values_are_in_the_order_assigned()
         {
             var result = (string) Context.FormattedMessage;
