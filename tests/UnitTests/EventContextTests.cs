@@ -154,6 +154,7 @@ namespace UnitTests
         [Example(null, null, ",")]
         public void Can_append_to_value(string value1, string value2, string expectedOutput)
         {
+            Given(An_event_context);
             When(Appending_values, value1, value2);
             Then(The_value_is_present, expectedOutput);
 
@@ -240,7 +241,7 @@ namespace UnitTests
         {
             Context.EventContext = new EventContext();
         }
-        
+
         private void An_event_is_comprised_of_short_values()
         {
             using (var context = new EventContext())
