@@ -13,18 +13,24 @@ namespace Spiffy.Monitoring
         const string TimeElapsedKey = "TimeElapsed";
         public EventContext(string component, string operation) 
         {
+            SetToInfo();
+
             GlobalEventContext.Instance.CopyTo(this);
             _timestamp = DateTime.UtcNow;
 
-            SetToInfo();
             Initialize(component, operation);
-            // reserve this spot for later...
+            // initialize time elapsed field so that it shows up in a consistent order in log entries
             this[TimeElapsedKey] = 0;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public EventContext() : this(null, null)
         {
+            Assembly AssemblyFor<T>() => typeof(T).GetTypeInfo().Assembly;
+            bool FrameworkAssembly(Assembly assembly) =>
+                assembly == AssemblyFor<object>() ||
+                assembly == AssemblyFor<EventContext>();
+
             string component = "[Unknown]";
             string operation = "[Unknown]";
 
@@ -33,13 +39,16 @@ namespace Spiffy.Monitoring
             var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
             var frames = stackTrace.GetFrames();
 
-            foreach (var f in frames)
+            if (frames != null)
             {
-                var assembly = f.GetMethod().DeclaringType?.GetTypeInfo().Assembly;
-                if (assembly != null && !FrameworkAssembly(assembly))
+                foreach (var f in frames)
                 {
-                    stackFrame = f;
-                    break;
+                    var assembly = f.GetMethod().DeclaringType?.GetTypeInfo().Assembly;
+                    if (assembly != null && !FrameworkAssembly(assembly))
+                    {
+                        stackFrame = f;
+                        break;
+                    }
                 }
             }
 
@@ -59,29 +68,18 @@ namespace Spiffy.Monitoring
 
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
 
-        bool FrameworkAssembly(Assembly assembly)
-        {
-            return assembly == AssemblyFor<object>() ||
-               assembly == AssemblyFor<EventContext>();
-        }
-
-        Assembly AssemblyFor<T>()
-        {
-            return typeof(T).GetTypeInfo().Assembly;
-        }
-
         public string Component { get; private set; }
         public string Operation { get; private set; }
         public Level Level { get; private set; }
 
-        readonly Dictionary<string, object> _values = new Dictionary<string, object>();
-        readonly Dictionary<string, uint> _counts = new Dictionary<string, uint>();
+        readonly ConcurrentDictionary<string, (uint Order, object Value)> _values =
+            new ConcurrentDictionary<string, (uint Order, object Value)>();
+        readonly ConcurrentDictionary<string, (uint Order, uint Value)> _counts =
+            new ConcurrentDictionary<string, (uint Order, uint Value)>();
 
-        readonly object _valuesSyncObject = new object();
-        readonly object _countsSyncObject = new object();
-        
         readonly DateTime _timestamp;
         readonly AutoTimer _timer = new AutoTimer();
+        static uint FieldCounter = 0;
 
         public IDisposable Time(string key)
         {
@@ -92,34 +90,20 @@ namespace Spiffy.Monitoring
 
         public void Count(string key)
         {
-            lock (_countsSyncObject)
-            {
-                if (_counts.ContainsKey(key))
-                {
-                    _counts[key]++;
-                }
-                else
-                {
-                    _counts[key] = 1;
-                }
-            }
+            _counts.AddOrUpdate(
+                key, (GetNextFieldCounter(), 1),
+                (k, v) => (v.Order, v.Value + 1)
+            );
         }
 
         public object this[string key]
         {
-            get
-            {
-                lock (_valuesSyncObject)
-                {
-                    return _values[key];
-                }
-            }
+            get => _values[key].Value;
             set
             {
-                lock (_valuesSyncObject)
-                {
-                    _values[key] = value;
-                }
+                _values.AddOrUpdate(key, (GetNextFieldCounter(), value),
+                    (k, existingValue) => (existingValue.Order,
+                        value));
             }
         }
 
@@ -131,12 +115,9 @@ namespace Spiffy.Monitoring
 
         public void AddValues(params KeyValuePair<string, object>[] values)
         {
-            lock (_valuesSyncObject)
+            foreach (var kvp in values)
             {
-                foreach (var kvp in values)
-                {
-                    _values[kvp.Key] = kvp.Value;
-                }
+                this[kvp.Key] = kvp.Value;
             }
         }
 
@@ -147,25 +128,14 @@ namespace Spiffy.Monitoring
 
         public bool Contains(string key)
         {
-            lock (_valuesSyncObject)
-            {
-                return _values.ContainsKey(key);
-            }
+            return _values.ContainsKey(key);
         }
 
         public void AppendToValue(string key, string content, string delimiter)
         {
-            lock (_valuesSyncObject)
-            {
-                if (_values.ContainsKey(key))
-                {
-                    _values[key] = string.Join(delimiter, _values[key]?.ToString(), content);
-                }
-                else
-                {
-                    _values.Add(key, content);
-                }
-            }
+            _values.AddOrUpdate(key, (GetNextFieldCounter(), content),
+                (k, existingValue) => (existingValue.Order,
+                    string.Join(delimiter, existingValue.Value?.ToString(), content)));
         }
 
         public void SetLevel(Level level)
@@ -203,6 +173,7 @@ namespace Spiffy.Monitoring
             IsSuppressed = true;
         }
 
+        // ReSharper disable once RedundantDefaultMemberInitializer
         volatile bool _disposed = false;
 
         public void Dispose()
@@ -241,16 +212,14 @@ namespace Spiffy.Monitoring
             this["Operation"] = Operation;
         }
 
-        private LogEvent Render()
+        LogEvent Render()
         {
-            Dictionary<string, string> kvps;
-            
-            lock (_valuesSyncObject)
-            {
-                kvps = _values.ToDictionary(
+            var kvps = _values
+                .OrderBy(x => x.Value.Order)
+                .ToDictionary(
                     kvp => kvp.Key,
-                    kvp => GetValue(kvp.Value));
-            }
+                    kvp => GetValue(kvp.Value.Value));
+
 
             foreach (var kvp in GetCountValues())
             {
@@ -283,7 +252,7 @@ namespace Spiffy.Monitoring
                 PrivateData);
         }
 
-        private static void EncapsulateValuesIfNecessary(Dictionary<string, string> keyValuePairs)
+        static void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
                 .Where(k => !k.Value.StartsWithQuote() && (
@@ -325,7 +294,7 @@ namespace Spiffy.Monitoring
                 .ToList())
             {
                 keyValuePairs.Remove(kvp.Key);
-                keyValuePairs[string.Format("GeneratedKey({0})", Guid.NewGuid())] = kvp.Value;
+                keyValuePairs[$"GeneratedKey({Guid.NewGuid()})"] = kvp.Value;
             }
         }
 
@@ -334,10 +303,10 @@ namespace Spiffy.Monitoring
             return string.Join(" ", keyValuePairs
                 .OrderBy(pair => pair.Value.Length <= Configuration.DeprioritizedValueLength ? 0 : 1)
                 .Select(kvp =>
-                string.Format("{0}={1}", kvp.Key, kvp.Value)).ToArray());
+                    $"{kvp.Key}={kvp.Value}").ToArray());
         }
 
-        private static string GetValue(object value)
+        static string GetValue(object value)
         {
             if (value == null)
             {
@@ -366,26 +335,20 @@ namespace Spiffy.Monitoring
             return _timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
         }
 
-        private IEnumerable<KeyValuePair<string, string>> GetCountValues()
+        private IDictionary<string, string> GetCountValues()
         {
-            var counts = new Dictionary<string, string>();
-
-            lock (_countsSyncObject)
-            {
-                foreach (var kvp in _counts)
-                {
-                    counts[$"{kvp.Key}"] = kvp.Value.ToString();
-                }
-            }
-
-            return counts;
+            return _counts.ToDictionary(
+                k => k.Key,
+                v => v.Value.Value.ToString());
         }
 
         private IEnumerable<KeyValuePair<string, string>> GetTimeValues()
         {
             var times = new Dictionary<string, string>();
 
-            foreach (var kvp in Timers.ShallowClone())
+            foreach (var kvp in Timers
+                .ShallowClone()
+                .OrderBy(x => x.Key))
             {
                 times[$"{TimeElapsedKey}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
                 if (kvp.Value.Count > 1)
@@ -400,6 +363,14 @@ namespace Spiffy.Monitoring
         private static string GetTimeFor(double milliseconds)
         {
             return $"{milliseconds:F1}";
+        }
+
+        static uint GetNextFieldCounter()
+        {
+            unchecked
+            {
+                return FieldCounter++;
+            }
         }
     }
 }
