@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2020</Copyright>
+    <Copyright>2014-2021</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -27,7 +27,7 @@ New features:
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.8</Version>
+    <Version>6.1-alpha</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
