@@ -28,6 +28,6 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-    - if: ${{ env.PUSH_PACKAGES }}
+    - if: ${{ env.PUSH_PACKAGES }} == 'true'
       name: Publish NuGet
       run: dotnet nuget push --skip-duplicate **\*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key ${{secrets.NUGET_API_KEY}}
