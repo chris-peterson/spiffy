@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2020</Copyright>
+    <Copyright>2014-2021</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -10,28 +10,16 @@
     <PackageId>Spiffy.Monitoring</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk;prometheus</PackageTags>
     <PackageReleaseNotes>
-Breaking changes:
-
-- Drop support for legacy .NET framework (net40)
-- Require netstandard &gt;= 2.0
-- Custom logging signature now receives LogEvent rather than a raw string
-- Unify configuration API across built in and custom providers
-
-New features:
-
-- Splunk provider
-- Prometheus provider
-- Introduce ITimedContext in order to extend timing blocks (e.g. intercept the elapsed duration)
-- Deprioritize long fields (!27)
+Update dependencies
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.8</Version>
+    <Version>6.1.0-alpha1</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.*" />
-    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.*" />
+    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.3.*" />
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.*" />
   </ItemGroup>
 </Project>

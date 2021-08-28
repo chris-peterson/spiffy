@@ -6,7 +6,7 @@ Handled over **500,000,000,000** production requests (and counting!)
 
 ## Status
 
-[![Build status](https://gitlab.com/chris-peterson/spiffy/badges/master/pipeline.svg)](https://gitlab.com/chris-peterson/spiffy/-/pipelines)
+[![Build status](https://img.shields.io/github/workflow/status/chris-peterson/spiffy/build)](https://github.com/chris-peterson/spiffy/actions/dotnet.yml)
 
 Package | Latest Release |
 :-------- | :------------ |

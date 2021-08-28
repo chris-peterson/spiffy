@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2020</Copyright>
+    <Copyright>2014-2021</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -10,21 +10,17 @@
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
     <PackageReleaseNotes>
-Breaking changes:
-
-- Drop support for legacy .NET framework (net40)
-- Custom logging signature now receives LogEvent rather than a raw string
-- Move classes into NLog namespace
+Update dependencies
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.0.0</Version>
+    <Version>6.1.0-alpha1</Version>
     <RootNamespace>Spiffy.Monitoring.NLog</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="NLog" Version="4.5.*" />
+    <PackageReference Include="NLog" Version="4.7.*" />
   </ItemGroup>
 </Project>

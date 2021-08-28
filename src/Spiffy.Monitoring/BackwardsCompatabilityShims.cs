@@ -1,5 +1,5 @@
 // this file exists to preserve previous API artifacts (version 5.2.0 and earlier)
-// (https://gitlab.com/chris-peterson/spiffy/-/blob/8ec62fde0a8658b8c511ecb2d4f3a9b393dd2988/src/Spiffy.Monitoring/ExtensionMethods.cs)
+// (https://github.com/chris-peterson/spiffy/blob/8ec62fde0a8658b8c511ecb2d4f3a9b393dd2988/src/Spiffy.Monitoring/ExtensionMethods.cs)
 // if these extensions were to be removed, applications built against earlier versions
 // would experience runtime errors, e.g.:
 // System.TypeLoadException: Could not load type 'Spiffy.Monitoring.ExceptionExtensions' from
