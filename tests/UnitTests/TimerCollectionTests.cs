@@ -12,7 +12,7 @@ namespace UnitTests
         {
             Given(A_code_block_timed_once);
             When(Event_is_logged);
-            Then(The_time_elapsed_field_should_be_near, 50)
+            Then(The_time_elapsed_field_should_be_near, 10)
                 .And(There_should_be_no_count_field);
         }
 
@@ -21,7 +21,7 @@ namespace UnitTests
         {
             Given(A_code_block_timed_multiple_times);
             When(Event_is_logged);
-            Then(The_time_elapsed_field_should_be_near, 100)
+            Then(The_time_elapsed_field_should_be_near, 20)
                 .And(There_should_be_a_count_field);
         }
 
@@ -29,7 +29,7 @@ namespace UnitTests
         {
             using (EventContext.Timers.TimeOnce(TimerKey))
             {
-                Thread.Sleep(50);
+                Thread.Sleep(10);
             }
         }
 
@@ -39,7 +39,7 @@ namespace UnitTests
             {
                 using (EventContext.Timers.Accumulate(TimerKey))
                 {
-                    Thread.Sleep(50);
+                    Thread.Sleep(10);
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace UnitTests
 
         void The_time_elapsed_field_should_be_near(int target)
         {
-            Assert.InRange(double.Parse(LoggedEvent.Properties[$"TimeElapsed_{TimerKey}"]), target, target+10);
+            Assert.InRange(double.Parse(LoggedEvent.Properties[$"TimeElapsed_{TimerKey}"]), target-5, target+5);
         }
 
         void There_should_be_no_count_field()
