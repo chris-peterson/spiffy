@@ -21,6 +21,6 @@ Update dependencies
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="prometheus-net" Version="4.*" />
+    <PackageReference Include="prometheus-net" Version="5.0.1" />
   </ItemGroup>
 </Project>
