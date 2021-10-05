@@ -16,7 +16,7 @@ Update dependencies
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.1.0-alpha1</Version>
+    <Version>6.1.0-alpha2</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
