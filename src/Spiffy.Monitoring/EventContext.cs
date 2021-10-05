@@ -36,7 +36,7 @@ namespace Spiffy.Monitoring
 
             StackFrame stackFrame = null;
 
-            var stackTrace = (StackTrace)Activator.CreateInstance(typeof(StackTrace));
+            var stackTrace = EnhancedStackTrace.Current();
             var frames = stackTrace.GetFrames();
 
             if (frames != null)
@@ -79,7 +79,7 @@ namespace Spiffy.Monitoring
 
         readonly DateTime _timestamp;
         readonly AutoTimer _timer = new AutoTimer();
-        static uint FieldCounter = 0;
+        volatile uint _fieldCounter = 0;
 
         public IDisposable Time(string key)
         {
@@ -365,11 +365,11 @@ namespace Spiffy.Monitoring
             return $"{milliseconds:F1}";
         }
 
-        static uint GetNextFieldCounter()
+        uint GetNextFieldCounter()
         {
             unchecked
             {
-                return FieldCounter++;
+                return _fieldCounter++;
             }
         }
     }
