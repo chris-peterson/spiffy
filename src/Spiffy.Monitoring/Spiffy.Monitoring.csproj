@@ -10,11 +10,11 @@
     <PackageId>Spiffy.Monitoring</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk;prometheus</PackageTags>
     <PackageReleaseNotes>
-Update dependencies
+https://github.com/chris-peterson/spiffy/milestone/1
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicense type="expression">MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>6.1.0-alpha2</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
@@ -27,5 +27,4 @@ Update dependencies
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
-
 </Project>

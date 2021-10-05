@@ -10,10 +10,11 @@
     <PackageId>Spiffy.Monitoring.Splunk</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;splunk</PackageTags>
     <PackageReleaseNotes>
-Update dependencies
+https://github.com/chris-peterson/spiffy/milestone/1
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicense type="expression">MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>1.1.0-alpha1</Version>
     <RootNamespace>Spiffy.Monitoring.Splunk</RootNamespace>
@@ -23,5 +24,9 @@ Update dependencies
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.*" />
     <PackageReference Include="System.Text.Json" Version="5.0.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>
