@@ -14,6 +14,7 @@ Update dependencies
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>6.1.0-alpha1</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
@@ -22,4 +23,8 @@ Update dependencies
     <PackageReference Include="System.Diagnostics.StackTrace" Version="4.3.*" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.*" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
 </Project>
