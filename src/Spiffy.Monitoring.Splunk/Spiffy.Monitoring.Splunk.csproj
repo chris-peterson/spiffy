@@ -16,7 +16,7 @@ https://github.com/chris-peterson/spiffy/milestone/1
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicense type="expression">MIT</PackageLicense>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.0-alpha1</Version>
+    <Version>1.1.0-alpha2</Version>
     <RootNamespace>Spiffy.Monitoring.Splunk</RootNamespace>
   </PropertyGroup>
 
