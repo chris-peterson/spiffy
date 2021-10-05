@@ -14,7 +14,7 @@ https://github.com/chris-peterson/spiffy/milestone/1
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicense type="expression">MIT</PackageLicense>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Version>6.1.0-alpha3</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
