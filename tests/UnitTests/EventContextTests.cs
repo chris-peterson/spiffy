@@ -26,7 +26,7 @@ namespace UnitTests
 
         void Component_and_operation_should_be(string component, string operation)
         {
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
             context.Component.Should().Be(component);
             context.Operation.Should().Be(operation);
         }
@@ -57,7 +57,7 @@ namespace UnitTests
                     Context.FormattedMessage = logEvent.MessageWithTime);
             });
 
-            using ((EventContext) Context.EventContext)
+            using ((EventContext)Context.EventContext)
             {
                 Thread.Sleep(100);
             }
@@ -65,7 +65,7 @@ namespace UnitTests
 
         void The_published_log_message_has_expected_TimeElapsed()
         {
-            var kvps = (string []) Context.FormattedMessage.Split(' ');
+            var kvps = (string[])Context.FormattedMessage.Split(' ');
             var timeElapsed = kvps.Single(k => k.StartsWith("TimeElapsed="));
             var timeElapsedSplit = timeElapsed.Split('=');
             var timeElapsedValue = float.Parse(timeElapsedSplit[1]);
@@ -87,7 +87,7 @@ namespace UnitTests
             When(Adding_values_array);
             Then(The_context_contains_key_value_pairs);
         }
-        
+
         [Scenario]
         public void Can_count()
         {
@@ -132,13 +132,13 @@ namespace UnitTests
 
         private void The_formatted_value_has_newline_characters()
         {
-            var result = (string) Context.FormattedMessage;
+            var result = (string)Context.FormattedMessage;
 
             result.Should().MatchRegex(
                 "[\\r\\n]",
                 because: "formatted message should not contain newline characters");
         }
-        
+
         [Scenario]
         public void Logs_with_short_values_are_slotted_in_order()
         {
@@ -159,27 +159,29 @@ namespace UnitTests
             Then(The_value_is_present, expectedOutput);
 
             const string Key = "key";
+
             void Appending_values(string str1, string str2)
-             {
-                 Context.EventContext.AppendToValue(Key, str1, ",");
-                 Context.EventContext.AppendToValue(Key, str2, ",");
-             }
-             void The_value_is_present(string expectedOutput)
-             {
-                 ((string) Context.EventContext[Key].ToString()).Should().Be(expectedOutput);
-             }
+            {
+                Context.EventContext.AppendToValue(Key, str1, ",");
+                Context.EventContext.AppendToValue(Key, str2, ",");
+            }
+
+            void The_value_is_present(string expectedOutput)
+            {
+                ((string)Context.EventContext[Key].ToString()).Should().Be(expectedOutput);
+            }
         }
 
         private void The_values_are_in_the_order_assigned()
         {
-            var result = (string) Context.FormattedMessage;
+            var result = (string)Context.FormattedMessage;
 
             var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
             var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
 
             indexOfKey1.Should().BeLessThan(indexOfKey2);
         }
-        
+
         [Scenario]
         public void Long_values_are_deprioritized_in_log_messages()
         {
@@ -187,10 +189,10 @@ namespace UnitTests
             When(An_event_has_a_mix_of_short_and_long_values);
             Then(The_long_values_are_deprioritized);
         }
-        
+
         private void The_long_values_are_deprioritized()
         {
-            var result = (string) Context.FormattedMessage;
+            var result = (string)Context.FormattedMessage;
 
             var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
             var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
@@ -230,7 +232,7 @@ namespace UnitTests
 
         private void The_formatted_value_has_no_newline_characters()
         {
-            var result = (string) Context.FormattedMessage;
+            var result = (string)Context.FormattedMessage;
 
             result.Should().NotMatchRegex(
                 "[\\r\\n]",
@@ -257,7 +259,7 @@ namespace UnitTests
                 });
             }
         }
-        
+
         private void An_event_has_a_mix_of_short_and_long_values()
         {
             using (var context = new EventContext())
@@ -274,7 +276,7 @@ namespace UnitTests
                 });
             }
         }
-        
+
         void Adding_values_via_params()
         {
             Context.EventContext.AddValues(
@@ -294,7 +296,7 @@ namespace UnitTests
 
         void The_context_contains_key_value_pairs()
         {
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
             context.Contains("key1").Should().BeTrue();
             context.Contains("key2").Should().BeTrue();
             context["key1"].Should().Be("value1");
@@ -304,7 +306,7 @@ namespace UnitTests
         void The_context_contains_counts()
         {
             LogEvent logEvent = null;
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
 
             Configuration.Initialize(customize =>
             {
@@ -316,19 +318,21 @@ namespace UnitTests
             logEvent.Message.Contains("foo=1").Should().BeTrue();
             logEvent.Message.Contains("bar=2").Should().BeTrue();
         }
+
         void Including_an_exception()
         {
-           ((EventContext) Context.EventContext).IncludeException(new NullReferenceException());
+            ((EventContext)Context.EventContext).IncludeException(new NullReferenceException());
         }
 
         void Including_an_informational_exception()
         {
-           ((EventContext) Context.EventContext).IncludeInformationalException(new NullReferenceException(), "InfoException");
+            ((EventContext)Context.EventContext).IncludeInformationalException(new NullReferenceException(),
+                "InfoException");
         }
 
         void The_context_contains_exception_data(string keyPrefix)
         {
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
             context.Contains($"{keyPrefix}_Type").Should().BeTrue();
             context.Contains($"{keyPrefix}_Message").Should().BeTrue();
             context.Contains($"{keyPrefix}_StackTrace").Should().BeTrue();
@@ -337,7 +341,7 @@ namespace UnitTests
 
         void The_context_level_is(Level expectedLevel)
         {
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
             context.Level.Should().Be(expectedLevel);
         }
 
@@ -363,10 +367,101 @@ namespace UnitTests
 
         void Adding_counts()
         {
-            var context = (EventContext) Context.EventContext;
+            var context = (EventContext)Context.EventContext;
             context.Count("foo");
             context.Count("bar");
             context.Count("bar");
+        }
+    }
+
+    public class EventContextFieldConflict : Scenarios<EventContext>
+    {
+        [Scenario]
+        public void Default()
+        {
+            Given(Field_conflict_behavior_not_specified);
+            When(Logging_duplicate_field_values);
+            Then(Field_value_should_be, "value2");
+        }
+
+        [Scenario]
+        public void Overwrite()
+        {
+            var behavior = FieldConflict.Overwrite;
+            Given(Field_behavior_is, behavior);
+            When(Logging_duplicate_field_values_with, behavior);
+            Then(Field_value_should_be, "value2");
+        }
+
+        [Scenario]
+        public void Ignore()
+        {
+            var behavior = FieldConflict.Ignore;
+            Given(Field_behavior_is, behavior);
+            When(Logging_duplicate_field_values_with, behavior);
+            Then(Field_value_should_be, "value1");
+        }
+
+        void Logging_duplicate_field_values()
+        {
+            Context.Set("key", "value1");
+            Context.Set("key", "value2");
+        }
+
+        void Logging_duplicate_field_values_with(FieldConflict behavior)
+        {
+            Context.Set("key", "value1", behavior);
+            Context.Set("key", "value2", behavior);
+        }
+
+        void Field_value_should_be(string expectedValue)
+        {
+            Context["key"].Should().Be(expectedValue);
+        }
+
+        static void Field_conflict_behavior_not_specified()
+        {
+        }
+
+        static void Field_behavior_is(FieldConflict behavior)
+        {
+        }
+    }
+
+    public class EventContextTrySet : Scenarios<EventContext>
+    {
+        [Scenario]
+        public void OnSuccess()
+        {
+            When(Function_doesnt_throw);
+            Then(Value_is_logged);
+        }
+
+        [Scenario]
+        public void OnException()
+        {
+            When(Function_throws);
+            Then(Value_is_omitted);
+        }
+
+        void Function_doesnt_throw()
+        {
+            Context.TrySet("key", () => "value");
+        }
+
+        void Function_throws()
+        {
+            Context.TrySet("key", () => throw new Exception());
+        }
+
+        void Value_is_logged()
+        {
+            Context.Contains("key").Should().BeTrue();
+        }
+
+        void Value_is_omitted()
+        {
+            Context.Contains("key").Should().BeFalse();
         }
     }
 }

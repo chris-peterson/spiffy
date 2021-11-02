@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Spiffy.Monitoring
@@ -90,7 +90,7 @@ namespace Spiffy.Monitoring
 
         readonly DateTime _timestamp;
         readonly AutoTimer _timer = new AutoTimer();
-        volatile uint _fieldCounter = 0;
+        volatile uint _fieldCounter;
 
         public IDisposable Time(string key)
         {
@@ -110,11 +110,33 @@ namespace Spiffy.Monitoring
         public object this[string key]
         {
             get => _values[key].Value;
-            set
+            set => Set(key, value);
+        }
+
+        public void Set(string key, object value, FieldConflict behavior = FieldConflict.Overwrite)
+        {
+            switch (behavior)
             {
-                _values.AddOrUpdate(key, (GetNextFieldCounter(), value),
-                    (k, existingValue) => (existingValue.Order,
-                        value));
+                case FieldConflict.Overwrite:
+                    _values.AddOrUpdate(key, (GetNextFieldCounter(), value),
+                        (k, existingValue) => (existingValue.Order,
+                            value));
+                    break;
+                case FieldConflict.Ignore:
+                    _values.GetOrAdd(key, (GetNextFieldCounter(), value));
+                    break;
+            }
+        }
+
+        public void TrySet(string key, Func<object> valueFunction, FieldConflict behavior = FieldConflict.Overwrite)
+        {
+            try
+            {
+                var value = valueFunction();
+                Set(key, value, behavior);
+            }
+            catch
+            {
             }
         }
 
