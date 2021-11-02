@@ -1,27 +1,24 @@
+using System;
 using Amazon;
 
 namespace Spiffy.Monitoring.Aws
 {
-    public enum Response
+    public class ResponseLoggingApi
     {
-        OnErrors,
-        Always
+        internal ResponseLoggingOption ResponseLoggingOption { get; private set; } = ResponseLoggingOption.OnError;
+
+        public void Always()
+        {
+            ResponseLoggingOption = ResponseLoggingOption.Always;
+        }
+
+        public void OnlyErrors()
+        {
+            ResponseLoggingOption = ResponseLoggingOption.OnError;
+        }
     }
     public class AwsConfigurationApi
     {
-        public AwsConfigurationApi Log(Response response)
-        {
-            switch (response)
-            {
-                case Response.Always:
-                    AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.Always;
-                    break;
-                case Response.OnErrors:
-                    AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.OnError;
-                    break;
-            }
-
-            return this;
-        }
+        public ResponseLoggingApi LogResponses { get; } = new ResponseLoggingApi();
     }
 }

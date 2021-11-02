@@ -75,7 +75,7 @@ namespace TestConsoleApp
                         Configuration.Initialize(spiffy =>
                             spiffy.Providers
                                 .Console()
-                                .Aws(c => c.Log(Response.Always)));
+                                .Aws(c => c.LogResponses.Always()));
                         var id = new AmazonSecurityTokenServiceClient()
                             .GetCallerIdentityAsync(new GetCallerIdentityRequest()).Result;
                         break;

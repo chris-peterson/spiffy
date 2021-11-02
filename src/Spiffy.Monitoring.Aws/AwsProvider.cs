@@ -7,13 +7,17 @@ namespace Spiffy.Monitoring.Aws
 {
     public static class AwsProvider
     {
-        public static void Aws(this InitializationApi.ProvidersApi providers, Action<AwsConfigurationApi> configure)
+        public static void Aws(this InitializationApi.ProvidersApi providers, Action<AwsConfigurationApi> configure = null)
         {
             AWSConfigs.LoggingConfig.LogTo = LoggingOptions.SystemDiagnostics;
             AWSConfigs.AddTraceListener("Amazon", new AwsEvent());
+            AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.OnError;
 
-            var config = new AwsConfigurationApi();
-            configure(config);
+            if (configure != null)
+            {
+                var config = new AwsConfigurationApi();
+                configure(config);
+            }
         }
 
         class AwsEvent : TraceListener
