@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Amazon.SecurityToken;
+using Amazon.SecurityToken.Model;
 using Spiffy.Monitoring;
+using Spiffy.Monitoring.Aws;
 using Spiffy.Monitoring.Console;
 using Spiffy.Monitoring.NLog;
 using Spiffy.Monitoring.Prometheus;
@@ -67,6 +70,14 @@ namespace TestConsoleApp
                                 .IncludeLabels("interesting_field")
                                 .OverrideValues(OverrideValues)
                             .ToCounter("my_app_my_counter", "Counter Help String");
+                        break;
+                    case "aws":
+                        Configuration.Initialize(spiffy =>
+                            spiffy.Providers
+                                .Console()
+                                .Aws(c => c.Log(Response.Always)));
+                        var id = new AmazonSecurityTokenServiceClient()
+                            .GetCallerIdentityAsync(new GetCallerIdentityRequest()).Result;
                         break;
                     case "all-the-things":
                         Configuration.Initialize(spiffy =>

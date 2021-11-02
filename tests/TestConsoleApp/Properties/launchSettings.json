@@ -2,7 +2,10 @@
   "profiles": {
     "TestConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "prometheus"
+      "commandLineArgs": "aws",
+      "environmentVariables": {
+        "AWS_PROFILE": "xxx"
+      }
     }
   }
 }
