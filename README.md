@@ -11,6 +11,7 @@ Handled over **650,000,000,000** production requests (and counting!)
 Package | Latest Release |
 :-------- | :------------ |
 `Spiffy.Monitoring` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.svg)](https://www.nuget.org/packages/spiffy.monitoring)
+`Spiffy.Monitoring.Aws` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.Aws.svg)](https://www.nuget.org/packages/spiffy.monitoring.aws)
 `Spiffy.Monitoring.NLog` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.NLog.svg)](https://www.nuget.org/packages/spiffy.monitoring.nlog)
 `Spiffy.Monitoring.Prometheus` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.Prometheus.svg)](https://www.nuget.org/packages/spiffy.monitoring.prometheus)
 `Spiffy.Monitoring.Splunk` | [![NuGet version](https://img.shields.io/nuget/dt/Spiffy.Monitoring.Splunk.svg)](https://www.nuget.org/packages/spiffy.monitoring.splunk)

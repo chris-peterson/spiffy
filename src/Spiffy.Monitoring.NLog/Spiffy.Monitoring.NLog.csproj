@@ -10,17 +10,22 @@
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk</PackageTags>
     <PackageReleaseNotes>
-Update dependencies
+Include readme in package
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.1.0-alpha1</Version>
+    <Version>6.0.1</Version>
     <RootNamespace>Spiffy.Monitoring.NLog</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
     <PackageReference Include="NLog" Version="4.7.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

@@ -10,17 +10,22 @@
     <PackageId>Spiffy.Monitoring.Prometheus</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;prometheus;splunk</PackageTags>
     <PackageReleaseNotes>
-Update dependencies
+Update prometheus-net to 5.x
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.0-alpha1</Version>
+    <Version>1.1.0</Version>
     <RootNamespace>Spiffy.Monitoring.Prometheus</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="prometheus-net" Version="4.*" />
+    <PackageReference Include="prometheus-net" Version="5.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>

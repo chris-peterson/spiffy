@@ -1,10 +1,6 @@
 name: build
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -13,6 +9,7 @@ jobs:
 
     env:
       Configuration: Release
+      PUSH_PACKAGES: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
 
     steps:
     - uses: actions/checkout@v2
@@ -31,5 +28,6 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-    - name: Publish NuGet
+    - if: ${{ env.PUSH_PACKAGES }} == 'true'
+      name: Publish NuGet
       run: dotnet nuget push --skip-duplicate **\*.nupkg --source 'https://api.nuget.org/v3/index.json' --api-key ${{secrets.NUGET_API_KEY}}

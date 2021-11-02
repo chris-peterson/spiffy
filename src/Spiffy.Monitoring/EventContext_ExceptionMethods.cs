@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
@@ -26,6 +27,7 @@ namespace Spiffy.Monitoring
             }
             else
             {
+                ex.Demystify();
                 // break out into keys that are easier to search for
                 this[keyPrefix + "_Type"] = ex.GetType().Name;
                 this[keyPrefix + "_Message"] = ex.Message;

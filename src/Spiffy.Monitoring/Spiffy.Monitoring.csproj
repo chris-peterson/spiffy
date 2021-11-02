@@ -10,16 +10,23 @@
     <PackageId>Spiffy.Monitoring</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk;prometheus</PackageTags>
     <PackageReleaseNotes>
-Update dependencies
+Include Ben.Demystifier for tidier exception logging
+Add advanced Set overload to control field conflict behavior
+Add TrySet to reduce try/catch boilerplate
+Rewrite using concurrent collections
     </PackageReleaseNotes>
-    <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
-    <PackageLicense>http://opensource.org/licenses/MIT</PackageLicense>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.1.0-alpha1</Version>
+    <Version>6.1.0</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Ben.Demystifier" Version="0.4.*" />
     <PackageReference Include="System.Diagnostics.StackTrace" Version="4.3.*" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>
