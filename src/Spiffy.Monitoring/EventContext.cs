@@ -68,8 +68,19 @@ namespace Spiffy.Monitoring
 
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
 
-        public string Component { get; private set; }
-        public string Operation { get; private set; }
+        string _component;
+        public string Component
+        {
+            get => _component;
+            set => this["Component"] = _component = value;
+        }
+
+        string _operation;
+        public string Operation
+        {
+            get => _operation;
+            set => this["Operation"] = _operation = value;
+        }
         public Level Level { get; private set; }
 
         readonly ConcurrentDictionary<string, (uint Order, object Value)> _values =
@@ -208,8 +219,6 @@ namespace Spiffy.Monitoring
         {
             Component = component;
             Operation = operation;
-            this["Component"] = Component;
-            this["Operation"] = Operation;
         }
 
         LogEvent Render()
