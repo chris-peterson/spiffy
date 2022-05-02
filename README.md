@@ -6,7 +6,7 @@ Handled over **789,000,000,000** production requests (and counting!)
 
 ## Status
 
-[![Build status](https://img.shields.io/github/workflow/status/chris-peterson/spiffy/build)](https://github.com/chris-peterson/spiffy/actions/workflows/dotnet.yml)
+[![build](https://github.com/chris-peterson/spiffy/actions/workflows/ci.yml/badge.svg)](https://github.com/chris-peterson/spiffy/actions/workflows/ci.yml)
 
 Package | Latest Release |
 :-------- | :------------ |
