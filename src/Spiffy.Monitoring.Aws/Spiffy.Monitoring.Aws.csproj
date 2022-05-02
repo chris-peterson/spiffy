@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Copyright>2021</Copyright>
+        <Copyright>2021-2022</Copyright>
         <Authors>Chris Peterson</Authors>
         <Description>AWS provider for Spiffy.Monitoring</Description>
         <TargetFrameworks>netstandard2.0</TargetFrameworks>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2021</Copyright>
+    <Copyright>2014-2022</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>

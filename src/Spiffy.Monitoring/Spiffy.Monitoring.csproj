@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2014-2021</Copyright>
+    <Copyright>2014-2022</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>A monitoring framework for .NET that supports IoC and modern targets, e.g. Splunk</Description>
     <TargetFramework>netstandard2.0</TargetFramework>

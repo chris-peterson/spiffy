@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2020-2021</Copyright>
+    <Copyright>2020-2022</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>The Splunk provider for Spiffy.Monitoring</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -10,19 +10,19 @@
     <PackageId>Spiffy.Monitoring.Splunk</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;splunk</PackageTags>
     <PackageReleaseNotes>
-Include readme in package
+Update package references
     </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <RootNamespace>Spiffy.Monitoring.Splunk</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="System.Net.Http.Json" Version="5.0.*" />
-    <PackageReference Include="System.Text.Json" Version="5.0.*" />
+    <PackageReference Include="System.Net.Http.Json" Version="6.0.*" />
+    <PackageReference Include="System.Text.Json" Version="6.0.*" />
   </ItemGroup>
 
   <ItemGroup>
