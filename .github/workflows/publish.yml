@@ -26,7 +26,7 @@ jobs:
         run: dotnet build
         
       - name: Publish to nuget.org
-        run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_API_TOKEN }} --source https://api.nuget.org/v3/index.json
+        run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
         
     environment:
       name: nuget.org
