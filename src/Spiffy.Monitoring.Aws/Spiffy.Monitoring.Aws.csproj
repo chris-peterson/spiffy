@@ -9,9 +9,6 @@
         <AssemblyName>Spiffy.Monitoring.Aws</AssemblyName>
         <PackageId>Spiffy.Monitoring.Aws</PackageId>
         <PackageTags>monitoring;eventcontext;logging;structured logging;prometheus;splunk</PackageTags>
-        <PackageReleaseNotes>
-            Initial version
-        </PackageReleaseNotes>
         <PackageProjectUrl>https://github.com/chris-peterson/spiffy</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

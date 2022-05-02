@@ -89,6 +89,10 @@ namespace Spiffy.Monitoring
             new ConcurrentDictionary<string, (uint Order, uint Value)>();
 
         readonly DateTime _timestamp;
+        DateTime? _customTimestamp;
+        public DateTime? CustomTimestamp { set {_customTimestamp = value; } }
+        private DateTime Timestamp => _customTimestamp ?? _timestamp;
+
         readonly AutoTimer _timer = new AutoTimer();
         volatile uint _fieldCounter;
 
@@ -243,7 +247,7 @@ namespace Spiffy.Monitoring
             Operation = operation;
         }
 
-        LogEvent Render()
+        internal LogEvent Render()
         {
             var kvps = _values
                 .OrderBy(x => x.Value.Order)
@@ -275,7 +279,7 @@ namespace Spiffy.Monitoring
 
             return new LogEvent(
                 Level,
-                _timestamp,
+                Timestamp,
                 TimeSpan.FromMilliseconds(timeElapsedMs),
                 GetSplunkFormattedTime(),
                 GetKeyValuePairsAsDelimitedString(kvps),
@@ -363,7 +367,7 @@ namespace Spiffy.Monitoring
 
         private string GetSplunkFormattedTime()
         {
-            return _timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
+            return Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
         }
 
         private IDictionary<string, string> GetCountValues()

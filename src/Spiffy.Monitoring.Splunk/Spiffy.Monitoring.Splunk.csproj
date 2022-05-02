@@ -9,9 +9,6 @@
     <AssemblyName>Spiffy.Monitoring.Splunk</AssemblyName>
     <PackageId>Spiffy.Monitoring.Splunk</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;splunk</PackageTags>
-    <PackageReleaseNotes>
-Update package references
-    </PackageReleaseNotes>
     <PackageProjectUrl>http://github.com/chris-peterson/spiffy</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

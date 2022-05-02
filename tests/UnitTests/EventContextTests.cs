@@ -464,4 +464,38 @@ namespace UnitTests
             Context.Contains("key").Should().BeFalse();
         }
     }
+
+    public class CustomTimestamp : Scenarios<EventContext>
+    {
+        [Scenario]
+        public void Customize()
+        {
+            When(Customizing_timestamp);
+            Then(time_is_custom_value);
+        }
+
+        [Scenario]
+        public void DefaultBehavior()
+        {
+            When(Doing_nothing);
+            Then(time_is_now);
+        }
+
+        void Customizing_timestamp()
+        {
+            Context.CustomTimestamp = DateTime.Parse("1/1/2000");
+        }
+
+        void time_is_custom_value()
+        {
+            Context.Render().Timestamp.Should().Be(DateTime.Parse("1/1/2000"));
+        }
+
+        void Doing_nothing() {}
+
+        void time_is_now()
+        {
+            Context.Render().Timestamp.Should().BeWithin(TimeSpan.FromMinutes(1));
+        }
+    }
 }

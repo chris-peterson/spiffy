@@ -9,16 +9,10 @@
     <AssemblyName>Spiffy.Monitoring</AssemblyName>
     <PackageId>Spiffy.Monitoring</PackageId>
     <PackageTags>monitoring;eventcontext;logging;structured logging;nlog;splunk;prometheus</PackageTags>
-    <PackageReleaseNotes>
-Include Ben.Demystifier for tidier exception logging
-Add advanced Set overload to control field conflict behavior
-Add TrySet to reduce try/catch boilerplate
-Rewrite using concurrent collections
-    </PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.1.0</Version>
+    <Version>6.2.0</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
