@@ -130,13 +130,28 @@ namespace UnitTests
             Then(The_formatted_value_has_newline_characters);
         }
 
+        [Scenario]
+        public void Double_quotes_are_escaped()
+        {
+            Given(An_event_context);
+            When(Formatting_a_value_that_contains_double_quotes);
+            Then(The_formatted_value_has_escaped_quotes);
+        }
+
         private void The_formatted_value_has_newline_characters()
         {
             var result = (string)Context.FormattedMessage;
 
             result.Should().MatchRegex(
                 "[\\r\\n]",
-                because: "formatted message should not contain newline characters");
+                because: "formatted message should contain newline characters");
+        }
+
+        private void The_formatted_value_has_escaped_quotes()
+        {
+            var result = (string)Context.FormattedMessage;
+
+            result.Should().Contain("\"");
         }
 
         [Scenario]
@@ -230,6 +245,17 @@ namespace UnitTests
             }
         }
 
+        private void Formatting_a_value_that_contains_double_quotes()
+        {
+            using var context = new EventContext();
+            context["foo"] = "\"bar\"";
+            Configuration.Initialize(customize =>
+            {
+                customize.Providers.Add("test", logEvent =>
+                    Context.FormattedMessage = logEvent.MessageWithTime);
+            });
+        }
+
         private void The_formatted_value_has_no_newline_characters()
         {
             var result = (string)Context.FormattedMessage;
@@ -289,8 +315,8 @@ namespace UnitTests
             Context.EventContext.AddValues(
                 new List<KeyValuePair<string, object>>
                 {
-                    new KeyValuePair<string, object>("key1", "value1"),
-                    new KeyValuePair<string, object>("key2", "value2")
+                    new("key1", "value1"),
+                    new("key2", "value2")
                 });
         }
 
