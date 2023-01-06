@@ -350,10 +350,7 @@ namespace Spiffy.Monitoring
 
             var valueStr = value.ToString();
 
-            // there are a certain few fields that Splunk chokes on in values.
-            // escape them individually to minimize visual noise (as opposed to doing a full encode) 
-            valueStr = valueStr.Replace("=", ":");
-            valueStr = valueStr.Replace("\"", "''");
+            valueStr = valueStr.Replace("\"", "\\\"");
 
             if (Configuration.RemoveNewLines)
             {
