@@ -7,12 +7,7 @@ namespace Spiffy.Monitoring
     {
         static readonly Regex WhiteSpaceRegex =
             new Regex(@"\s+", RegexOptions.Compiled);
-
-        public static bool StartsWithQuote(this string value)
-        {
-            return string.IsNullOrEmpty(value) == false && value[0] == '"';
-        }
-
+        
         public static bool ContainsWhiteSpace(this string value)
         {
             return value != null && WhiteSpaceRegex.IsMatch(value);
@@ -23,19 +18,37 @@ namespace Spiffy.Monitoring
             return value == null ? null : WhiteSpaceRegex.Replace(value.Trim(), "_");
         }
 
-        public static string WrappedInQuotes(this string value)
+        private static readonly char[] CharsThatRequiresEncapsulation = { ' ', '"', '\'', ',', '&' , '='};
+        private static readonly char[] QuotePreference = { '"', '\'', '`' };
+        public static bool RequiresEncapsulation(this string value, out char preferredQuote)
         {
-            return $@"""{value}""";
+            var requiresEncapsulation = false;
+            var quoteIndex = 0;
+            
+            foreach (var c in value)
+            {
+                if (CharsThatRequiresEncapsulation.Contains(c))
+                {
+                    requiresEncapsulation = true;
+                }
+                if (c == QuotePreference[quoteIndex])
+                {
+                    quoteIndex++;
+                }
+            }
+
+            preferredQuote = quoteIndex < QuotePreference.Length ? QuotePreference[quoteIndex] : '"';
+            return requiresEncapsulation;
+        }
+
+        public static string WrappedInQuotes(this string value, char quoteCharacter)
+        {
+            return $"{quoteCharacter}{value}{quoteCharacter}";
         }
 
         public static string WrappedInBrackets(this string value)
         {
             return $"[{value}]";
-        }
-
-        public static bool IsNullOrWhiteSpace(this string value)
-        {
-            return value == null || value.All(char.IsWhiteSpace);
         }
     }
 }

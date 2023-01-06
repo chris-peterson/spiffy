@@ -130,12 +130,20 @@ namespace UnitTests
             Then(The_formatted_value_has_newline_characters);
         }
 
-        [Scenario]
-        public void Double_quotes_are_escaped()
+        [ScenarioOutline]
+        [Example("foo", "foo",      "no encapsulation needed")]
+        [Example("a b", "\"a b\"",  "spaces are encapsulated")]
+        [Example("a,b", "\"a,b\"",  "commas are encapsulated")]
+        [Example("a=b", "\"a=b\"",  "equals are encapsulated")]
+        [Example("a&b", "\"a&b\"",  "ampersands are encapsulated")]
+        [Example("\"", "'\"'",      "double quotes are wrapped in single quotes")]
+        [Example("\"'", "`\"'",     "if double and single quotes are used, wrap in backtick")]
+        [Example("\"'`", "\"\"'`",  "if all quote times are used, use double quotes")]
+        public void Values_are_encapsulated_with_quotes_if_necessary(string input, string expectedResult, string reason)
         {
             Given(An_event_context);
-            When(Formatting_a_value_that_contains_double_quotes);
-            Then(The_formatted_value_has_escaped_quotes);
+            When(Formatting_value, input);
+            Then(It_should_be, expectedResult, reason);
         }
 
         private void The_formatted_value_has_newline_characters()
@@ -147,11 +155,11 @@ namespace UnitTests
                 because: "formatted message should contain newline characters");
         }
 
-        private void The_formatted_value_has_escaped_quotes()
+        private void It_should_be(string expectedResult, string reasons)
         {
             var result = (string)Context.FormattedMessage;
 
-            result.Should().Contain("\"");
+            result.Should().Contain(expectedResult, because: reasons);
         }
 
         [Scenario]
@@ -245,10 +253,10 @@ namespace UnitTests
             }
         }
 
-        private void Formatting_a_value_that_contains_double_quotes()
+        private void Formatting_value(string input)
         {
             using var context = new EventContext();
-            context["foo"] = "\"bar\"";
+            context["Key"] = input;
             Configuration.Initialize(customize =>
             {
                 customize.Providers.Add("test", logEvent =>
