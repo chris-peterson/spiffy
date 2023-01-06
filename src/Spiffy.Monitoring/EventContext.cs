@@ -286,17 +286,15 @@ namespace Spiffy.Monitoring
                 kvps,
                 PrivateData);
         }
-
+        
         static void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
         {
-            foreach (var kvp in keyValuePairs
-                .Where(k => !k.Value.StartsWithQuote() && (
-                    k.Value.ContainsWhiteSpace() ||
-                    k.Value.Contains(',') ||
-                    k.Value.Contains('&')))
-                .ToList())
+            foreach (var kvp in keyValuePairs)
             {
-                keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes();
+                if (kvp.Value.RequiresEncapsulation(out var preferredQuote))
+                {
+                    keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes(preferredQuote);
+                }
             }
         }
 
@@ -325,7 +323,7 @@ namespace Spiffy.Monitoring
         private void GenerateKeysIfNecessary(Dictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs
-                .Where(k => k.Key.IsNullOrWhiteSpace())
+                .Where(k => string.IsNullOrWhiteSpace(k.Key))
                 .ToList())
             {
                 keyValuePairs.Remove(kvp.Key);
@@ -348,18 +346,16 @@ namespace Spiffy.Monitoring
                 return "{null}";
             }
 
-            var valueStr = value.ToString();
-
-            valueStr = valueStr.Replace("\"", "\\\"");
+            var str = value.ToString();
 
             if (Configuration.RemoveNewLines)
             {
-                valueStr = valueStr
-                    .Replace("\r", String.Empty)
+                str = str
+                    .Replace("\r", string.Empty)
                     .Replace("\n", "\\n");
             }
 
-            return valueStr;
+            return str;
         }
 
         private string GetSplunkFormattedTime()
