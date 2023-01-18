@@ -31,13 +31,13 @@ namespace Spiffy.Monitoring
                 {
                     requiresEncapsulation = true;
                 }
-                if (c == QuotePreference[quoteIndex])
+                if (quoteIndex < QuotePreference.Length && c == QuotePreference[quoteIndex])
                 {
                     quoteIndex++;
                 }
             }
 
-            preferredQuote = quoteIndex < QuotePreference.Length ? QuotePreference[quoteIndex] : '"';
+            preferredQuote = quoteIndex >= QuotePreference.Length ? '"' : QuotePreference[quoteIndex];
             return requiresEncapsulation;
         }
 
