@@ -131,14 +131,15 @@ namespace UnitTests
         }
 
         [ScenarioOutline]
-        [Example("foo", "foo",      "no encapsulation needed")]
-        [Example("a b", "\"a b\"",  "spaces are encapsulated")]
-        [Example("a,b", "\"a,b\"",  "commas are encapsulated")]
-        [Example("a=b", "\"a=b\"",  "equals are encapsulated")]
-        [Example("a&b", "\"a&b\"",  "ampersands are encapsulated")]
-        [Example("\"", "'\"'",      "double quotes are wrapped in single quotes")]
-        [Example("\"'", "`\"'",     "if double and single quotes are used, wrap in backtick")]
-        [Example("\"'`", "\"\"'`",  "if all quote types are used, use double quotes")]
+        [Example("foo", "foo",           "no encapsulation needed")]
+        [Example("a b", "\"a b\"",       "spaces are encapsulated")]
+        [Example("a,b", "\"a,b\"",       "commas are encapsulated")]
+        [Example("a=b", "\"a=b\"",       "equals are encapsulated")]
+        [Example("a&b", "\"a&b\"",       "ampersands are encapsulated")]
+        [Example("\"", "'\"'",           "double quotes are wrapped in single quotes")]
+        [Example("\"'", "`\"'",          "if double and single quotes are used, wrap in backtick")]
+        [Example("\"'`", "\"\"'`",       "if all quote types are used, use double quotes")]
+        [Example("\"'`foo", "\"\"'`foo", "don't throw out-of-range-exceptions (regression test for !35)")]
         public void Values_are_encapsulated_with_quotes_if_necessary(string input, string expectedResult, string reason)
         {
             Given(An_event_context);
