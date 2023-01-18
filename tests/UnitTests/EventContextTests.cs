@@ -138,7 +138,7 @@ namespace UnitTests
         [Example("a&b", "\"a&b\"",  "ampersands are encapsulated")]
         [Example("\"", "'\"'",      "double quotes are wrapped in single quotes")]
         [Example("\"'", "`\"'",     "if double and single quotes are used, wrap in backtick")]
-        [Example("\"'`", "\"\"'`",  "if all quote times are used, use double quotes")]
+        [Example("\"'`", "\"\"'`",  "if all quote types are used, use double quotes")]
         public void Values_are_encapsulated_with_quotes_if_necessary(string input, string expectedResult, string reason)
         {
             Given(An_event_context);
