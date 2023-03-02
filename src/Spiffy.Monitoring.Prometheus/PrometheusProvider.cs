@@ -14,7 +14,9 @@ namespace Spiffy.Monitoring.Prometheus
                 var config = new PrometheusConfigurationApi();
                 customize(config);
                 _previousCollector?.Dispose();
+#if NET6_0_OR_GREATER
                 _previousCollector = config.RuntimeStats.StartCollecting();
+#endif
             }
             api.Add("prometheus", PrometheusRules.Process);
             return api;
