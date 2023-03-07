@@ -6,6 +6,7 @@ namespace Spiffy.Monitoring.Prometheus
     public static class PrometheusProvider
     {
         static IDisposable _previousCollector = null;
+        static readonly object _serializeCollectionAccess = new object();
 
         public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api, Action<PrometheusConfigurationApi> customize = null)
         {
@@ -13,9 +14,12 @@ namespace Spiffy.Monitoring.Prometheus
             {
                 var config = new PrometheusConfigurationApi();
                 customize(config);
-                _previousCollector?.Dispose();
 #if NET6_0_OR_GREATER
-                _previousCollector = config.RuntimeStats.StartCollecting();
+                lock (_serializeCollectionAccess)
+                {
+                    _previousCollector?.Dispose();
+                    _previousCollector = config.RuntimeStats.StartCollecting();
+                }
 #endif
             }
             api.Add("prometheus", PrometheusRules.Process);
