@@ -12,13 +12,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <RootNamespace>Spiffy.Monitoring.Prometheus</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="prometheus-net" Version="8.0.*" />
+    <PackageReference Include="prometheus-net" Version="6.0.*" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' " >
