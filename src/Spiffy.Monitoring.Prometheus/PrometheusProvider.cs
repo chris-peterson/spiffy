@@ -8,7 +8,12 @@ namespace Spiffy.Monitoring.Prometheus
         static IDisposable _previousCollector = null;
         static readonly object _serializeCollectionAccess = new object();
 
-        public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api, Action<PrometheusConfigurationApi> customize = null)
+        public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api)
+        {
+            return Prometheus(api, null);
+        }
+
+        public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api, Action<PrometheusConfigurationApi> customize)
         {
             if (customize != null)
             {
