@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Spiffy.Monitoring;
 using Kekiri.Xunit;
@@ -24,6 +26,20 @@ namespace UnitTests
             Then(Component_and_operation_should_be, "MyComponent", "MyOperation");
         }
 
+        [Scenario]
+        public void Implicit_creation_from_async_context()
+        {
+            WhenAsync(Creating_an_event_context_async);
+            Then(Component_and_operation_should_be, GetType().Name, nameof(Creating_an_event_context_async));
+        }
+
+        [Scenario]
+        public void Created_via_reflection()
+        {
+            When(Creating_an_event_context_via_reflection);
+            Then(Component_and_operation_should_be, "RuntimeType", "CreateInstanceDefaultCtor");
+        }
+
         void Component_and_operation_should_be(string component, string operation)
         {
             var context = (EventContext)Context.EventContext;
@@ -34,6 +50,17 @@ namespace UnitTests
         void Creating_an_event_context(EventContext eventContext)
         {
             Context.EventContext = eventContext;
+        }
+
+        async Task Creating_an_event_context_async()
+        {
+            Context.EventContext = new EventContext();
+            await Task.CompletedTask;
+        }
+
+        void Creating_an_event_context_via_reflection()
+        {
+            Context.EventContext = Activator.CreateInstance(typeof(EventContext));
         }
     }
 

@@ -3,15 +3,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Spiffy.Monitoring
 {
     partial class EventContext : ITimedContext
     {
         const string TimeElapsedKey = "TimeElapsed";
-        public EventContext(string component, string operation) 
+
+        public EventContext(string component, string operation)
         {
             SetToInfo();
 
@@ -23,47 +22,15 @@ namespace Spiffy.Monitoring
             this[TimeElapsedKey] = 0;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public EventContext() : this(null, null)
         {
-            Assembly AssemblyFor<T>() => typeof(T).GetTypeInfo().Assembly;
-            bool FrameworkAssembly(Assembly assembly) =>
-                assembly == AssemblyFor<object>() ||
-                assembly == AssemblyFor<EventContext>();
+            var enhancedStackTrace = new EnhancedStackTrace(new StackTrace(skipFrames: 1));
 
-            string component = "[Unknown]";
-            string operation = "[Unknown]";
+            var caller = enhancedStackTrace
+                .First(f => f.MethodInfo.DeclaringType != null)
+                .MethodInfo;
 
-            StackFrame stackFrame = null;
-
-            var stackTrace = EnhancedStackTrace.Current();
-            var frames = stackTrace.GetFrames();
-
-            if (frames != null)
-            {
-                foreach (var f in frames)
-                {
-                    var assembly = f.GetMethod().DeclaringType?.GetTypeInfo().Assembly;
-                    if (assembly != null && !FrameworkAssembly(assembly))
-                    {
-                        stackFrame = f;
-                        break;
-                    }
-                }
-            }
-
-            var method = stackFrame?.GetMethod();
-            if (method != null)
-            {
-                var declaringType = method.DeclaringType;
-                if (declaringType != null)
-                {
-                    component = declaringType.Name;
-                }
-                operation = method.Name;
-            }
-
-            Initialize(component, operation);
+            Initialize(caller.DeclaringType.Name, caller.Name);
         }
 
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
