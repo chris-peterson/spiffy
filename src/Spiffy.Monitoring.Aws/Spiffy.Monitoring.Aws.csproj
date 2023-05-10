@@ -1,19 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Copyright>2021-2022</Copyright>
+        <Copyright>2021-2023</Copyright>
         <Authors>Chris Peterson</Authors>
         <Description>AWS provider for Spiffy.Monitoring</Description>
         <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <DebugType>portable</DebugType>
         <AssemblyName>Spiffy.Monitoring.Aws</AssemblyName>
         <PackageId>Spiffy.Monitoring.Aws</PackageId>
-        <PackageTags>monitoring;eventcontext;logging;structured logging;prometheus;splunk</PackageTags>
-        <PackageProjectUrl>https://github.com/chris-peterson/spiffy</PackageProjectUrl>
+        <PackageTags>monitoring;eventcontext;structured logging;aws</PackageTags>
+        <PackageProjectUrl>http://github.com/chris-peterson/spiffy#overview</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <RootNamespace>Spiffy.Monitoring.Aws</RootNamespace>
     </PropertyGroup>
 

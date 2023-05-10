@@ -1,8 +1,8 @@
 # Overview
 
-A structured logging framework for .NET that supports log aggregation, e.g. Splunk.
+A structured logging framework for .NET that supports log analysis (e.g. Splunk) and metrics gathering (e.g. Prometheus).
 
-Handled over **933,000,000,000** production requests (and counting!)
+Battle-tested in high-volume production environments for more than 10 years, handling over 1,000,0000,000,000 (1 trillion) requests.
 
 ## Status
 
