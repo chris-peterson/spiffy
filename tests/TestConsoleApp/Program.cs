@@ -30,6 +30,12 @@ namespace TestConsoleApp
                         break;
                     case "console":
                         Configuration.Initialize(spiffy => {
+                            spiffy.Callbacks.BeforeLogging(eventContext => {
+                                if (eventContext.Level == Level.Info)
+                                {
+                                    eventContext.Suppress();
+                                }
+                            });
                             spiffy.Providers.Console();
                         });
                         break;

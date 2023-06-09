@@ -6,7 +6,8 @@ namespace Spiffy.Monitoring.Config
 {
     public class InitializationApi
     {
-        readonly ConcurrentDictionary<string, Action<LogEvent>> _providers = new ConcurrentDictionary<string, Action<LogEvent>>();
+        readonly ConcurrentDictionary<string, Action<LogEvent>> _providers = new();
+        readonly ConcurrentBag<Action<EventContext>> _beforeLoggingCallbacks = new();
 
         // Custom providers should extend this API by way of extension methods
         public class ProvidersApi
@@ -22,13 +23,30 @@ namespace Spiffy.Monitoring.Config
             {
                 _parent.AddProvider(id, loggingAction);
             }
+       }
+
+        public class CallbacksApi
+        {
+            readonly InitializationApi _parent;
+
+            public CallbacksApi(InitializationApi parent)
+            {
+                _parent = parent;
+            }
+
+            public void BeforeLogging(Action<EventContext> action)
+            {
+                _parent.AddBeforeLoggingCallback(action);
+            }
         }
 
         public ProvidersApi Providers { get; }
+        public CallbacksApi Callbacks { get; }
 
         public InitializationApi()
         {
             Providers = new ProvidersApi(this);
+            Callbacks = new CallbacksApi(this);
         }
         
         /// <summary>
@@ -59,6 +77,16 @@ namespace Spiffy.Monitoring.Config
         internal Action<LogEvent> [] GetLoggingActions()
         {
             return _providers.Values.ToArray();
+        }
+
+        void AddBeforeLoggingCallback(Action<EventContext> action)
+        {
+            _beforeLoggingCallbacks.Add(action);
+        }
+
+        internal Action<EventContext> [] GetBeforeLoggingActions()
+        {
+            return _beforeLoggingCallbacks.ToArray();
         }
     }
 }

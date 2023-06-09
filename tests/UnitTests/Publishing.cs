@@ -82,6 +82,15 @@ namespace UnitTests
                 .But(The_nessage_contains_Count, true);
         }
 
+
+        [Scenario]
+        public void Before_logging_callbacks()
+        {
+            Given(A_publishing_context);
+            When(Disposing_an_event_context);
+            Then(It_should_first_trigger_callbacks);
+        }
+
         void A_code_block_is_timed()
         {
             using (_context.EventContext.Time("TimingKey"))
@@ -156,18 +165,25 @@ namespace UnitTests
                 .Contain($"\"{value}\"");
         }
 
+        void It_should_first_trigger_callbacks()
+        {
+            _context.BeforeLoggingContexts.Should().HaveCount(1);
+        }
+
         class PublishingTestContext
         {
             public PublishingTestContext()
             {
                 Configuration.Initialize(customize =>
                 {
+                    customize.Callbacks.BeforeLogging(eventContext => BeforeLoggingContexts.Add(eventContext));
                     customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
                 });
             }
 
             public EventContext EventContext { get; } = new EventContext("MyComponent", "MyOperation");
-            public List<LogEvent> LogEvents { get; } = new List<LogEvent>();
+            public List<EventContext> BeforeLoggingContexts { get; } = new();
+            public List<LogEvent> LogEvents { get; } = new();
         }
     }
 }

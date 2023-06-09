@@ -184,7 +184,12 @@ namespace Spiffy.Monitoring
         {
             if (!_disposed)
             {
-                if(!IsSuppressed)
+                var beforeLoggingActions = Configuration.GetBeforeLoggingActions();
+                foreach (var action in beforeLoggingActions)
+                {
+                    action(this);
+                }
+                if (!IsSuppressed)
                 {
                     var logActions = Configuration.GetLoggingActions();
 
