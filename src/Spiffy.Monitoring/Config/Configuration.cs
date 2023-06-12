@@ -6,6 +6,7 @@ namespace Spiffy.Monitoring
 {
     public static class Configuration
     {
+        static Action<EventContext>[] _beforeLoggingActions = new Action<EventContext>[] {};
         static Action<LogEvent>[] _loggingActions = new Action<LogEvent>[] {};
 
         public static void Initialize(Action<InitializationApi> customize)
@@ -17,9 +18,15 @@ namespace Spiffy.Monitoring
             }
             customize(api);
 
+            _beforeLoggingActions = api.GetBeforeLoggingActions();
             _loggingActions = api.GetLoggingActions();
             RemoveNewLines = api.RemoveNewlines;
             DeprioritizedValueLength = api.DeprioritizedValueLength;
+        }
+
+        internal static Action<EventContext> [] GetBeforeLoggingActions()
+        {
+            return _beforeLoggingActions;
         }
 
         internal static Action<LogEvent> [] GetLoggingActions()
