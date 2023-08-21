@@ -37,11 +37,37 @@ namespace Spiffy.Monitoring.Aws
 
             void Handle(string message)
             {
-                using (var context = new EventContext())
+                if (!IsSdkSpam(message))
                 {
-                    context.Operation = "Unknown";
-                    context["Message"] = message;
+                    using (var context = new EventContext("AwsSdk", "Event"))
+                    {
+                        context["Message"] = message;
+                        // some example exception messages:
+                        // An exception of type HttpErrorResponseException was handled in ErrorHandler...
+                        // UnsupportedLanguagePairException making request TranslateTextRequest...
+                        // An exception of type TimeoutException was handled in ErrorHandler...
+                        if (message.IndexOf("exception", 100, StringComparison.OrdinalIgnoreCase) != -1)
+                        {
+                            context.SetToError();
+                        }
+                    }
                 }
+            }
+
+            static bool IsSdkSpam(string message)
+            {
+                // this message happens often and for all configurations (legacy/standard/etc)
+                if (message.StartsWith("Resolved DefaultConfigurationMode for RegionEndpoint"))
+                {
+                    return true;
+                }
+                // this message happens as part of routine DynamoDB usage
+                if (message.StartsWith("Description for table") && message.EndsWith("loaded from SDK Cache"))
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
     }
