@@ -37,11 +37,16 @@ namespace Spiffy.Monitoring.Aws
 
             void Handle(string message)
             {
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    return;
+                }
                 if (!IsSdkSpam(message))
                 {
                     using (var context = new EventContext("AwsSdk", "Event"))
                     {
                         context["Message"] = message;
+
                         // some example exception messages:
                         // An exception of type HttpErrorResponseException was handled in ErrorHandler...
                         // UnsupportedLanguagePairException making request TranslateTextRequest...
