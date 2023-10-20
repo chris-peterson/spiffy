@@ -30,10 +30,11 @@ namespace TestConsoleApp
                         break;
                     case "console":
                         Configuration.Initialize(spiffy => {
+                            spiffy.CustomNullValue = "<null>";
                             spiffy.Callbacks.BeforeLogging(eventContext => {
                                 if (eventContext.Level == Level.Info)
                                 {
-                                    eventContext.Suppress();
+                                    //eventContext.Suppress();
                                 }
                             });
                             spiffy.Providers.Console();
@@ -120,9 +121,13 @@ namespace TestConsoleApp
             // info:
             using (var context = new EventContext("Greetings", "Start"))
             {
-                context["Greeting"] = "Hello world!";
+                context["Greeting"] = "hi";
+                context["MyField"] = null;
+                context.SuppressFields("Greeting");
             }
-            
+
+            //return;
+
             while (true)
             {
                 // warning:

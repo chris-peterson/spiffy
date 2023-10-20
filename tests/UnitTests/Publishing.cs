@@ -19,6 +19,15 @@ namespace UnitTests
         }
 
         [Scenario]
+        public void Suppressed_fields_are_not_emitted()
+        {
+            Given(A_publishing_context)
+            .And(EventContext_fields_are_suppressed);
+            When(Disposing_an_event_context);
+            Then(Some_fields_are_omitted);
+        }
+
+        [Scenario]
         public void Suppressed_events_are_not_published()
         {
             Given(A_publishing_context)
@@ -127,6 +136,13 @@ namespace UnitTests
             _context =new PublishingTestContext();
         }
 
+        void EventContext_fields_are_suppressed()
+        {
+            var field = "Uninteresting";
+            _context.EventContext[field] = "some value";
+            _context.EventContext.SuppressFields(field);
+        }
+
         void EventContext_is_suppressed()
         {
             _context.EventContext.Suppress();
@@ -142,6 +158,12 @@ namespace UnitTests
             var logEvent = _context.LogEvents.Single();
             logEvent.Level.Should().Be(Level.Info);
             logEvent.MessageWithTime.Length.Should().BeInRange(10, 200);
+        }
+
+        void Some_fields_are_omitted()
+        {
+            var logEvent = _context.LogEvents.Single();
+            logEvent.Message.Should().NotContain("Uninteresting");
         }
 
         void It_should_not_publish_again()

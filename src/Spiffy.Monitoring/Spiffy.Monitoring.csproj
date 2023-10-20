@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>6.2.6</Version>
+    <Version>6.3.0</Version>
     <RootNamespace>Spiffy.Monitoring</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>

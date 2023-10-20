@@ -20,6 +20,7 @@ namespace Spiffy.Monitoring
 
             _beforeLoggingActions = api.GetBeforeLoggingActions();
             _loggingActions = api.GetLoggingActions();
+            CustomNullValue = api.CustomNullValue;
             RemoveNewLines = api.RemoveNewlines;
             DeprioritizedValueLength = api.DeprioritizedValueLength;
         }
@@ -34,6 +35,7 @@ namespace Spiffy.Monitoring
             return _loggingActions;
         }
 
+        internal static string CustomNullValue { get; set; }
         internal static bool RemoveNewLines { get; private set; }
 
         internal static int DeprioritizedValueLength { get; private set; } = 1024;

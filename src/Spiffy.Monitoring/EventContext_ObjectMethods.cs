@@ -5,7 +5,7 @@ namespace Spiffy.Monitoring
 {
     public partial class EventContext
     {
-        public EventContext IncludeStructure(object structure, string keyPrefix = null, bool includeNullValues = true)
+        public EventContext IncludeStructure(object structure, string keyPrefix = null, bool includeNullValues = false)
         {
             if (structure != null)
             {
@@ -13,7 +13,7 @@ namespace Spiffy.Monitoring
                 {
                     try
                     {
-                        var val = property.GetValue(structure, null);
+                        var val = property.GetValue(structure, null) ?? Configuration.CustomNullValue;
                         if (val == null && !includeNullValues)
                         {
                             continue;

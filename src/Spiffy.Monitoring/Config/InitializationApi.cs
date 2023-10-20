@@ -48,7 +48,12 @@ namespace Spiffy.Monitoring.Config
             Providers = new ProvidersApi(this);
             Callbacks = new CallbacksApi(this);
         }
-        
+
+        /// <summary>
+        /// If set, this value is used for logging values that are null.
+        /// </summary>
+        public string CustomNullValue { get; set; }
+
         /// <summary>
         /// Whether or not to remove newline characters from logged values.
         /// </summary>

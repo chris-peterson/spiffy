@@ -177,6 +177,14 @@ namespace Spiffy.Monitoring
             IsSuppressed = true;
         }
 
+        public void SuppressFields(params string [] fields)
+        {
+            foreach (var field in fields)
+            {
+                _values.TryRemove(field, out _);
+            }
+        }
+
         // ReSharper disable once RedundantDefaultMemberInitializer
         volatile bool _disposed = false;
 
@@ -221,12 +229,16 @@ namespace Spiffy.Monitoring
 
         internal LogEvent Render()
         {
-            var kvps = _values
+            IEnumerable<KeyValuePair<string, (uint Order, object Value)>> values = _values;
+            if (Configuration.CustomNullValue == null)
+            {
+                values = values.Where(kvp => kvp.Value.Value != null);
+            }
+            var kvps = values
                 .OrderBy(x => x.Value.Order)
                 .ToDictionary(
                     kvp => kvp.Key,
                     kvp => GetValue(kvp.Value.Value));
-
 
             foreach (var kvp in GetCountValues())
             {
@@ -315,7 +327,7 @@ namespace Spiffy.Monitoring
         {
             if (value == null)
             {
-                return "{null}";
+                return Configuration.CustomNullValue;
             }
 
             var str = value.ToString();

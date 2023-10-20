@@ -102,7 +102,7 @@ Multiple providers can be provied, for example, this application uses both `Cons
 ### Exception Entry
 
 > [2014-06-13 00:12:52.038Z] Application=MyApplication **Level=Error** Component=Program Operation=Main TimeElapsed=1027.0 Key=Value **ErrorReason="An exception has ocurred"** **Exception_Type=ApplicationException Exception_Message="you were unlucky!"** Exception_StackTrace="   at TestConsoleApp.Program.DoSomethingDangerous() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 47
-   at TestConsoleApp.Program.Main() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 29" InnermostException_Type=NullReferenceException **InnermostException_Message="Object reference not set to an instance of an object."** InnermostException_StackTrace={null} Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
+   at TestConsoleApp.Program.Main() in c:\src\git\github\chris-peterson\Spiffy\src\Tests\TestConsoleApp\Program.cs:line 29" InnermostException_Type=NullReferenceException **InnermostException_Message="Object reference not set to an instance of an object."** Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
 
 ## Hosting Frameworks
 

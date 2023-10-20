@@ -30,7 +30,7 @@ namespace Spiffy.Monitoring
     public static class EventContextExtensions
     {
         [Obsolete("This extension should be avoided, instead preferring IncludeStructure on EventContext")]
-        public static EventContext IncludeStructure(this EventContext eventContext, object structure, string keyPrefix = null, bool includeNullValues = true)
+        public static EventContext IncludeStructure(this EventContext eventContext, object structure, string keyPrefix = null, bool includeNullValues = false)
         {
             return eventContext.IncludeStructure(structure, keyPrefix, includeNullValues);
         }
