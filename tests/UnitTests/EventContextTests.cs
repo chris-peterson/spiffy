@@ -560,4 +560,73 @@ namespace UnitTests
             Context.Render().Timestamp.Should().BeWithin(TimeSpan.FromMinutes(1));
         }
     }
+
+    public class SetComponent : Scenarios<EventContext>
+    {
+        [Scenario]
+        public void UsingProperty()
+        {
+            When(Setting_via_property);
+            Then(Value_is_reflected);
+        }
+
+        [Scenario]
+        public void UsingIndexer()
+        {
+            When(Setting_via_indexer);
+            Then(Value_is_reflected);
+        }
+
+        const string CUSTOM_VALUE = "foobar123";
+        void Setting_via_property()
+        {
+            Context.Component = CUSTOM_VALUE;
+        }
+
+        void Setting_via_indexer()
+        {
+            Context["Component"] = CUSTOM_VALUE;
+        }
+
+
+        void Value_is_reflected()
+        {
+            Context.Component.Should().Be(CUSTOM_VALUE);
+            Context.Render().Message.Should().Contain(CUSTOM_VALUE);
+        }
+    }   
+
+    public class SetOperation : Scenarios<EventContext>
+    {
+        [Scenario]
+        public void UsingProperty()
+        {
+            When(Setting_via_property);
+            Then(Value_is_reflected);
+        }
+
+        [Scenario]
+        public void UsingIndexer()
+        {
+            When(Setting_via_indexer);
+            Then(Value_is_reflected);
+        }
+
+        const string CUSTOM_VALUE = "foobar123";
+        void Setting_via_property()
+        {
+            Context.Operation = CUSTOM_VALUE;
+        }
+
+        void Setting_via_indexer()
+        {
+            Context["Operation"] = CUSTOM_VALUE;
+        }
+
+        void Value_is_reflected()
+        {
+            Context.Operation.Should().Be(CUSTOM_VALUE);
+            Context.Render().Message.Should().Contain(CUSTOM_VALUE);
+        }
+    }
 }

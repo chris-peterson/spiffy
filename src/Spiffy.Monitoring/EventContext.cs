@@ -35,19 +35,18 @@ namespace Spiffy.Monitoring
 
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
 
-        string _component;
         public string Component
         {
-            get => _component;
-            set => this["Component"] = _component = value;
+            get => this["Component"] as string;
+            set => this["Component"] = value;
         }
 
-        string _operation;
         public string Operation
         {
-            get => _operation;
-            set => this["Operation"] = _operation = value;
+            get => this["Operation"] as string;
+            set => this["Operation"] = value;
         }
+
         public Level Level { get; private set; }
 
         readonly ConcurrentDictionary<string, (uint Order, object Value)> _values =
