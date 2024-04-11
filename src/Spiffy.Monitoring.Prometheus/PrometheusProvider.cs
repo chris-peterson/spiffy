@@ -1,13 +1,11 @@
 ﻿using System;
+using Prometheus;
 using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring.Prometheus
 {
     public static class PrometheusProvider
     {
-        static IDisposable _previousCollector = null;
-        static readonly object _serializeCollectionAccess = new object();
-
         public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api)
         {
             return Prometheus(api, null);
@@ -15,18 +13,37 @@ namespace Spiffy.Monitoring.Prometheus
 
         public static InitializationApi.ProvidersApi Prometheus(this InitializationApi.ProvidersApi api, Action<PrometheusConfigurationApi> customize)
         {
+            var config = new PrometheusConfigurationApi();
             if (customize != null)
             {
-                var config = new PrometheusConfigurationApi();
                 customize(config);
-#if NET6_0_OR_GREATER
-                lock (_serializeCollectionAccess)
-                {
-                    _previousCollector?.Dispose();
-                    _previousCollector = config.RuntimeStats.StartCollecting();
-                }
-#endif
             }
+            var metricOptions = new SuppressDefaultMetricOptions
+            {
+                // these are small and useful; always include
+                //   dotnet_*
+                //   process_*
+                SuppressProcessMetrics = false,
+
+                // these are small and useful; always include
+                //   microsoft_aspnetcore_*
+                //   system_runtime_*
+                //   system_net_sockets_*
+                SuppressEventCounters = false,
+
+                // these are not useful in most (all?) cases; omit by default
+                //   prometheus_net_exemplars_*
+                //   prometheus_net_metric_*
+                SuppressDebugMetrics = config.SuppressDebugMetrics,
+
+                // these are insanely large (upwards of 10s of GBs); omit by default
+                //   microsoft_aspnetcore_hosting_*
+                //   microsoft_aspnetcore_routing_aspnetcore_routing_match_attempts
+                //   microsoft_aspnetcore_server_kestrel_kestrel_connection_duration
+                //   system_net_http_http_client_*
+                SuppressMeters = config.SuppressMeters
+            };
+            Metrics.SuppressDefaultMetrics(metricOptions);
             api.Add("prometheus", PrometheusRules.Process);
             return api;
         }

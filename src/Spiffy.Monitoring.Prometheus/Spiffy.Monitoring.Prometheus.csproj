@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Copyright>2020-2023</Copyright>
+    <Copyright>2020-2024</Copyright>
     <Authors>Chris Peterson</Authors>
     <Description>The Prometheus provider for Spiffy.Monitoring</Description>
-    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Spiffy.Monitoring.Prometheus</AssemblyName>
     <PackageId>Spiffy.Monitoring.Prometheus</PackageId>
     <PackageTags>monitoring;eventcontext;structured logging;metrics;prometheus;splunk</PackageTags>
@@ -12,17 +12,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.0.6</Version>
+    <Version>3.0.0</Version>
     <RootNamespace>Spiffy.Monitoring.Prometheus</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
-    <PackageReference Include="prometheus-net" Version="6.0.*" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' " >
-    <PackageReference Include="prometheus-net.DotNetRuntime" Version="4.4.*" />
+    <PackageReference Include="prometheus-net" Version="8.2.*" />
   </ItemGroup>
 
   <ItemGroup>
