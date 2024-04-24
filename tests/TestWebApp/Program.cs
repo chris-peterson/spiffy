@@ -16,9 +16,6 @@ var app = builder.Build();
 app.UseRouting();
 
 app.MapGet("/", () => "Hello World!");
-
-app.UseEndpoints(endpoints => {
-    endpoints.MapMetrics();
-});
+app.MapMetrics();
 
 app.Run();
