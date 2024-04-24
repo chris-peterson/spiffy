@@ -92,13 +92,7 @@ namespace TestConsoleApp
                             spiffy.Providers
                                 .Trace()
                                 .Console()
-                                .Prometheus(cfg =>
-                                {
-                                    cfg.RuntimeStats
-                                        .WithGcStats()
-                                        //.WithXXX()
-                                    ;
-                                })
+                                .Prometheus()
                                 .Splunk(cfg => {})
                                 .NLog(cfg => {});
                         });
