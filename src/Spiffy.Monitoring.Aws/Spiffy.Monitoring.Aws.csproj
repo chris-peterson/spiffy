@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <Copyright>2021-2023</Copyright>
+        <Copyright>2021-2024</Copyright>
         <Authors>Chris Peterson</Authors>
         <Description>AWS provider for Spiffy.Monitoring</Description>
         <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -13,7 +13,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <Version>2.0.2</Version>
+        <Version>2.0.3</Version>
         <RootNamespace>Spiffy.Monitoring.Aws</RootNamespace>
     </PropertyGroup>
 
