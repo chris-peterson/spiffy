@@ -16,7 +16,13 @@ namespace Spiffy.Monitoring.Aws
         {
             ResponseLoggingOption = ResponseLoggingOption.OnError;
         }
+
+        public void Never()
+        {
+            ResponseLoggingOption = ResponseLoggingOption.Never;
+        }
     }
+
     public class AwsConfigurationApi
     {
         public ResponseLoggingApi LogResponses { get; } = new ResponseLoggingApi();

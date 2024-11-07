@@ -11,12 +11,21 @@ namespace Spiffy.Monitoring.Aws
         {
             AWSConfigs.LoggingConfig.LogTo = LoggingOptions.SystemDiagnostics;
             AWSConfigs.AddTraceListener("Amazon", new AwsEvent());
-            AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.OnError;
 
-            if (configure != null)
+            var config = new AwsConfigurationApi();
+            configure?.Invoke(config);
+
+            switch (config.LogResponses.ResponseLoggingOption)
             {
-                var config = new AwsConfigurationApi();
-                configure(config);
+                case ResponseLoggingOption.Never:
+                    AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.Never;
+                    break;
+                case ResponseLoggingOption.OnError:
+                    AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.OnError;
+                    break;
+                case ResponseLoggingOption.Always:
+                    AWSConfigs.LoggingConfig.LogResponses = ResponseLoggingOption.Always;
+                    break;
             }
 
             return providers;
