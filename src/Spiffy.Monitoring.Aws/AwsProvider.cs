@@ -74,6 +74,8 @@ namespace Spiffy.Monitoring.Aws
 
                 return false;
             }
+
+            public override string Name { get; set; } = nameof(AwsEvent);
         }
     }
 }
