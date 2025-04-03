@@ -58,7 +58,7 @@ NOTE: the provider package need only be installed for your application's entry p
 
 ### Multiple Providers
 
-Multiple providers can be provied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)
+Multiple providers can be supplied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)
 
 **Example**
 
