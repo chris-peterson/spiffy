@@ -6,8 +6,8 @@ namespace Spiffy.Monitoring
 {
     public static class Configuration
     {
-        static Action<EventContext>[] _beforeLoggingActions = new Action<EventContext>[] {};
-        static Action<LogEvent>[] _loggingActions = new Action<LogEvent>[] {};
+        static Action<EventContext>[] _beforeLoggingActions = [];
+        static Action<LogEvent>[] _loggingActions = [];
 
         public static void Initialize(Action<InitializationApi> customize)
         {
@@ -23,6 +23,7 @@ namespace Spiffy.Monitoring
             CustomNullValue = api.CustomNullValue;
             RemoveNewLines = api.RemoveNewlines;
             DeprioritizedValueLength = api.DeprioritizedValueLength;
+            Naming.FieldNameLookup = api.GetFieldNameLookup();
         }
 
         internal static Action<EventContext> [] GetBeforeLoggingActions()
@@ -37,7 +38,6 @@ namespace Spiffy.Monitoring
 
         internal static string CustomNullValue { get; set; }
         internal static bool RemoveNewLines { get; private set; }
-
         internal static int DeprioritizedValueLength { get; private set; } = 1024;
     }
 }

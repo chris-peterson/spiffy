@@ -10,33 +10,27 @@ namespace Spiffy.Monitoring.Config
         readonly ConcurrentBag<Action<EventContext>> _beforeLoggingCallbacks = new();
 
         // Custom providers should extend this API by way of extension methods
-        public class ProvidersApi
+        public class ProvidersApi(InitializationApi _parent)
         {
-            readonly InitializationApi _parent;
-
-            public ProvidersApi(InitializationApi parent)
-            {
-                _parent = parent;
-            }
-
             public void Add(string id, Action<LogEvent> loggingAction)
             {
                 _parent.AddProvider(id, loggingAction);
             }
-       }
+        }
 
-        public class CallbacksApi
+        public class CallbacksApi(InitializationApi _parent)
         {
-            readonly InitializationApi _parent;
-
-            public CallbacksApi(InitializationApi parent)
-            {
-                _parent = parent;
-            }
-
             public void BeforeLogging(Action<EventContext> action)
             {
                 _parent.AddBeforeLoggingCallback(action);
+            }
+        }
+
+        public class NamingApi(InitializationApi _parent)
+        {
+            public void UseShortFieldNames()
+            {
+                _parent.UseShortFieldNames = true;
             }
         }
 
@@ -47,12 +41,15 @@ namespace Spiffy.Monitoring.Config
         {
             Providers = new ProvidersApi(this);
             Callbacks = new CallbacksApi(this);
+            Naming = new NamingApi(this);
         }
 
         /// <summary>
         /// If set, this value is used for logging values that are null.
         /// </summary>
         public string CustomNullValue { get; set; }
+
+        public NamingApi Naming { get; }
 
         /// <summary>
         /// Whether or not to remove newline characters from logged values.
@@ -62,7 +59,7 @@ namespace Spiffy.Monitoring.Config
         /// values, <code>false</code> otherwise.
         /// </returns>
         public bool RemoveNewlines { get; set; }
-        
+
         /// <summary>
         /// Values over this length will be deprioritized in the <see cref="LogEvent.Message"/>.
         /// Defaults to 1024.
@@ -79,7 +76,7 @@ namespace Spiffy.Monitoring.Config
             _providers[id] = loggingAction;
         }
 
-        internal Action<LogEvent> [] GetLoggingActions()
+        internal Action<LogEvent>[] GetLoggingActions()
         {
             return _providers.Values.ToArray();
         }
@@ -89,9 +86,17 @@ namespace Spiffy.Monitoring.Config
             _beforeLoggingCallbacks.Add(action);
         }
 
-        internal Action<EventContext> [] GetBeforeLoggingActions()
+        internal Action<EventContext>[] GetBeforeLoggingActions()
         {
             return _beforeLoggingCallbacks.ToArray();
+        }
+
+        private bool UseShortFieldNames { get; set; }
+        internal Naming.IFieldNameLookup GetFieldNameLookup()
+        {
+            return UseShortFieldNames ?
+                new Naming.ShortFieldNameLookup() :
+                new Naming.LegacyFieldNameLookup();
         }
     }
 }

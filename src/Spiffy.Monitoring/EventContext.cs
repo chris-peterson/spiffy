@@ -3,13 +3,12 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Spiffy.Monitoring.Config;
 
 namespace Spiffy.Monitoring
 {
     partial class EventContext : ITimedContext
     {
-        const string TimeElapsedKey = "TimeElapsed";
-
         public EventContext(string component, string operation)
         {
             SetToInfo();
@@ -19,7 +18,7 @@ namespace Spiffy.Monitoring
 
             Initialize(component, operation);
             // initialize time elapsed field so that it shows up in a consistent order in log entries
-            this[TimeElapsedKey] = 0;
+            this[Naming.Get(Field.TimeElapsed)] = 0;
         }
 
         public EventContext() : this(null, null)
@@ -37,26 +36,24 @@ namespace Spiffy.Monitoring
 
         public string Component
         {
-            get => this["Component"] as string;
-            set => this["Component"] = value;
+            get => this[Naming.Get(Field.Component)] as string;
+            set => this[Naming.Get(Field.Component)] = value;
         }
 
         public string Operation
         {
-            get => this["Operation"] as string;
-            set => this["Operation"] = value;
+            get => this[Naming.Get(Field.Operation)] as string;
+            set => this[Naming.Get(Field.Operation)] = value;
         }
 
         public Level Level { get; private set; }
 
-        readonly ConcurrentDictionary<string, (uint Order, object Value)> _values =
-            new ConcurrentDictionary<string, (uint Order, object Value)>();
-        readonly ConcurrentDictionary<string, (uint Order, uint Value)> _counts =
-            new ConcurrentDictionary<string, (uint Order, uint Value)>();
+        readonly ConcurrentDictionary<string, (uint Order, object Value)> _values = new();
+        readonly ConcurrentDictionary<string, (uint Order, uint Value)> _counts = new();
 
         readonly DateTime _timestamp;
         DateTime? _customTimestamp;
-        public DateTime? CustomTimestamp { set {_customTimestamp = value; } }
+        public DateTime? CustomTimestamp { set => _customTimestamp = value; }
         private DateTime Timestamp => _customTimestamp ?? _timestamp;
 
         readonly AutoTimer _timer = new AutoTimer();
@@ -143,7 +140,7 @@ namespace Spiffy.Monitoring
 
         public void SetLevel(Level level)
         {
-            this["Level"] = Level = level;
+            this[Naming.Get(Field.Level)] = Level = level;
         }
 
         public void SetToInfo()
@@ -156,7 +153,7 @@ namespace Spiffy.Monitoring
             SetLevel(Level.Error);
             if (reason != null)
             {
-                this["ErrorReason"] = reason;
+                this[Naming.Get(Field.ErrorReason)] = reason;
             }
         }
 
@@ -165,7 +162,7 @@ namespace Spiffy.Monitoring
             SetLevel(Level.Warning);
             if (reason != null)
             {
-                this["WarningReason"] = reason;
+                this[Naming.Get(Field.WarningReason)] = reason;
             }
         }
 
@@ -257,8 +254,8 @@ namespace Spiffy.Monitoring
 
             var timeElapsedMs = _timer.ElapsedMilliseconds;
             var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
-            this[TimeElapsedKey] = formattedTimeElapsed;
-            kvps[TimeElapsedKey] = formattedTimeElapsed;
+            this[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
+            kvps[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
 
             return new LogEvent(
                 Level,
@@ -361,7 +358,7 @@ namespace Spiffy.Monitoring
                 .ShallowClone()
                 .OrderBy(x => x.Key))
             {
-                times[$"{TimeElapsedKey}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
+                times[$"{Naming.Get(Field.TimeElapsed)}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
                 if (kvp.Value.Count > 1)
                 {
                     times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();
