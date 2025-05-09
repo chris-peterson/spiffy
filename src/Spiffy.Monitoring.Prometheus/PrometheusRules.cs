@@ -145,19 +145,12 @@ namespace Spiffy.Monitoring.Prometheus
     {
         public static string GetKey(this CounterRule rule)
         {
-            return GetCompositeKey(rule.Component, rule.Operation);
+            return $"{rule.Component}/{rule.Operation}";
         }
 
         public static string GetKey(this LogEvent logEvent)
         {
-            return GetCompositeKey(
-                logEvent.Properties["Component"],
-                logEvent.Properties["Operation"]);
-        }
-
-        static string GetCompositeKey(string part1, string part2)
-        {
-            return $"{part1}/{part2}";
+            return logEvent.PrivateData["MetricsKey"];
         }
     }
 }

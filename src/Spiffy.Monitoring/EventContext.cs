@@ -256,6 +256,7 @@ namespace Spiffy.Monitoring
             var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
             this[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
             kvps[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
+            PrivateData["MetricsKey"] = $"{Component}/{Operation}";
 
             return new LogEvent(
                 Level,
