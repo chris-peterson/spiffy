@@ -76,7 +76,7 @@ namespace Spiffy.Monitoring
 
         public object this[string key]
         {
-            get => _values[key].Value;
+            get => _values.TryGetValue(key, out var value) ? value.Value : string.Empty;
             set => Set(key, value);
         }
 

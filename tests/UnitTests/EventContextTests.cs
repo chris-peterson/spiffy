@@ -526,6 +526,33 @@ public class EventContextTrySet : Scenarios<EventContext>
     }
 }
 
+public class EventContextForgiveNonExistentFields : Scenarios<EventContext>
+{
+    object _value;
+
+    [Scenario]
+    public void Avoid_exceptions()
+    {
+        When(Attempting_to_get_non_existent_field);
+        Then(No_exception_is_thrown)
+            .And(Empty_string_is_returned_instead);
+    }
+
+    void Attempting_to_get_non_existent_field()
+    {
+        _value = Context["NonExistentKey"];
+    }
+
+    void No_exception_is_thrown()
+    {
+    }
+
+    void Empty_string_is_returned_instead()
+    {
+        _value.Should().Be(string.Empty);
+    }
+}
+
 public class CustomTimestamp : Scenarios<EventContext>
 {
     [Scenario]
@@ -593,7 +620,7 @@ public class SetComponent : Scenarios<EventContext>
         Context.Component.Should().Be(CUSTOM_VALUE);
         Context.Render().Message.Should().Contain(CUSTOM_VALUE);
     }
-}   
+}
 
 public class SetOperation : Scenarios<EventContext>
 {
