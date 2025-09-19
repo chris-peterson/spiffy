@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using Kekiri.Xunit;
 using Spiffy.Monitoring;
 

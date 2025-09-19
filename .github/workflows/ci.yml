@@ -23,3 +23,6 @@ jobs:
       
       - name: Build
         run: dotnet build
+
+      - name: Run Unit Tests
+        run: dotnet test

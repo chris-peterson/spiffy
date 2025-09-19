@@ -21,7 +21,7 @@ namespace Spiffy.Monitoring
         public TimeSpan TimeElapsed { get; }
         public string FormattedTime { get; }
         public string Message { get; }
-        
+
         public string MessageWithTime => $"{FormattedTime} {Message}";
         public IDictionary<string, string> Properties { get; }
         public IDictionary<string, string> PrivateData { get; }

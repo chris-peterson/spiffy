@@ -9,7 +9,7 @@ namespace UnitTests
     public class ConcurrencyTests
     {
         [Fact]
-        public void TestTimers()
+        public async Task TestTimers()
         {
             var eventContext = new EventContext();
             var tasks = new List<Task>();
@@ -21,7 +21,7 @@ namespace UnitTests
                 tasks.Add(task);
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks);
 
             LogEvent logEvent = null;
             Configuration.Initialize(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
