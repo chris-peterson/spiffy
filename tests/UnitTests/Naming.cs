@@ -69,7 +69,7 @@ public class Naming : Scenarios
     {
         public TestingContext(FieldNaming? fieldNaming = null)
         {
-            var config = Configuration.Initialize(customize =>
+            var config = Configuration.Create(customize =>
             {
                 if (fieldNaming == FieldNaming.Short)
                 {

@@ -195,7 +195,7 @@ public class Publishing : Scenarios
     {
         public PublishingTestContext()
         {
-            var config = Configuration.Initialize(customize =>
+            var config = Configuration.Create(customize =>
             {
                 customize.Callbacks.BeforeLogging(eventContext => BeforeLoggingContexts.Add(eventContext));
                 customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));

@@ -12,7 +12,7 @@ namespace UnitTests
         public async Task TestTimers()
         {
             LogEvent logEvent = null;
-            var config = Configuration.Initialize(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
+            var config = Configuration.Create(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
 
             var eventContext = new EventContext("TestComponent", "TestOperation", config);
             var tasks = new List<Task>();

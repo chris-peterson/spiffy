@@ -6,7 +6,7 @@ namespace UnitTests
 {
     public class LogfmtTests :Scenarios<EventContextTestContext>
     {
-        Configuration LogfmtConfig => Configuration.Initialize(c => c.UseLogfmt());
+        Configuration LogfmtConfig => Configuration.Create(c => c.UseLogfmt());
     
         [Scenario]
         public void Basics()

@@ -21,7 +21,12 @@ namespace Spiffy.Monitoring
         internal string TimestampFormatString { get; set; }                  = "yyyy-MM-dd HH:mm:ss.fffK";
         internal SpecialValueFormatting SpecialValueFormatting { get; set; } = SpecialValueFormatting.UseAlternateQuotes;
 
-        public static Configuration Initialize(Action<InitializationApi> customize)
+        public static void Initialize(Action<InitializationApi> customize)
+        {
+            Default = Create(customize);
+        }
+
+        internal static Configuration Create(Action<InitializationApi> customize)
         {
             Configuration c = new Configuration();
             var api = new InitializationApi();
@@ -39,8 +44,7 @@ namespace Spiffy.Monitoring
             c.TimestampNaming = api.Naming.TimestampNaming ?? c.TimestampNaming;
             c.TimestampFormatString = api.Formatting.TimestampFormatString ?? c.TimestampFormatString;
             c.SpecialValueFormatting = api.Formatting.SpecialValueFormatting ?? c.SpecialValueFormatting;
-
-            return Default = c;
+            return c;
         }
     }
 }

@@ -68,7 +68,7 @@ public class EventContextTestContext
     readonly List<LogEvent> _loggedEvents = new();
     public void Initialize(Configuration config = null)
     {
-        config ??= Configuration.Initialize(c =>
+        config ??= Configuration.Create(c =>
             {
                 c.Providers.Add("test", le => _loggedEvents.Add(le));
             });
@@ -277,7 +277,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void Formatting_a_value_with_one_or_more_newline_characters()
     {
-        Context.Initialize(Configuration.Initialize(c => c.RemoveNewlines = _removeNewlines));
+        Context.Initialize(Configuration.Create(c => c.RemoveNewlines = _removeNewlines));
         Context.EventContext.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
         Context.Log();
     }
@@ -303,7 +303,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void An_event_is_comprised_of_short_values()
     {
-        Context.Initialize(Configuration.Initialize(c => c.DeprioritizedValueLength = 30));
+        Context.Initialize(Configuration.Create(c => c.DeprioritizedValueLength = 30));
         Context.EventContext["Key1"] = "A short message";
         Context.EventContext["Key2"] = "Another short message";
         Context.Log();
@@ -311,7 +311,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void An_event_has_a_mix_of_short_and_long_values()
     {
-        Context.Initialize(Configuration.Initialize(c => c.DeprioritizedValueLength = 30));
+        Context.Initialize(Configuration.Create(c => c.DeprioritizedValueLength = 30));
         Context.EventContext["Key1"] = "A short message";
         Context.EventContext["Key2"] = "A very very very very very very very very very very very very long message";
         Context.EventContext["Key3"] = "Another short message";
