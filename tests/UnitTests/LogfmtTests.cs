@@ -4,28 +4,10 @@ using Spiffy.Monitoring;
 
 namespace UnitTests
 {
-    public class LogfmtContext
+    public class LogfmtTests :Scenarios<EventContextTestContext>
     {
-        public LogfmtContext()
-        {
-            Configuration.Initialize(c =>
-            {
-                c.UseLogfmt();
-            });
-            EventContext["foo"] = "bar";
-        }
-
-        public EventContext EventContext { get; } = new EventContext();
-        public string Message { get; private set; }
-
-        public void Log()
-        {
-            Message = EventContext.Render().MessageWithTime;
-        }
-    }
-
-    public class LogfmtTests :Scenarios<LogfmtContext>
-    {
+        Configuration LogfmtConfig => Configuration.Initialize(c => c.UseLogfmt());
+    
         [Scenario]
         public void Basics()
         {
@@ -37,39 +19,42 @@ namespace UnitTests
         [Scenario]
         public void Special_values()
         {
-            Given(special_values);
-            When(logging);
+            When(logging_special_values);
             Then(special_values_are_quoted_and_escaped);
         }
-
-        private void special_values()
+        
+        void logging()
         {
+            Context.Initialize(LogfmtConfig);
+            Context.EventContext["foo"] = "bar";
+            Context.Log();
+        }
+
+        void logging_special_values()
+        {
+            Context.Initialize(LogfmtConfig);
             Context.EventContext["WithSpaces"] = "value with spaces";
             Context.EventContext["WithEquals"] = "foo=bar";
             Context.EventContext["WithQuotes"] = "\"hello\"";
-        }
-
-        void logging()
-        {
             Context.Log();
         }
 
         void it_contains_kvps()
         {
-            Context.Message.Should().Contain("foo=bar");
+            Context.SingleLogMessage.Should().Contain("foo=bar");
         }
         
         void iso8601_timestamp_is_logged_to_its_own_field()
         {
-            Context.Message
+            Context.SingleLogMessage
                 .Should().MatchRegex(@"time=\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z");
         }
 
         void special_values_are_quoted_and_escaped()
         {
-            Context.Message.Should().Contain("WithSpaces=\"value with spaces\"");
-            Context.Message.Should().Contain("WithEquals=\"foo=bar\"");
-            Context.Message.Should().Contain("WithQuotes=\"\\\"hello\\\"\"");
+            Context.SingleLogMessage.Should().Contain("WithSpaces=\"value with spaces\"");
+            Context.SingleLogMessage.Should().Contain("WithEquals=\"foo=bar\"");
+            Context.SingleLogMessage.Should().Contain("WithQuotes=\"\\\"hello\\\"\"");
         }
     }
 }

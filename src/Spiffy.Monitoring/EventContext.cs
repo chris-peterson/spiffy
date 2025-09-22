@@ -10,8 +10,12 @@ namespace Spiffy.Monitoring
 {
     partial class EventContext : ITimedContext
     {
-        public EventContext(string component, string operation)
+        private readonly Configuration _config;
+
+        internal EventContext(string component, string operation, Configuration config)
         {
+            _config = config ?? Configuration.Default;
+
             SetToInfo();
 
             GlobalEventContext.Instance.CopyTo(this);
@@ -31,6 +35,10 @@ namespace Spiffy.Monitoring
                 .MethodInfo;
 
             Initialize(caller.DeclaringType.Name, caller.Name);
+        }
+
+        public EventContext(string component, string operation) : this(component, operation, null)
+        {
         }
 
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
@@ -60,7 +68,7 @@ namespace Spiffy.Monitoring
         readonly AutoTimer _timer = new AutoTimer();
         volatile uint _fieldCounter;
 
-        internal IFieldNameLookup FieldName = Configuration.FieldNameLookup;
+        internal IFieldNameLookup FieldName => _config.FieldNameLookup;
 
         public IDisposable Time(string key)
         {
@@ -191,14 +199,14 @@ namespace Spiffy.Monitoring
         {
             if (!_disposed)
             {
-                var beforeLoggingActions = Configuration.BeforeLoggingActions;
+                var beforeLoggingActions = _config.BeforeLoggingActions;
                 foreach (var action in beforeLoggingActions)
                 {
                     action(this);
                 }
                 if (!IsSuppressed)
                 {
-                    var logActions = Configuration.LoggingActions;
+                    var logActions = _config.LoggingActions;
                     if (logActions.Any())
                     {
                         var logEvent = Render();
@@ -225,10 +233,10 @@ namespace Spiffy.Monitoring
             Operation = operation;
         }
 
-        internal LogEvent Render()
+        private LogEvent Render()
         {
             IEnumerable<KeyValuePair<string, (uint Order, object Value)>> values = _values;
-            if (Configuration.CustomNullValue == null)
+            if (_config.CustomNullValue == null)
             {
                 values = values.Where(kvp => kvp.Value.Value != null);
             }
@@ -270,13 +278,13 @@ namespace Spiffy.Monitoring
                 PrivateData);
         }
         
-        static void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
+        void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs)
             {
                 if (kvp.Value.RequiresEncapsulation(out var preferredQuote))
                 {
-                    switch (Configuration.SpecialValueFormatting)
+                    switch (_config.SpecialValueFormatting)
                     {
                         case SpecialValueFormatting.UseAlternateQuotes:
                             keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes(preferredQuote);
@@ -322,24 +330,24 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
+        private string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
             return string.Join(" ", keyValuePairs
-                .OrderBy(pair => pair.Value.Length <= Configuration.DeprioritizedValueLength ? 0 : 1)
+                .OrderBy(pair => pair.Value.Length <= _config.DeprioritizedValueLength ? 0 : 1)
                 .Select(kvp =>
                     $"{kvp.Key}={kvp.Value}").ToArray());
         }
 
-        static string GetValue(object value)
+        string GetValue(object value)
         {
             if (value == null)
             {
-                return Configuration.CustomNullValue;
+                return _config.CustomNullValue;
             }
 
             var str = value.ToString();
 
-            if (Configuration.RemoveNewLines)
+            if (_config.RemoveNewLines)
             {
                 str = str
                     .Replace("\r", string.Empty)
@@ -351,9 +359,9 @@ namespace Spiffy.Monitoring
 
         private string RenderTimestamp()
         {
-            string ts = Timestamp.ToString(Configuration.TimestampFormatString);
+            string ts = Timestamp.ToString(_config.TimestampFormatString);
         
-            switch (Configuration.TimestampNaming)
+            switch (_config.TimestampNaming)
             {
                 case TimestampNaming.UseUnnamedFieldInBrackets:
                     ts = ts.WrappedInBrackets();

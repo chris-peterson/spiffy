@@ -11,7 +11,10 @@ namespace UnitTests
         [Fact]
         public async Task TestTimers()
         {
-            var eventContext = new EventContext();
+            LogEvent logEvent = null;
+            var config = Configuration.Initialize(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
+
+            var eventContext = new EventContext("TestComponent", "TestOperation", config);
             var tasks = new List<Task>();
             const int numTasks = 100;
             for (int i = 0; i < numTasks; i++)
@@ -23,8 +26,6 @@ namespace UnitTests
 
             await Task.WhenAll(tasks);
 
-            LogEvent logEvent = null;
-            Configuration.Initialize(c => c.Providers.Add(GetType().Name, le => logEvent = le ));
             eventContext.Dispose();
 
             Assert.InRange(int.Parse(logEvent.Properties["Count_accum"]), numTasks*.65, numTasks*.99);

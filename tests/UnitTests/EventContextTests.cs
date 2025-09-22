@@ -41,7 +41,7 @@ public class EventContextCreation : Scenarios
 
     void Component_and_operation_should_be(string component, string operation)
     {
-        var context = (EventContext)Context.EventContext;
+        var context = (EventContext) Context.EventContext;
         context.Component.Should().Be(component);
         context.Operation.Should().Be(operation);
     }
@@ -63,7 +63,36 @@ public class EventContextCreation : Scenarios
     }
 }
 
-public class EventContextValues : Scenarios
+public class EventContextTestContext
+{
+    public EventContextTestContext()
+    {
+        Initialize();
+    }
+
+    readonly List<LogEvent> _loggedEvents = new();
+    public void Initialize(Configuration config = null)
+    {
+        config ??= Configuration.Initialize(c =>
+            {
+                c.Providers.Add("test", le => _loggedEvents.Add(le));
+            });
+        config.LoggingActions = [ _loggedEvents.Add ];
+        EventContext = new EventContext("TestComponent", "TestOperation", config);
+    }
+
+    public EventContext EventContext { get; private set; }
+
+    public void Log()
+    {
+        EventContext.Dispose();
+    }
+
+    public LogEvent SingleLogEvent => _loggedEvents.Single();
+    public string SingleLogMessage => SingleLogEvent.MessageWithTime;
+}
+
+public class EventContextValues : Scenarios<EventContextTestContext>
 {
     bool _removeNewlines = false;
 
@@ -77,25 +106,19 @@ public class EventContextValues : Scenarios
 
     void Measuring_something_slow()
     {
-        Configuration.Initialize(customize =>
-        {
-            customize.Providers.Add("test", logEvent =>
-                Context.FormattedMessage = logEvent.MessageWithTime);
-        });
-
-        using ((EventContext)Context.EventContext)
-        {
-            Thread.Sleep(100);
-        }
+        Thread.Sleep(100);
+        Context.Log();
     }
 
     void The_published_log_message_has_expected_TimeElapsed()
     {
-        var kvps = (string[])Context.FormattedMessage.Split(' ');
+        var te = Context.SingleLogEvent.TimeElapsed;
+        te.Should().BeGreaterThan(TimeSpan.FromMilliseconds(50));
+        var kvps = (string[]) Context.SingleLogMessage.Split(' ');
         var timeElapsed = kvps.Single(k => k.StartsWith("TimeElapsed="));
         var timeElapsedSplit = timeElapsed.Split('=');
-        var timeElapsedValue = float.Parse(timeElapsedSplit[1]);
-        timeElapsedValue.Should().BeGreaterThan(50);
+        var timeElapsedValue = TimeSpan.FromMilliseconds(float.Parse(timeElapsedSplit[1]));
+        timeElapsedValue.Should().BeCloseTo(te, TimeSpan.FromMilliseconds(1));
     }
 
     [Scenario]
@@ -157,14 +180,14 @@ public class EventContextValues : Scenarios
     }
 
     [ScenarioOutline]
-    [Example("foo", "foo",           "no encapsulation needed")]
-    [Example("a b", "\"a b\"",       "spaces are encapsulated")]
-    [Example("a,b", "\"a,b\"",       "commas are encapsulated")]
-    [Example("a=b", "\"a=b\"",       "equals are encapsulated")]
-    [Example("a&b", "\"a&b\"",       "ampersands are encapsulated")]
-    [Example("\"", "'\"'",           "double quotes are wrapped in single quotes")]
-    [Example("\"'", "`\"'",          "if double and single quotes are used, wrap in backtick")]
-    [Example("\"'`", "\"\"'`",       "if all quote types are used, use double quotes")]
+    [Example("foo", "foo", "no encapsulation needed")]
+    [Example("a b", "\"a b\"", "spaces are encapsulated")]
+    [Example("a,b", "\"a,b\"", "commas are encapsulated")]
+    [Example("a=b", "\"a=b\"", "equals are encapsulated")]
+    [Example("a&b", "\"a&b\"", "ampersands are encapsulated")]
+    [Example("\"", "'\"'", "double quotes are wrapped in single quotes")]
+    [Example("\"'", "`\"'", "if double and single quotes are used, wrap in backtick")]
+    [Example("\"'`", "\"\"'`", "if all quote types are used, use double quotes")]
     [Example("\"'`foo", "\"\"'`foo", "don't throw out-of-range-exceptions (regression test for !35)")]
     public void Values_are_encapsulated_with_quotes_if_necessary(string input, string expectedResult, string reason)
     {
@@ -175,18 +198,14 @@ public class EventContextValues : Scenarios
 
     private void The_formatted_value_has_newline_characters()
     {
-        var result = (string)Context.FormattedMessage;
-
-        result.Should().MatchRegex(
+        Context.SingleLogMessage.Should().MatchRegex(
             "[\\r\\n]",
             because: "formatted message should contain newline characters");
     }
 
     private void It_should_be(string expectedResult, string reasons)
     {
-        var result = (string)Context.FormattedMessage;
-
-        result.Should().Contain(expectedResult, because: reasons);
+        Context.SingleLogMessage.Should().Contain(expectedResult, because: reasons);
     }
 
     [Scenario]
@@ -224,10 +243,8 @@ public class EventContextValues : Scenarios
 
     private void The_values_are_in_the_order_assigned()
     {
-        var result = (string)Context.FormattedMessage;
-
-        var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
-        var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
+        var indexOfKey1 = Context.SingleLogMessage.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
+        var indexOfKey2 = Context.SingleLogMessage.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
 
         indexOfKey1.Should().BeLessThan(indexOfKey2);
     }
@@ -242,11 +259,9 @@ public class EventContextValues : Scenarios
 
     private void The_long_values_are_deprioritized()
     {
-        var result = (string)Context.FormattedMessage;
-
-        var indexOfKey1 = result.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
-        var indexOfKey2 = result.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
-        var indexOfKey3 = result.IndexOf(" Key3=", StringComparison.InvariantCultureIgnoreCase);
+        var indexOfKey1 = Context.SingleLogMessage.IndexOf(" Key1=", StringComparison.InvariantCultureIgnoreCase);
+        var indexOfKey2 = Context.SingleLogMessage.IndexOf(" Key2=", StringComparison.InvariantCultureIgnoreCase);
+        var indexOfKey3 = Context.SingleLogMessage.IndexOf(" Key3=", StringComparison.InvariantCultureIgnoreCase);
 
         indexOfKey1.Should().BeLessThan(indexOfKey2);
         indexOfKey3.Should().BeLessThan(indexOfKey2);
@@ -267,75 +282,45 @@ public class EventContextValues : Scenarios
 
     private void Formatting_a_value_with_one_or_more_newline_characters()
     {
-        using (var context = new EventContext())
-        {
-            context.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
-
-            Configuration.Initialize(customize =>
-            {
-                customize.RemoveNewlines = _removeNewlines;
-                customize.Providers.Add("test", logEvent =>
-                    Context.FormattedMessage = logEvent.MessageWithTime);
-            });
-        }
+        Context.Initialize(Configuration.Initialize(c => c.RemoveNewlines = _removeNewlines));
+        Context.EventContext.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
+        Context.Log();
     }
 
     private void Formatting_value(string input)
     {
-        using var context = new EventContext();
-        context["Key"] = input;
-        Configuration.Initialize(customize =>
-        {
-            customize.Providers.Add("test", logEvent =>
-                Context.FormattedMessage = logEvent.MessageWithTime);
-        });
+        Context.Initialize();
+        Context.EventContext["Key"] = input;
+        Context.Log();
     }
 
     private void The_formatted_value_has_no_newline_characters()
     {
-        var result = (string)Context.FormattedMessage;
-
-        result.Should().NotMatchRegex(
+        Context.SingleLogMessage.Should().NotMatchRegex(
             "[\\r\\n]",
             because: "formatted message should not contain newline characters");
     }
 
     void An_event_context()
     {
-        Context.EventContext = new EventContext();
+        Context.Initialize();
     }
 
     private void An_event_is_comprised_of_short_values()
     {
-        using (var context = new EventContext())
-        {
-            context["Key1"] = "A short message";
-            context["Key2"] = "Another short message";
-
-            Configuration.Initialize(customize =>
-            {
-                customize.DeprioritizedValueLength = 30;
-                customize.Providers.Add("test", logEvent =>
-                    Context.FormattedMessage = logEvent.MessageWithTime);
-            });
-        }
+        Context.Initialize(Configuration.Initialize(c => c.DeprioritizedValueLength = 30));
+        Context.EventContext["Key1"] = "A short message";
+        Context.EventContext["Key2"] = "Another short message";
+        Context.Log();
     }
 
     private void An_event_has_a_mix_of_short_and_long_values()
     {
-        using (var context = new EventContext())
-        {
-            context["Key1"] = "A short message";
-            context["Key2"] = "A very very very very very very very very very very very very long message";
-            context["Key3"] = "Another short message";
-
-            Configuration.Initialize(customize =>
-            {
-                customize.DeprioritizedValueLength = 30;
-                customize.Providers.Add("test", logEvent =>
-                    Context.FormattedMessage = logEvent.MessageWithTime);
-            });
-        }
+        Context.Initialize(Configuration.Initialize(c => c.DeprioritizedValueLength = 30));
+        Context.EventContext["Key1"] = "A short message";
+        Context.EventContext["Key2"] = "A very very very very very very very very very very very very long message";
+        Context.EventContext["Key3"] = "Another short message";
+        Context.Log();
     }
 
     void Adding_values_via_params()
@@ -343,6 +328,7 @@ public class EventContextValues : Scenarios
         Context.EventContext.AddValues(
             new KeyValuePair<string, object>("key1", "value1"),
             new KeyValuePair<string, object>("key2", "value2"));
+        Context.Log();
     }
 
     void Adding_values_array()
@@ -357,53 +343,40 @@ public class EventContextValues : Scenarios
 
     void The_context_contains_key_value_pairs()
     {
-        var context = (EventContext)Context.EventContext;
-        context.Contains("key1").Should().BeTrue();
-        context.Contains("key2").Should().BeTrue();
-        context["key1"].Should().Be("value1");
-        context["key2"].Should().Be("value2");
+        Context.EventContext.Contains("key1").Should().BeTrue();
+        Context.EventContext.Contains("key2").Should().BeTrue();
+        Context.EventContext["key1"].Should().Be("value1");
+        Context.EventContext["key2"].Should().Be("value2");
     }
 
     void The_context_contains_counts()
     {
-        LogEvent logEvent = null;
-        var context = (EventContext)Context.EventContext;
-
-        Configuration.Initialize(customize =>
-        {
-            customize.RemoveNewlines = _removeNewlines;
-            customize.Providers.Add("test", l => logEvent = l);
-        });
-        context.Dispose();
-
-        logEvent.Message.Contains("foo=1").Should().BeTrue();
-        logEvent.Message.Contains("bar=2").Should().BeTrue();
+        Context.SingleLogMessage.Contains("foo=1").Should().BeTrue();
+        Context.SingleLogMessage.Contains("bar=2").Should().BeTrue();
     }
 
     void Including_an_exception()
     {
-        ((EventContext)Context.EventContext).IncludeException(new NullReferenceException());
+        Context.EventContext.IncludeException(new NullReferenceException());
     }
 
     void Including_an_informational_exception()
     {
-        ((EventContext)Context.EventContext).IncludeInformationalException(new NullReferenceException(),
+        Context.EventContext.IncludeInformationalException(new NullReferenceException(),
             "InfoException");
     }
 
     void The_context_contains_exception_data(string keyPrefix)
     {
-        var context = (EventContext)Context.EventContext;
-        context.Contains($"{keyPrefix}_Type").Should().BeTrue();
-        context.Contains($"{keyPrefix}_Message").Should().BeTrue();
-        context.Contains($"{keyPrefix}_StackTrace").Should().BeTrue();
-        context.Contains($"{keyPrefix}").Should().BeTrue();
+        Context.EventContext.Contains($"{keyPrefix}_Type").Should().BeTrue();
+        Context.EventContext.Contains($"{keyPrefix}_Message").Should().BeTrue();
+        Context.EventContext.Contains($"{keyPrefix}_StackTrace").Should().BeTrue();
+        Context.EventContext.Contains($"{keyPrefix}").Should().BeTrue();
     }
 
     void The_context_level_is(Level expectedLevel)
     {
-        var context = (EventContext)Context.EventContext;
-        context.Level.Should().Be(expectedLevel);
+        Context.EventContext.Level.Should().Be(expectedLevel);
     }
 
     class TestStructure
@@ -414,29 +387,29 @@ public class EventContextValues : Scenarios
 
     void Including_a_structure()
     {
-        ((EventContext)Context.EventContext).IncludeStructure(new TestStructure(), "Prefix");
+        Context.EventContext.IncludeStructure(new TestStructure(), "Prefix");
     }
 
     void The_context_contains_structure_data()
     {
-        var context = (EventContext)Context.EventContext;
-        context.Contains("Prefix_Data1").Should().BeTrue();
-        context.Contains("Prefix_Data2").Should().BeTrue();
-        context["Prefix_Data1"].Should().Be(1);
-        context["Prefix_Data2"].Should().Be("foo");
+        Context.EventContext.Contains("Prefix_Data1").Should().BeTrue();
+        Context.EventContext.Contains("Prefix_Data2").Should().BeTrue();
+        Context.EventContext["Prefix_Data1"].Should().Be(1);
+        Context.EventContext["Prefix_Data2"].Should().Be("foo");
     }
 
     void Adding_counts()
     {
-        var context = (EventContext)Context.EventContext;
-        context.Count("foo");
-        context.Count("bar");
-        context.Count("bar");
+        Context.EventContext.Count("foo");
+        Context.EventContext.Count("bar");
+        Context.EventContext.Count("bar");
+        Context.Log();
     }
 }
 
-public class EventContextFieldConflict : Scenarios<EventContext>
+public class EventContextFieldConflict : Scenarios<EventContextTestContext>
 {
+
     [Scenario]
     public void Default()
     {
@@ -465,19 +438,19 @@ public class EventContextFieldConflict : Scenarios<EventContext>
 
     void Logging_duplicate_field_values()
     {
-        Context.Set("key", "value1");
-        Context.Set("key", "value2");
+        Context.EventContext.Set("key", "value1");
+        Context.EventContext.Set("key", "value2");
     }
 
     void Logging_duplicate_field_values_with(FieldConflict behavior)
     {
-        Context.Set("key", "value1", behavior);
-        Context.Set("key", "value2", behavior);
+        Context.EventContext.Set("key", "value1", behavior);
+        Context.EventContext.Set("key", "value2", behavior);
     }
 
     void Field_value_should_be(string expectedValue)
     {
-        Context["key"].Should().Be(expectedValue);
+        Context.EventContext["key"].Should().Be(expectedValue);
     }
 
     static void Field_conflict_behavior_not_specified()
@@ -489,7 +462,7 @@ public class EventContextFieldConflict : Scenarios<EventContext>
     }
 }
 
-public class EventContextTrySet : Scenarios<EventContext>
+public class EventContextTrySet : Scenarios<EventContextTestContext>
 {
     [Scenario]
     public void OnSuccess()
@@ -507,26 +480,26 @@ public class EventContextTrySet : Scenarios<EventContext>
 
     void Function_doesnt_throw()
     {
-        Context.TrySet("key", () => "value");
+        Context.EventContext.TrySet("key", () => "value");
     }
 
     void Function_throws()
     {
-        Context.TrySet("key", () => throw new Exception());
+        Context.EventContext.TrySet("key", () => throw new Exception());
     }
 
     void Value_is_logged()
     {
-        Context.Contains("key").Should().BeTrue();
+        Context.EventContext.Contains("key").Should().BeTrue();
     }
 
     void Value_is_omitted()
     {
-        Context.Contains("key").Should().BeFalse();
+        Context.EventContext.Contains("key").Should().BeFalse();
     }
 }
 
-public class EventContextForgiveNonExistentFields : Scenarios<EventContext>
+public class EventContextForgiveNonExistentFields : Scenarios<EventContextTestContext>
 {
     object _value;
 
@@ -540,7 +513,7 @@ public class EventContextForgiveNonExistentFields : Scenarios<EventContext>
 
     void Attempting_to_get_non_existent_field()
     {
-        _value = Context["NonExistentKey"];
+        _value = Context.EventContext["NonExistentKey"];
     }
 
     void No_exception_is_thrown()
@@ -553,7 +526,7 @@ public class EventContextForgiveNonExistentFields : Scenarios<EventContext>
     }
 }
 
-public class CustomTimestamp : Scenarios<EventContext>
+public class CustomTimestamp : Scenarios<EventContextTestContext>
 {
     [Scenario]
     public void Customize()
@@ -571,23 +544,25 @@ public class CustomTimestamp : Scenarios<EventContext>
 
     void Customizing_timestamp()
     {
-        Context.CustomTimestamp = DateTime.Parse("1/1/2000");
+        Context.EventContext.CustomTimestamp = DateTime.Parse("1/1/2000");
     }
 
     void time_is_custom_value()
     {
-        Context.Render().Timestamp.Should().Be(DateTime.Parse("1/1/2000"));
+        Context.Log();
+        Context.SingleLogEvent.Timestamp.Should().Be(DateTime.Parse("1/1/2000"));
     }
 
     void Doing_nothing() {}
 
     void time_is_now()
     {
-        Context.Render().Timestamp.Should().BeWithin(TimeSpan.FromMinutes(1));
+        Context.Log();
+        Context.SingleLogEvent.Timestamp.Should().BeWithin(TimeSpan.FromMinutes(1));
     }
 }
 
-public class SetComponent : Scenarios<EventContext>
+public class SetComponent : Scenarios<EventContextTestContext>
 {
     [Scenario]
     public void UsingProperty()
@@ -606,23 +581,24 @@ public class SetComponent : Scenarios<EventContext>
     const string CUSTOM_VALUE = "foobar123";
     void Setting_via_property()
     {
-        Context.Component = CUSTOM_VALUE;
+        Context.EventContext.Component = CUSTOM_VALUE;
     }
 
     void Setting_via_indexer()
     {
-        Context["Component"] = CUSTOM_VALUE;
+        Context.EventContext["Component"] = CUSTOM_VALUE;
     }
 
 
     void Value_is_reflected()
     {
-        Context.Component.Should().Be(CUSTOM_VALUE);
-        Context.Render().Message.Should().Contain(CUSTOM_VALUE);
+        Context.EventContext.Component.Should().Be(CUSTOM_VALUE);
+        Context.Log();
+        Context.SingleLogMessage.Should().Contain(CUSTOM_VALUE);
     }
 }
 
-public class SetOperation : Scenarios<EventContext>
+public class SetOperation : Scenarios<EventContextTestContext>
 {
     [Scenario]
     public void UsingProperty()
@@ -641,17 +617,18 @@ public class SetOperation : Scenarios<EventContext>
     const string CUSTOM_VALUE = "foobar123";
     void Setting_via_property()
     {
-        Context.Operation = CUSTOM_VALUE;
+        Context.EventContext.Operation = CUSTOM_VALUE;
     }
 
     void Setting_via_indexer()
     {
-        Context["Operation"] = CUSTOM_VALUE;
+        Context.EventContext["Operation"] = CUSTOM_VALUE;
     }
 
     void Value_is_reflected()
     {
-        Context.Operation.Should().Be(CUSTOM_VALUE);
-        Context.Render().Message.Should().Contain(CUSTOM_VALUE);
+        Context.EventContext.Operation.Should().Be(CUSTOM_VALUE);
+        Context.Log();
+        Context.SingleLogMessage.Should().Contain(CUSTOM_VALUE);
     }
 }

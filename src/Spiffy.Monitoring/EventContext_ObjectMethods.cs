@@ -13,7 +13,7 @@ namespace Spiffy.Monitoring
                 {
                     try
                     {
-                        var val = property.GetValue(structure, null) ?? Configuration.CustomNullValue;
+                        var val = property.GetValue(structure, null) ?? _config.CustomNullValue;
                         if (val == null && !includeNullValues)
                         {
                             continue;

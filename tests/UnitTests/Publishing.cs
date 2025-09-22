@@ -195,14 +195,15 @@ public class Publishing : Scenarios
     {
         public PublishingTestContext()
         {
-            Configuration.Initialize(customize =>
+            var config = Configuration.Initialize(customize =>
             {
                 customize.Callbacks.BeforeLogging(eventContext => BeforeLoggingContexts.Add(eventContext));
                 customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
             });
+            EventContext = new EventContext("MyComponent", "MyOperation", config);
         }
 
-        public EventContext EventContext { get; } = new EventContext("MyComponent", "MyOperation");
+        public EventContext EventContext { get; }
         public List<EventContext> BeforeLoggingContexts { get; } = new();
         public List<LogEvent> LogEvents { get; } = new();
     }
