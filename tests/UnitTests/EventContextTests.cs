@@ -65,11 +65,6 @@ public class EventContextCreation : Scenarios
 
 public class EventContextTestContext
 {
-    public EventContextTestContext()
-    {
-        Initialize();
-    }
-
     readonly List<LogEvent> _loggedEvents = new();
     public void Initialize(Configuration config = null)
     {
@@ -409,6 +404,11 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
 public class EventContextFieldConflict : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
 
     [Scenario]
     public void Default()
@@ -464,6 +464,12 @@ public class EventContextFieldConflict : Scenarios<EventContextTestContext>
 
 public class EventContextTrySet : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     [Scenario]
     public void OnSuccess()
     {
@@ -501,6 +507,12 @@ public class EventContextTrySet : Scenarios<EventContextTestContext>
 
 public class EventContextForgiveNonExistentFields : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     object _value;
 
     [Scenario]
@@ -528,6 +540,12 @@ public class EventContextForgiveNonExistentFields : Scenarios<EventContextTestCo
 
 public class CustomTimestamp : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     [Scenario]
     public void Customize()
     {
@@ -564,6 +582,12 @@ public class CustomTimestamp : Scenarios<EventContextTestContext>
 
 public class SetComponent : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     [Scenario]
     public void UsingProperty()
     {
@@ -600,6 +624,12 @@ public class SetComponent : Scenarios<EventContextTestContext>
 
 public class SetOperation : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     [Scenario]
     public void UsingProperty()
     {

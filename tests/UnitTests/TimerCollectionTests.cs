@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Spiffy.Monitoring;
 using Kekiri.Xunit;
 using Xunit;
 
@@ -8,12 +7,18 @@ namespace UnitTests;
 
 public class TimerCollectionTests : Scenarios<EventContextTestContext>
 {
+    protected override Task BeforeAsync()
+    {
+        Context.Initialize();
+        return base.BeforeAsync();
+    }
+
     [Scenario]
     public void TimeOnceScenario()
     {
         Given(A_code_block_timed_once);
         When(Event_is_logged);
-        Then(The_time_elapsed_field_should_be_near, 10)
+        Then(The_time_elapsed_field_should_be_near, 50)
             .And(There_should_be_no_count_field);
     }
 
@@ -22,7 +27,7 @@ public class TimerCollectionTests : Scenarios<EventContextTestContext>
     {
         Given(A_code_block_timed_multiple_times);
         When(Event_is_logged);
-        Then(The_time_elapsed_field_should_be_near, 20)
+        Then(The_time_elapsed_field_should_be_near, 100)
             .And(There_should_be_a_count_field);
     }
 
@@ -30,7 +35,7 @@ public class TimerCollectionTests : Scenarios<EventContextTestContext>
     {
         using (Context.EventContext.Timers.TimeOnce(TimerKey))
         {
-            Thread.Sleep(10);
+            Thread.Sleep(50);
         }
     }
 
@@ -40,7 +45,7 @@ public class TimerCollectionTests : Scenarios<EventContextTestContext>
         {
             using (Context.EventContext.Timers.Accumulate(TimerKey))
             {
-                Thread.Sleep(10);
+                Thread.Sleep(50);
             }
         }
     }
