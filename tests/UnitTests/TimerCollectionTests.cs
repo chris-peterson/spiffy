@@ -1,11 +1,12 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using Spiffy.Monitoring;
 using Kekiri.Xunit;
 using Xunit;
 
 namespace UnitTests;
 
-public class TimerCollectionTests : Scenarios
+public class TimerCollectionTests : Scenarios<EventContextTestContext>
 {
     [Scenario]
     public void TimeOnceScenario()
@@ -27,7 +28,7 @@ public class TimerCollectionTests : Scenarios
 
     void A_code_block_timed_once()
     {
-        using (EventContext.Timers.TimeOnce(TimerKey))
+        using (Context.EventContext.Timers.TimeOnce(TimerKey))
         {
             Thread.Sleep(10);
         }
@@ -37,7 +38,7 @@ public class TimerCollectionTests : Scenarios
     {
         for (int i = 0; i < 2; i++)
         {
-            using (EventContext.Timers.Accumulate(TimerKey))
+            using (Context.EventContext.Timers.Accumulate(TimerKey))
             {
                 Thread.Sleep(10);
             }
@@ -46,28 +47,24 @@ public class TimerCollectionTests : Scenarios
         
     void Event_is_logged()
     {
-        Configuration.Initialize(c => c.Providers.Add(GetType().Name, logEvent => LoggedEvent = logEvent));
-        EventContext.Dispose();
+        Context.Log();
     }
 
     void The_time_elapsed_field_should_be_near(int target)
     {
-        Assert.InRange(double.Parse(LoggedEvent.Properties[$"TimeElapsed_{TimerKey}"]), target-5, target+5);
+        Assert.InRange(double.Parse(Context.SingleLogEvent.Properties[$"TimeElapsed_{TimerKey}"]), target-5, target+5);
     }
 
     void There_should_be_no_count_field()
     {
-        Assert.DoesNotContain($"Count_{TimerKey}", LoggedEvent.Properties);
+        Assert.DoesNotContain($"Count_{TimerKey}", Context.SingleLogEvent.Properties);
     }
 
     void There_should_be_a_count_field()
     {
         var keyName = $"Count_{TimerKey}";
-        Assert.Contains(keyName, LoggedEvent.Properties);
-        Assert.Equal(2, int.Parse(LoggedEvent.Properties[keyName]));
+        Assert.Contains(keyName, Context.SingleLogEvent.Properties);
+        Assert.Equal(2, int.Parse(Context.SingleLogEvent.Properties[keyName]));
     }
-
-    EventContext EventContext { get; } = new EventContext();
-    LogEvent LoggedEvent { get; set; }
     const string TimerKey = "abc";
 }

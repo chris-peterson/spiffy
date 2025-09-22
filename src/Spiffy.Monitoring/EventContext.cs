@@ -3,14 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Spiffy.Monitoring.Config;
+using Spiffy.Monitoring.Config.Formatting;
+using Spiffy.Monitoring.Config.Naming;
 
 namespace Spiffy.Monitoring
 {
     partial class EventContext : ITimedContext
     {
-        public EventContext(string component, string operation)
+        private readonly Configuration _config;
+
+        internal EventContext(string component, string operation, Configuration config)
         {
+            _config = config ?? Configuration.Default;
+
             SetToInfo();
 
             GlobalEventContext.Instance.CopyTo(this);
@@ -18,7 +23,7 @@ namespace Spiffy.Monitoring
 
             Initialize(component, operation);
             // initialize time elapsed field so that it shows up in a consistent order in log entries
-            this[Naming.Get(Field.TimeElapsed)] = 0;
+            this[FieldName.Get(Field.TimeElapsed)] = 0;
         }
 
         public EventContext() : this(null, null)
@@ -32,18 +37,22 @@ namespace Spiffy.Monitoring
             Initialize(caller.DeclaringType.Name, caller.Name);
         }
 
+        public EventContext(string component, string operation) : this(component, operation, null)
+        {
+        }
+
         public double ElapsedMilliseconds => _timer.ElapsedMilliseconds;
 
         public string Component
         {
-            get => this[Naming.Get(Field.Component)] as string;
-            set => this[Naming.Get(Field.Component)] = value;
+            get => this[FieldName.Get(Field.Component)] as string;
+            set => this[FieldName.Get(Field.Component)] = value;
         }
 
         public string Operation
         {
-            get => this[Naming.Get(Field.Operation)] as string;
-            set => this[Naming.Get(Field.Operation)] = value;
+            get => this[FieldName.Get(Field.Operation)] as string;
+            set => this[FieldName.Get(Field.Operation)] = value;
         }
 
         public Level Level { get; private set; }
@@ -58,6 +67,8 @@ namespace Spiffy.Monitoring
 
         readonly AutoTimer _timer = new AutoTimer();
         volatile uint _fieldCounter;
+
+        internal IFieldNameLookup FieldName => _config.FieldNameLookup;
 
         public IDisposable Time(string key)
         {
@@ -140,7 +151,7 @@ namespace Spiffy.Monitoring
 
         public void SetLevel(Level level)
         {
-            this[Naming.Get(Field.Level)] = Level = level;
+            this[FieldName.Get(Field.Level)] = Level = level;
         }
 
         public void SetToInfo()
@@ -153,7 +164,7 @@ namespace Spiffy.Monitoring
             SetLevel(Level.Error);
             if (reason != null)
             {
-                this[Naming.Get(Field.ErrorReason)] = reason;
+                this[FieldName.Get(Field.ErrorReason)] = reason;
             }
         }
 
@@ -162,7 +173,7 @@ namespace Spiffy.Monitoring
             SetLevel(Level.Warning);
             if (reason != null)
             {
-                this[Naming.Get(Field.WarningReason)] = reason;
+                this[FieldName.Get(Field.WarningReason)] = reason;
             }
         }
 
@@ -188,15 +199,14 @@ namespace Spiffy.Monitoring
         {
             if (!_disposed)
             {
-                var beforeLoggingActions = Configuration.GetBeforeLoggingActions();
+                var beforeLoggingActions = _config.BeforeLoggingActions;
                 foreach (var action in beforeLoggingActions)
                 {
                     action(this);
                 }
                 if (!IsSuppressed)
                 {
-                    var logActions = Configuration.GetLoggingActions();
-
+                    var logActions = _config.LoggingActions;
                     if (logActions.Any())
                     {
                         var logEvent = Render();
@@ -223,10 +233,10 @@ namespace Spiffy.Monitoring
             Operation = operation;
         }
 
-        internal LogEvent Render()
+        private LogEvent Render()
         {
             IEnumerable<KeyValuePair<string, (uint Order, object Value)>> values = _values;
-            if (Configuration.CustomNullValue == null)
+            if (_config.CustomNullValue == null)
             {
                 values = values.Where(kvp => kvp.Value.Value != null);
             }
@@ -254,27 +264,35 @@ namespace Spiffy.Monitoring
 
             var timeElapsedMs = _timer.ElapsedMilliseconds;
             var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
-            this[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
-            kvps[Naming.Get(Field.TimeElapsed)] = formattedTimeElapsed;
+            this[FieldName.Get(Field.TimeElapsed)] = formattedTimeElapsed;
+            kvps[FieldName.Get(Field.TimeElapsed)] = formattedTimeElapsed;
             PrivateData["MetricsKey"] = $"{Component}/{Operation}";
 
             return new LogEvent(
                 Level,
                 Timestamp,
                 TimeSpan.FromMilliseconds(timeElapsedMs),
-                GetSplunkFormattedTime(),
+                RenderTimestamp(),
                 GetKeyValuePairsAsDelimitedString(kvps),
                 kvps,
                 PrivateData);
         }
         
-        static void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
+        void EncapsulateValuesIfNecessary(IDictionary<string, string> keyValuePairs)
         {
             foreach (var kvp in keyValuePairs)
             {
                 if (kvp.Value.RequiresEncapsulation(out var preferredQuote))
                 {
-                    keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes(preferredQuote);
+                    switch (_config.SpecialValueFormatting)
+                    {
+                        case SpecialValueFormatting.UseAlternateQuotes:
+                            keyValuePairs[kvp.Key] = kvp.Value.WrappedInQuotes(preferredQuote);
+                            break;
+                        case SpecialValueFormatting.UseAndEscapeDoubleQuotes:
+                            keyValuePairs[kvp.Key] = kvp.Value.Replace("\"", "\\\"").WrappedInQuotes('"');
+                            break;
+                    }
                 }
             }
         }
@@ -312,24 +330,24 @@ namespace Spiffy.Monitoring
             }
         }
 
-        private static string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
+        private string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
             return string.Join(" ", keyValuePairs
-                .OrderBy(pair => pair.Value.Length <= Configuration.DeprioritizedValueLength ? 0 : 1)
+                .OrderBy(pair => pair.Value.Length <= _config.DeprioritizedValueLength ? 0 : 1)
                 .Select(kvp =>
                     $"{kvp.Key}={kvp.Value}").ToArray());
         }
 
-        static string GetValue(object value)
+        string GetValue(object value)
         {
             if (value == null)
             {
-                return Configuration.CustomNullValue;
+                return _config.CustomNullValue;
             }
 
             var str = value.ToString();
 
-            if (Configuration.RemoveNewLines)
+            if (_config.RemoveNewLines)
             {
                 str = str
                     .Replace("\r", string.Empty)
@@ -339,9 +357,20 @@ namespace Spiffy.Monitoring
             return str;
         }
 
-        private string GetSplunkFormattedTime()
+        private string RenderTimestamp()
         {
-            return Timestamp.ToString("yyyy-MM-dd HH:mm:ss.fffK").WrappedInBrackets();
+            string ts = Timestamp.ToString(_config.TimestampFormatString);
+        
+            switch (_config.TimestampNaming)
+            {
+                case TimestampNaming.UseUnnamedFieldInBrackets:
+                    ts = ts.WrappedInBrackets();
+                    break;
+                case TimestampNaming.UseTimestampField:
+                    ts = $"{FieldName.Get(Field.Timestamp)}={ts}";
+                    break;
+            }
+            return ts;
         }
 
         private IDictionary<string, string> GetCountValues()
@@ -359,7 +388,7 @@ namespace Spiffy.Monitoring
                 .ShallowClone()
                 .OrderBy(x => x.Key))
             {
-                times[$"{Naming.Get(Field.TimeElapsed)}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
+                times[$"{FieldName.Get(Field.TimeElapsed)}_{kvp.Key}"] = GetTimeFor(kvp.Value.ElapsedMilliseconds);
                 if (kvp.Value.Count > 1)
                 {
                     times[$"Count_{kvp.Key}"] = kvp.Value.Count.ToString();

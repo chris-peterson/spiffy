@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using FluentAssertions;
+using AwesomeAssertions;
 using Kekiri.Xunit;
 using Spiffy.Monitoring;
 
@@ -69,7 +69,7 @@ public class Naming : Scenarios
     {
         public TestingContext(FieldNaming? fieldNaming = null)
         {
-            Configuration.Initialize(customize =>
+            var config = Configuration.Initialize(customize =>
             {
                 if (fieldNaming == FieldNaming.Short)
                 {
@@ -77,7 +77,7 @@ public class Naming : Scenarios
                 }
                 customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
             });
-            EventContext = new EventContext();
+            EventContext = new EventContext("TestComponent", "TestOperation", config);
         }
 
         public EventContext EventContext { get; }
