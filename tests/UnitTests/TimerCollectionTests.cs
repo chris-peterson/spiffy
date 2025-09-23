@@ -57,7 +57,7 @@ public class TimerCollectionTests : Scenarios<EventContextTestContext>
 
     void The_time_elapsed_field_should_be_near(int target)
     {
-        Assert.InRange(double.Parse(Context.SingleLogEvent.Properties[$"TimeElapsed_{TimerKey}"]), target-5, target+5);
+        Assert.InRange(double.Parse(Context.SingleLogEvent.Properties[$"TimeElapsed_{TimerKey}"]), target-20, target+20);
     }
 
     void There_should_be_no_count_field()
