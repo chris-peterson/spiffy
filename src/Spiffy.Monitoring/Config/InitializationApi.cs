@@ -28,7 +28,13 @@ namespace Spiffy.Monitoring.Config
 
         public class NamingApi()
         {
-            public NamingApi UseShortFieldNames()
+            [Obsolete("superseded by ShortFieldNames")]
+            public void UseShortFieldNames()
+            {
+                ShortFieldNames();
+            }
+
+            public NamingApi ShortFieldNames()
             {
                 FieldNameLookup = new ShortFieldNameLookup();
                 return this;

@@ -30,7 +30,7 @@ namespace TestConsoleApp
                         break;
                     case "console":
                         Configuration.Initialize(spiffy => {
-                            spiffy.Naming.UseShortFieldNames();
+                            spiffy.Naming.ShortFieldNames();
                             spiffy.CustomNullValue = "<null>";
                             spiffy.Callbacks.BeforeLogging(eventContext => {
                                 if (eventContext.Level == Level.Info)
