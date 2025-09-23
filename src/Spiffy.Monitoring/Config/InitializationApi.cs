@@ -89,7 +89,7 @@ namespace Spiffy.Monitoring.Config
         /// <code>true</code> if newline characters will be removed from logged
         /// values, <code>false</code> otherwise.
         /// </returns>
-        public bool? RemoveNewlines { get; set; }
+        public bool RemoveNewlines { get; set; } = false;
 
         /// <summary>
         /// Values over this length will be deprioritized in the <see cref="LogEvent.Message"/>.
@@ -100,7 +100,7 @@ namespace Spiffy.Monitoring.Config
         /// Key/value pairs with values whose length exceeds this value will be output after those
         /// pairs whose values do not.
         /// </remarks>
-        public int? DeprioritizedValueLength { get; set; }
+        public int DeprioritizedValueLength { get; set; } = -1;
 
         public InitializationApi UseLogfmt()
         {

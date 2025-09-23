@@ -347,7 +347,7 @@ namespace Spiffy.Monitoring
 
             var str = value.ToString();
 
-            if (_config.RemoveNewLines)
+            if (_config.RemoveNewlines)
             {
                 str = str
                     .Replace("\r", string.Empty)

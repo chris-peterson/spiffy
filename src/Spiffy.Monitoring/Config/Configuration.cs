@@ -14,7 +14,7 @@ namespace Spiffy.Monitoring
         internal Action<EventContext>[] BeforeLoggingActions { get; set; }   = [];
         internal Action<LogEvent>[] LoggingActions { get; set; }             = [];
         internal string CustomNullValue { get; set; }                        = null;
-        internal bool RemoveNewLines { get; set; }                           = false;
+        internal bool RemoveNewlines { get; set; }                           = false;
         internal int DeprioritizedValueLength { get; set; }                  = 1024;
         internal IFieldNameLookup FieldNameLookup { get; set; }              = new LegacyFieldNameLookup();
         internal TimestampNaming TimestampNaming { get; set; }               = TimestampNaming.UseUnnamedFieldInBrackets;
@@ -38,8 +38,14 @@ namespace Spiffy.Monitoring
             c.BeforeLoggingActions = api.Callbacks.BeforeLoggingActions.Any() ? api.Callbacks.BeforeLoggingActions.ToArray() : c.BeforeLoggingActions;
             c.LoggingActions = api.Providers.LoggingActions.Any() ? api.Providers.LoggingActions.Values.ToArray() : c.LoggingActions;
             c.CustomNullValue = api.CustomNullValue ?? c.CustomNullValue;
-            c.RemoveNewLines = api.RemoveNewlines ?? c.RemoveNewLines;
-            c.DeprioritizedValueLength = api.DeprioritizedValueLength ?? c.DeprioritizedValueLength;
+            if (api.RemoveNewlines)
+            {
+                c.RemoveNewlines = true;
+            }
+            if (api.DeprioritizedValueLength != -1)
+            {
+                c.DeprioritizedValueLength = api.DeprioritizedValueLength;
+            }
             c.FieldNameLookup = api.Naming.FieldNameLookup ?? c.FieldNameLookup;
             c.TimestampNaming = api.Naming.TimestampNaming ?? c.TimestampNaming;
             c.TimestampFormatString = api.Formatting.TimestampFormatString ?? c.TimestampFormatString;
