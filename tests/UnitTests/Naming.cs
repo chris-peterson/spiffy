@@ -73,7 +73,7 @@ public class Naming : Scenarios
             {
                 if (fieldNaming == FieldNaming.Short)
                 {
-                    customize.Naming.UseShortFieldNames();
+                    customize.Naming.ShortFieldNames();
                 }
                 customize.Providers.Add("test", logEvent => LogEvents.Add(logEvent));
             });

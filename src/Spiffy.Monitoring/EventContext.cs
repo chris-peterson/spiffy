@@ -347,11 +347,16 @@ namespace Spiffy.Monitoring
 
             var str = value.ToString();
 
-            if (_config.RemoveNewlines)
+            switch (_config.NewlineFormatting)
             {
-                str = str
-                    .Replace("\r", string.Empty)
-                    .Replace("\n", "\\n");
+                case NewlineFormatting.Remove:
+                    str = str
+                        .Replace("\r", string.Empty)
+                        .Replace("\n", "\\n");
+                    break;
+                case NewlineFormatting.Preserve:
+                default:
+                    break;
             }
 
             return str;

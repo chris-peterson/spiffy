@@ -66,6 +66,27 @@ namespace Spiffy.Monitoring.Config
                 return this;
             }
             internal string TimestampFormatString { get; private set; }
+
+            public FormattingApi Newlines(NewlineFormatting formatting)
+            {
+                NewlineFormatting = formatting;
+                return this;
+            }
+            internal NewlineFormatting? NewlineFormatting { get; private set; }
+
+            public FormattingApi NullValue(string nullValue)
+            {
+                CustomNullValue = nullValue;
+                return this;
+            }
+            internal string CustomNullValue { get; private set; }
+
+            public FormattingApi DeprioritizeValueLength(int length)
+            {
+                DeprioritizedValueLength = length;
+                return this;
+            }
+            internal int? DeprioritizedValueLength { get; private set; }
         }
 
         public ProvidersApi Providers { get; }
@@ -82,6 +103,7 @@ namespace Spiffy.Monitoring.Config
         /// <summary>
         /// If set, this value is used for logging values that are null.
         /// </summary>
+        [Obsolete("superseded by Formatting.NullValue")]
         public string CustomNullValue { get; set; }
 
         public NamingApi Naming { get; }
@@ -95,6 +117,7 @@ namespace Spiffy.Monitoring.Config
         /// <code>true</code> if newline characters will be removed from logged
         /// values, <code>false</code> otherwise.
         /// </returns>
+        [Obsolete("superseded by Formatting.Newlines")]
         public bool RemoveNewlines { get; set; } = false;
 
         /// <summary>
@@ -106,14 +129,15 @@ namespace Spiffy.Monitoring.Config
         /// Key/value pairs with values whose length exceeds this value will be output after those
         /// pairs whose values do not.
         /// </remarks>
+        [Obsolete("superseded by Formatting.DeprioritizeValueLength")]
         public int DeprioritizedValueLength { get; set; } = -1;
 
         public InitializationApi UseLogfmt()
         {
-            Naming.Timestamp(TimestampNaming.UseTimestampField);
-            Formatting.Timestamp("yyyy-MM-ddTHH:mm:ss.fffZ");
+            Formatting.Newlines(NewlineFormatting.Remove);
             Formatting.SpecialValue(SpecialValueFormatting.UseAndEscapeDoubleQuotes);
-            RemoveNewlines = true;
+            Formatting.Timestamp("yyyy-MM-ddTHH:mm:ss.fffZ");
+            Naming.Timestamp(TimestampNaming.UseTimestampField);
             return this;
         }
     }

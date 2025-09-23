@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AwesomeAssertions;
 using Spiffy.Monitoring;
 using Kekiri.Xunit;
+using Newtonsoft.Json;
+using Spiffy.Monitoring.Config.Formatting;
 
 namespace UnitTests;
 
@@ -89,7 +91,7 @@ public class EventContextTestContext
 
 public class EventContextValues : Scenarios<EventContextTestContext>
 {
-    bool _removeNewlines = false;
+    NewlineFormatting _newlineFormatting = NewlineFormatting.Preserve;
 
     [Scenario]
     public void TimeElapsed_works()
@@ -272,12 +274,12 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void Newline_removal_enabled()
     {
-        _removeNewlines = true;
+        _newlineFormatting = NewlineFormatting.Remove;
     }
 
     private void Formatting_a_value_with_one_or_more_newline_characters()
     {
-        Context.Initialize(Configuration.Create(c => c.RemoveNewlines = _removeNewlines));
+        Context.Initialize(Configuration.Create(c => c.Formatting.Newlines(_newlineFormatting)));
         Context.EventContext.AddValues(new KeyValuePair<string, object>("foo", "\nba\tr\r"));
         Context.Log();
     }
@@ -303,7 +305,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void An_event_is_comprised_of_short_values()
     {
-        Context.Initialize(Configuration.Create(c => c.DeprioritizedValueLength = 30));
+        Context.Initialize(Configuration.Create(c => c.Formatting.DeprioritizeValueLength(30)));
         Context.EventContext["Key1"] = "A short message";
         Context.EventContext["Key2"] = "Another short message";
         Context.Log();
@@ -311,7 +313,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
 
     private void An_event_has_a_mix_of_short_and_long_values()
     {
-        Context.Initialize(Configuration.Create(c => c.DeprioritizedValueLength = 30));
+        Context.Initialize(Configuration.Create(c => c.Formatting.DeprioritizeValueLength(30)));
         Context.EventContext["Key1"] = "A short message";
         Context.EventContext["Key2"] = "A very very very very very very very very very very very very long message";
         Context.EventContext["Key3"] = "Another short message";
