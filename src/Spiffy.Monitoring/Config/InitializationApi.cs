@@ -5,11 +5,17 @@ using Spiffy.Monitoring.Config.Naming;
 
 namespace Spiffy.Monitoring.Config
 {
-    public class InitializationApi
+    public partial class InitializationApi
     {
         // Custom providers should extend this API by way of extension methods
-        public class ProvidersApi()
+
+        public partial class ProvidersApi
         {
+            // TODO: this should be internal
+            public ProvidersApi()
+            {
+            }
+
             internal readonly Dictionary<string, Action<LogEvent>> LoggingActions = new();
             public void Add(string id, Action<LogEvent> loggingAction)
             {
@@ -17,8 +23,13 @@ namespace Spiffy.Monitoring.Config
             }
         }
 
-        public class CallbacksApi()
+        public partial class CallbacksApi
         {
+            // TODO: this should be internal
+            public CallbacksApi()
+            {
+            }
+
             internal readonly List<Action<EventContext>> BeforeLoggingActions = new();
             public void BeforeLogging(Action<EventContext> action)
             {
@@ -26,12 +37,11 @@ namespace Spiffy.Monitoring.Config
             }
         }
 
-        public class NamingApi()
+        public partial class NamingApi
         {
-            [Obsolete("superseded by ShortFieldNames")]
-            public void UseShortFieldNames()
+            // TODO: this should be internal
+            public NamingApi()
             {
-                ShortFieldNames();
             }
 
             public NamingApi ShortFieldNames()
@@ -50,8 +60,13 @@ namespace Spiffy.Monitoring.Config
             internal TimestampNaming? TimestampNaming { get; private set; }
         }
 
-        public class FormattingApi()
+        public partial class FormattingApi
         {
+            // TODO: this should be internal
+            public FormattingApi()
+            {
+            }
+
             public FormattingApi SpecialValue(SpecialValueFormatting formatting)
             {
                 SpecialValueFormatting = formatting;
@@ -100,37 +115,9 @@ namespace Spiffy.Monitoring.Config
             Formatting = new FormattingApi();
         }
 
-        /// <summary>
-        /// If set, this value is used for logging values that are null.
-        /// </summary>
-        [Obsolete("superseded by Formatting.NullValue")]
-        public string CustomNullValue { get; set; }
-
         public NamingApi Naming { get; }
 
         public FormattingApi Formatting { get; }
-
-        /// <summary>
-        /// Whether to remove newline characters from logged values.
-        /// </summary>
-        /// <returns>
-        /// <code>true</code> if newline characters will be removed from logged
-        /// values, <code>false</code> otherwise.
-        /// </returns>
-        [Obsolete("superseded by Formatting.Newlines")]
-        public bool RemoveNewlines { get; set; } = false;
-
-        /// <summary>
-        /// Values over this length will be deprioritized in the <see cref="LogEvent.Message"/>.
-        /// Defaults to 1024.
-        /// </summary>
-        /// <remarks>
-        /// In some logging scenarios, long values can result in some key/value pairs being cut off.
-        /// Key/value pairs with values whose length exceeds this value will be output after those
-        /// pairs whose values do not.
-        /// </remarks>
-        [Obsolete("superseded by Formatting.DeprioritizeValueLength")]
-        public int DeprioritizedValueLength { get; set; } = -1;
 
         public InitializationApi UseLogfmt()
         {
