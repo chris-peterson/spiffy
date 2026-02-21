@@ -5,7 +5,6 @@
     <Authors>Chris Peterson</Authors>
     <Description>The NLog adapter for Spiffy.Monitoring</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <DebugType>portable</DebugType>
     <AssemblyName>Spiffy.Monitoring.NLog</AssemblyName>
     <PackageId>Spiffy.Monitoring.NLog</PackageId>
     <PackageTags>monitoring;eventcontext;structured logging;nlog</PackageTags>
