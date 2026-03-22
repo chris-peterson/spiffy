@@ -110,3 +110,6 @@ UpgradeLog*.XML
 project.lock.json
 .vs/
 .vscode/
+
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
