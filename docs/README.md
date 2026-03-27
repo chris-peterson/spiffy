@@ -1,4 +1,4 @@
-# spiffy
+# <img src="favicon.svg" alt="spiffy" width="64" height="64" style="vertical-align: middle"> spiffy
 
 A structured logging framework for .NET that supports log analysis (e.g. Splunk) and metrics gathering (e.g. Prometheus).
 
