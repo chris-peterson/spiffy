@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
     internal class AutoTimer : ITimedContext
     {
-        readonly Stopwatch _stopwatch = new Stopwatch();
+        private long _startTimestamp;
+        private double _accumulatedMs;
+        private bool _running;
 
         public int Count { get; private set;}
 
@@ -14,11 +16,26 @@ namespace Spiffy.Monitoring
             Start();
         }
 
-        public double ElapsedMilliseconds => _stopwatch.Elapsed.TotalMilliseconds;
+        public double ElapsedMilliseconds
+        {
+            get
+            {
+                var ms = _accumulatedMs;
+                if (_running)
+                {
+                    ms += GetElapsedMs(_startTimestamp);
+                }
+                return ms;
+            }
+        }
 
         public void Dispose()
         {
-            _stopwatch.Stop();
+            if (_running)
+            {
+                _accumulatedMs += GetElapsedMs(_startTimestamp);
+                _running = false;
+            }
         }
 
         public void Resume()
@@ -28,19 +45,26 @@ namespace Spiffy.Monitoring
 
         public void StartOver()
         {
-            _stopwatch.Reset();
+            _accumulatedMs = 0;
             Count = 0;
+            _running = false;
             Start();
         }
 
         void Start()
         {
-            if (_stopwatch.IsRunning)
+            if (_running)
             {
                 return;
             }
             Count++;
-            _stopwatch.Start();
+            _startTimestamp = Stopwatch.GetTimestamp();
+            _running = true;
+        }
+
+        private static double GetElapsedMs(long startTimestamp)
+        {
+            return (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
         }
     }
 }

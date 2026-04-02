@@ -27,5 +27,13 @@ namespace Spiffy.Monitoring
                 other[kvp.Key] = kvp.Value;
             }
         }
+
+        internal void CopyToCore(EventContext other)
+        {
+            foreach (var kvp in _values)
+            {
+                other.SetCore(kvp.Key, kvp.Value);
+            }
+        }
     }
 }

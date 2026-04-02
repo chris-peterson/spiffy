@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spiffy.Monitoring.Aws", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWebApp", "tests\TestWebApp\TestWebApp.csproj", "{4DF62688-C556-4439-93C1-2E4562E07F42}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "tests\Benchmarks\Benchmarks.csproj", "{B1A2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{4DF62688-C556-4439-93C1-2E4562E07F42}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DF62688-C556-4439-93C1-2E4562E07F42}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DF62688-C556-4439-93C1-2E4562E07F42}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1A2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1A2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1A2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1A2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,5 +83,6 @@ Global
 		{9AD4DAE4-10DB-4933-9A28-6D0F994ADC17} = {8DEB13B2-A275-40CB-8D0F-AA672DB5717E}
 		{E7E90469-1E8B-4204-9990-48CD0C42E481} = {8DEB13B2-A275-40CB-8D0F-AA672DB5717E}
 		{4DF62688-C556-4439-93C1-2E4562E07F42} = {2DF31750-1635-4C57-980C-23EA82B2DE53}
+		{B1A2C3D4-E5F6-7890-ABCD-EF1234567890} = {2DF31750-1635-4C57-980C-23EA82B2DE53}
 	EndGlobalSection
 EndGlobal
