@@ -32,7 +32,7 @@ using (var context = new EventContext()) {
 ## Exception Entry
 
 ```text
-[2014-06-13 00:12:52.038Z] Application=MyApplication Level=Error Component=Program Operation=Main TimeElapsed=1027.0 Key=Value ErrorReason="An exception has ocurred" Exception_Type=ApplicationException Exception_Message="you were unlucky!" Exception_StackTrace="..." InnermostException_Type=NullReferenceException InnermostException_Message="Object reference not set to an instance of an object." Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
+[2014-06-13 00:12:52.038Z] Application=MyApplication Level=Error Component=Program Operation=Main TimeElapsed=1027.0 Key=Value ErrorReason="An exception has occurred" Exception_Type=ApplicationException Exception_Message="you were unlucky!" Exception_StackTrace="..." InnermostException_Type=NullReferenceException InnermostException_Message="Object reference not set to an instance of an object." Exception="See Exception_* and InnermostException_* for more details" TimeElapsed_LongRunning=1000.0
 ```
 
 ## Hosting Frameworks
