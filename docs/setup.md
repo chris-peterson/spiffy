@@ -57,34 +57,36 @@ static void Main() {
 Each event's level comes from the severity the SDK reported it at.
 
 Where the SDK hands the exception to the trace listener, it is broken out into `Exception_*` fields.
-Only v3 of the AWS SDK does so — v4 discards the exception before the listener sees it, keeping only
-the message text — so don't build alerting on `Exception_*` for a v4 application.
+Only v3 of the AWS SDK does so: v4 discards the exception before the listener sees it, keeping only
+the message text. So don't build alerting on `Exception_*` for a v4 application.
 
 The SDK reports a lot at informational severity, including several messages that repeat on every call
-and carry nothing actionable — its own user-agent string, request-signing canonicalization, retry
-bookkeeping, buffer resizing, cached DynamoDB table descriptions, and one line per unset `AWS_*`
-environment variable. Those are suppressed by default; anything the SDK reports at warning or above
-never is.
+and carry nothing actionable: its own user-agent string, request-signing canonicalization, retry
+bookkeeping, buffer resizing, DynamoDB table descriptions, and one line per unset `AWS_*` environment
+variable. Those are filtered by default; anything the SDK reports at warning or above never is.
 
-Retry and failure notices are kept, including the ones the SDK reports at informational severity —
+Retry and failure notices are kept, including the ones the SDK reports at informational severity, so
 a throttled DynamoDB request or a rejected S3 request still reaches your logs.
 
-To suppress more, match on the start of the message:
+There's one filter per kind, and each kind is a member of `SdkNoise`, so you don't have to know the
+message text. Remove a filter and that kind shows up in your logs again:
 
 ```csharp
-spiffy.Providers.Aws(c => c.SuppressMessages.Add("Resolved endpoint"));
+spiffy.Providers.Aws(c => c.NoiseFilters.Remove(SdkNoise.UserAgentHeader));
 ```
 
-`Only` replaces the defaults rather than adding to them:
+To filter noise `SdkNoise` doesn't name (something specific to your application, or a message a
+newer SDK started reporting), add a filter matching the start of the message:
 
 ```csharp
-spiffy.Providers.Aws(c => c.SuppressMessages.Only("Resolved endpoint"));
+spiffy.Providers.Aws(c => c.NoiseFilters.Add("Credentials found using"));
 ```
 
-`None` emits everything the SDK reports, noise included:
+`Clear` removes every filter, so everything the SDK reports is logged. Useful when you're working out
+what to filter:
 
 ```csharp
-spiffy.Providers.Aws(c => c.SuppressMessages.None());
+spiffy.Providers.Aws(c => c.NoiseFilters.Clear());
 ```
 
 Response bodies are logged on error only. `Always` logs them for every call, `Never` for none:

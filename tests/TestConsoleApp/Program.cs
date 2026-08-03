@@ -90,7 +90,7 @@ namespace TestConsoleApp
                                     c.LogResponses.Always();
                                     if (unfiltered)
                                     {
-                                        c.SuppressMessages.None();
+                                        c.NoiseFilters.Clear();
                                     }
                                 }));
                         var id = new AmazonSecurityTokenServiceClient()

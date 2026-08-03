@@ -10,19 +10,14 @@ using Xunit;
 
 namespace UnitTests;
 
-// The listener builds its EventContext from the ambient Configuration, so these scenarios
-// have to take turns installing a capturing provider into Configuration.Default.
-[CollectionDefinition(AwsListener.Collection, DisableParallelization = true)]
-public class AwsListener
-{
-    public const string Collection = "AwsListener";
-}
-
 public class AwsListenerTestContext
 {
     readonly List<LogEvent> _loggedEvents = new();
     AwsProvider.AwsEvent _listener;
 
+    // The listener builds its EventContext from the ambient Configuration, so capturing what it
+    // logs means installing a provider into the global Configuration.Default.  Properties/
+    // AssemblyInfo.cs turns off test parallelization for that reason.
     public void Initialize(Action<AwsConfigurationApi> configure = null)
     {
         _loggedEvents.Clear();
@@ -30,7 +25,7 @@ public class AwsListenerTestContext
 
         var config = new AwsConfigurationApi();
         configure?.Invoke(config);
-        _listener = new AwsProvider.AwsEvent(config.SuppressMessages.Prefixes);
+        _listener = new AwsProvider.AwsEvent(config.NoiseFilters.Prefixes);
     }
 
     // Mirrors how the SDK reports.  A lone message is what v4 always sends -- its
@@ -51,7 +46,6 @@ public class AwsListenerTestContext
     public LogEvent SingleLogEvent => _loggedEvents.Single();
 }
 
-[Collection(AwsListener.Collection)]
 public class AwsListenerSeverity : Scenarios<AwsListenerTestContext>
 {
     const string ErrorMessage = "An exception of type HttpErrorResponseException was handled in ErrorHandler.";
@@ -130,7 +124,6 @@ public class AwsListenerSeverity : Scenarios<AwsListenerTestContext>
     }
 }
 
-[Collection(AwsListener.Collection)]
 public class AwsListenerExceptions : Scenarios<AwsListenerTestContext>
 {
     // Only reachable on SDK v3, which is why the package floor still matters: v4 drops the
@@ -180,8 +173,7 @@ public class AwsListenerExceptions : Scenarios<AwsListenerTestContext>
     }
 }
 
-[Collection(AwsListener.Collection)]
-public class AwsListenerSuppression : Scenarios<AwsListenerTestContext>
+public class AwsListenerNoiseFilters : Scenarios<AwsListenerTestContext>
 {
     // The messages here are taken verbatim from a production log query, so a change to the
     // prefixes has to keep clearing the traffic that motivated them.
@@ -194,7 +186,7 @@ public class AwsListenerSuppression : Scenarios<AwsListenerTestContext>
     [Example("Retry check: IsStaleConnectionError=False, CanRetry=True, staleConnectionRetries=0, maxStaleConnectionRetries=10, IsRequestStreamRewindable=True")]
     [Example("Single encoded /{Key+} with endpoint https://example.s3.us-west-2.amazonaws.com/ for canonicalization: /public/getty/workbench-pages/index.xml.gz")]
     [Example("Double encoded /usageplans with endpoint https://apigateway.us-west-2.amazonaws.com/ for canonicalization: /usageplans")]
-    public void Noise_is_suppressed_by_default(string message)
+    public void Noise_is_filtered_by_default(string message)
     {
         Given(A_listener);
         When(The_sdk_reports_at_information, message);
@@ -224,35 +216,73 @@ public class AwsListenerSuppression : Scenarios<AwsListenerTestContext>
     }
 
     [Scenario]
-    public void Suppression_never_applies_to_errors()
+    public void Filtering_never_applies_to_errors()
     {
         Given(A_listener);
         When(The_sdk_reports_an_error, "User-Agent Header: something went wrong while building it");
         Then(One_event_is_logged);
     }
 
-    static readonly Action<AwsConfigurationApi> SuppressNothing = c => c.SuppressMessages.None();
-    static readonly Action<AwsConfigurationApi> AlsoSuppressRegion = c => c.SuppressMessages.Add("Region found using");
-    static readonly Action<AwsConfigurationApi> OnlySuppressRegion = c => c.SuppressMessages.Only("Region found using");
+    const string UserAgentMessage = "User-Agent Header: aws-sdk-dotnet-coreclr/4.0.2.11";
 
-    static readonly Action<AwsConfigurationApi> AlsoSuppressRegionAndCredentials = c =>
+    static readonly Action<AwsConfigurationApi> FilterNothing = c => c.NoiseFilters.Clear();
+    static readonly Action<AwsConfigurationApi> KeepUserAgent = c => c.NoiseFilters.Remove(SdkNoise.UserAgentHeader);
+    static readonly Action<AwsConfigurationApi> AlsoFilterRegion = c => c.NoiseFilters.Add("Region found using");
+
+    static readonly Action<AwsConfigurationApi> OnlyFilterRegion = c =>
     {
-        c.SuppressMessages.Add("Region found using");
-        c.SuppressMessages.Add("Credentials found using");
+        c.NoiseFilters.Clear();
+        c.NoiseFilters.Add("Region found using");
+    };
+
+    static readonly Action<AwsConfigurationApi> AlsoFilterRegionAndCredentials = c =>
+    {
+        c.NoiseFilters.Add("Region found using");
+        c.NoiseFilters.Add("Credentials found using");
     };
 
     [Scenario]
-    public void None_disables_suppression()
+    public void Clear_disables_filtering()
     {
-        Given(A_listener_configured_with, SuppressNothing);
-        When(The_sdk_reports_at_information, "User-Agent Header: aws-sdk-dotnet-coreclr/4.0.2.11");
+        Given(A_listener_configured_with, FilterNothing);
+        When(The_sdk_reports_at_information, UserAgentMessage);
         Then(One_event_is_logged);
     }
 
     [Scenario]
+    public void Remove_stops_filtering_one_kind()
+    {
+        Given(A_listener_configured_with, KeepUserAgent);
+        When(The_sdk_reports_at_information, UserAgentMessage);
+        Then(One_event_is_logged);
+    }
+
+    [Scenario]
+    public void Remove_leaves_the_other_kinds_filtered()
+    {
+        Given(A_listener_configured_with, KeepUserAgent);
+        When(The_sdk_reports_at_information, "Retry check: IsStaleConnectionError=False, CanRetry=True");
+        Then(Nothing_is_logged);
+    }
+
+    // RequestCanonicalization covers two prefixes, so removing it has to clear both.
+    [ScenarioOutline]
+    [Example("Single encoded /{Key+} with endpoint https://example.s3.us-west-2.amazonaws.com/ for canonicalization: /a.gz")]
+    [Example("Double encoded /usageplans with endpoint https://apigateway.us-west-2.amazonaws.com/ for canonicalization: /usageplans")]
+    public void Removing_a_kind_covers_all_its_prefixes(string message)
+    {
+        Given(A_listener_configured_with, KeepCanonicalization);
+        When(The_sdk_reports_at_information, message);
+        Then(One_event_is_logged);
+    }
+
+    static readonly Action<AwsConfigurationApi> KeepCanonicalization =
+        c => c.NoiseFilters.Remove(SdkNoise.RequestCanonicalization);
+
+    [Scenario]
     public void Add_extends_the_defaults()
     {
-        Given(A_listener_configured_with, AlsoSuppressRegion);
+        Given(A_listener_configured_with, AlsoFilterRegion);
         When(The_sdk_reports_at_information, "Region found using environment variable.");
         Then(Nothing_is_logged);
     }
@@ -260,31 +290,31 @@ public class AwsListenerSuppression : Scenarios<AwsListenerTestContext>
     [Scenario]
     public void Add_keeps_the_defaults()
     {
-        Given(A_listener_configured_with, AlsoSuppressRegion);
-        When(The_sdk_reports_at_information, "User-Agent Header: aws-sdk-dotnet-coreclr/4.0.2.11");
+        Given(A_listener_configured_with, AlsoFilterRegion);
+        When(The_sdk_reports_at_information, UserAgentMessage);
         Then(Nothing_is_logged);
     }
 
     [Scenario]
     public void Add_accumulates_across_calls()
     {
-        Given(A_listener_configured_with, AlsoSuppressRegionAndCredentials);
+        Given(A_listener_configured_with, AlsoFilterRegionAndCredentials);
         When(The_sdk_reports_at_information, "Region found using environment variable.");
         Then(Nothing_is_logged);
     }
 
     [Scenario]
-    public void Only_discards_the_defaults()
+    public void Clear_then_Add_discards_the_defaults()
     {
-        Given(A_listener_configured_with, OnlySuppressRegion);
-        When(The_sdk_reports_at_information, "User-Agent Header: aws-sdk-dotnet-coreclr/4.0.2.11");
+        Given(A_listener_configured_with, OnlyFilterRegion);
+        When(The_sdk_reports_at_information, UserAgentMessage);
         Then(One_event_is_logged);
     }
 
     [Scenario]
-    public void Only_suppresses_what_it_names()
+    public void Clear_then_Add_filters_what_it_names()
     {
-        Given(A_listener_configured_with, OnlySuppressRegion);
+        Given(A_listener_configured_with, OnlyFilterRegion);
         When(The_sdk_reports_at_information, "Region found using environment variable.");
         Then(Nothing_is_logged);
     }
@@ -295,6 +325,36 @@ public class AwsListenerSuppression : Scenarios<AwsListenerTestContext>
         Given(A_listener);
         When(The_sdk_reports_at_information, "   ");
         Then(Nothing_is_logged);
+    }
+
+    // A member added to SdkNoise without a prefix mapping would filter nothing, silently.
+    [Scenario]
+    public void Every_kind_maps_to_at_least_one_prefix()
+    {
+        When(Filtering_each_kind_on_its_own);
+        Then(No_kind_is_left_unmapped);
+    }
+
+    readonly List<SdkNoise> _unmappedKinds = new();
+
+    void Filtering_each_kind_on_its_own()
+    {
+        foreach (SdkNoise kind in Enum.GetValues(typeof(SdkNoise)))
+        {
+            var config = new AwsConfigurationApi();
+            config.NoiseFilters.Clear();
+            config.NoiseFilters.Add(kind);
+
+            if (!config.NoiseFilters.Prefixes.Any())
+            {
+                _unmappedKinds.Add(kind);
+            }
+        }
+    }
+
+    void No_kind_is_left_unmapped()
+    {
+        _unmappedKinds.Should().BeEmpty(because: "a kind with no prefix mapping filters nothing");
     }
 
     void A_listener()

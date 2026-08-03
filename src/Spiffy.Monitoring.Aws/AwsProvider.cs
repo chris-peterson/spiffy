@@ -15,7 +15,7 @@ namespace Spiffy.Monitoring.Aws
             configure?.Invoke(config);
 
             AWSConfigs.LoggingConfig.LogTo = LoggingOptions.SystemDiagnostics;
-            AWSConfigs.AddTraceListener("Amazon", new AwsEvent(config.SuppressMessages.Prefixes));
+            AWSConfigs.AddTraceListener("Amazon", new AwsEvent(config.NoiseFilters.Prefixes));
 
             switch (config.LogResponses.ResponseLoggingOption)
             {
@@ -35,11 +35,11 @@ namespace Spiffy.Monitoring.Aws
 
         internal class AwsEvent : TraceListener
         {
-            readonly IReadOnlyList<string> _suppressedPrefixes;
+            readonly IReadOnlyList<string> _noisePrefixes;
 
-            public AwsEvent(IReadOnlyList<string> suppressedPrefixes)
+            public AwsEvent(IReadOnlyList<string> noisePrefixes)
             {
-                _suppressedPrefixes = suppressedPrefixes;
+                _noisePrefixes = noisePrefixes;
             }
 
             // TraceData is a System.Diagnostics.TraceListener member, so what's overridden here
@@ -83,7 +83,7 @@ namespace Spiffy.Monitoring.Aws
                 {
                     return;
                 }
-                if (!IsActionable(eventType) && IsSuppressed(message))
+                if (IsNoise(eventType, message))
                 {
                     return;
                 }
@@ -118,22 +118,19 @@ namespace Spiffy.Monitoring.Aws
                 }
             }
 
-            static bool IsActionable(TraceEventType eventType)
+            // Severity decides first: only what the SDK reports below Warning is eligible for
+            // prefix matching.
+            bool IsNoise(TraceEventType eventType, string message)
             {
                 switch (eventType)
                 {
                     case TraceEventType.Critical:
                     case TraceEventType.Error:
                     case TraceEventType.Warning:
-                        return true;
-                    default:
                         return false;
+                    default:
+                        return _noisePrefixes.Any(prefix => message.StartsWith(prefix, StringComparison.Ordinal));
                 }
-            }
-
-            bool IsSuppressed(string message)
-            {
-                return _suppressedPrefixes.Any(prefix => message.StartsWith(prefix, StringComparison.Ordinal));
             }
 
             public override string Name { get; set; } = nameof(AwsEvent);
