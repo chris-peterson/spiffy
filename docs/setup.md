@@ -38,6 +38,61 @@ static void Main() {
 }
 ```
 
+### AWS Provider
+
+```bash
+PM> Install-Package Spiffy.Monitoring.Aws
+```
+
+Routes the AWS SDK's own diagnostics into your structured logs as `Component=AwsSdk Operation=Event`.
+
+```csharp
+static void Main() {
+    Spiffy.Monitoring.Configuration.Initialize(spiffy => {
+        spiffy.Providers.Aws();
+    });
+}
+```
+
+Each event's level comes from the severity the SDK reported it at.
+
+Where the SDK hands the exception to the trace listener, it is broken out into `Exception_*` fields.
+Only v3 of the AWS SDK does so — v4 discards the exception before the listener sees it, keeping only
+the message text — so don't build alerting on `Exception_*` for a v4 application.
+
+The SDK reports a lot at informational severity, including several messages that repeat on every call
+and carry nothing actionable — its own user-agent string, request-signing canonicalization, retry
+bookkeeping, buffer resizing, cached DynamoDB table descriptions, and one line per unset `AWS_*`
+environment variable. Those are suppressed by default; anything the SDK reports at warning or above
+never is.
+
+Retry and failure notices are kept, including the ones the SDK reports at informational severity —
+a throttled DynamoDB request or a rejected S3 request still reaches your logs.
+
+To suppress more, match on the start of the message:
+
+```csharp
+spiffy.Providers.Aws(c => c.SuppressMessages.Add("Resolved endpoint"));
+```
+
+`Only` replaces the defaults rather than adding to them:
+
+```csharp
+spiffy.Providers.Aws(c => c.SuppressMessages.Only("Resolved endpoint"));
+```
+
+`None` emits everything the SDK reports, noise included:
+
+```csharp
+spiffy.Providers.Aws(c => c.SuppressMessages.None());
+```
+
+Response bodies are logged on error only. `Always` logs them for every call, `Never` for none:
+
+```csharp
+spiffy.Providers.Aws(c => c.LogResponses.Always());
+```
+
 ## Multiple Providers
 
 Multiple providers can be supplied, for example, this application uses both `Console` (built-in), as well as `File` (NLog)

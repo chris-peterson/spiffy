@@ -79,11 +79,20 @@ namespace TestConsoleApp
                                 .OverrideValues(OverrideValues)
                             .ToCounter("my_app_my_counter", "Counter Help String");
                         break;
+                    // pass "unfiltered" to see what the default suppression is removing
                     case "aws":
+                        var unfiltered = args.Length > 1 && args[1].Trim().ToLower() == "unfiltered";
                         Configuration.Initialize(spiffy =>
                             spiffy.Providers
                                 .Console()
-                                .Aws(c => c.LogResponses.Always()));
+                                .Aws(c =>
+                                {
+                                    c.LogResponses.Always();
+                                    if (unfiltered)
+                                    {
+                                        c.SuppressMessages.None();
+                                    }
+                                }));
                         var id = new AmazonSecurityTokenServiceClient()
                             .GetCallerIdentityAsync(new GetCallerIdentityRequest()).Result;
                         break;

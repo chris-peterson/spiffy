@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Amazon;
 using Spiffy.Monitoring.Config;
 
@@ -9,11 +11,11 @@ namespace Spiffy.Monitoring.Aws
     {
         public static InitializationApi.ProvidersApi Aws(this InitializationApi.ProvidersApi providers, Action<AwsConfigurationApi> configure = null)
         {
-            AWSConfigs.LoggingConfig.LogTo = LoggingOptions.SystemDiagnostics;
-            AWSConfigs.AddTraceListener("Amazon", new AwsEvent());
-
             var config = new AwsConfigurationApi();
             configure?.Invoke(config);
+
+            AWSConfigs.LoggingConfig.LogTo = LoggingOptions.SystemDiagnostics;
+            AWSConfigs.AddTraceListener("Amazon", new AwsEvent(config.SuppressMessages.Prefixes));
 
             switch (config.LogResponses.ResponseLoggingOption)
             {
@@ -31,57 +33,107 @@ namespace Spiffy.Monitoring.Aws
             return providers;
         }
 
-        class AwsEvent : TraceListener
+        internal class AwsEvent : TraceListener
         {
+            readonly IReadOnlyList<string> _suppressedPrefixes;
+
+            public AwsEvent(IReadOnlyList<string> suppressedPrefixes)
+            {
+                _suppressedPrefixes = suppressedPrefixes;
+            }
+
+            // TraceData is a System.Diagnostics.TraceListener member, so what's overridden here
+            // is BCL surface -- nothing about it is tied to an SDK version, and one
+            // implementation serves both majors.  Both report exclusively through
+            // TraceSource.TraceData (v3 via InternalSystemDiagnosticsLogger, v4 via
+            // DiagnosticAdaptorLogger), which is where the severity is available;
+            // Write/WriteLine only ever see the flattened string.  Every v4 message lands on
+            // this overload, as do v3's InfoFormat/DebugFormat.
+            public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, object data)
+            {
+                Handle(eventType, data?.ToString(), null);
+            }
+
+            // Only v3 reaches this overload, from Error/Debug, which pass the message and the
+            // exception separately.  v4 accepts an exception and discards it before this point.
+            public override void TraceData(TraceEventCache eventCache, string source, TraceEventType eventType, int id, params object[] data)
+            {
+                if (data == null || data.Length == 0)
+                {
+                    return;
+                }
+                Handle(eventType, data[0]?.ToString(), data.Length > 1 ? data[1] as Exception : null);
+            }
+
             public override void Write(string message)
             {
-                // these messages tend to be useless, e.g.
-                // Message="Amazon Information: 0 : "
+                // headers, e.g. Message="Amazon Information: 0 : "
             }
 
+            // Nothing in the SDK reaches the listener this way today, but a caller that
+            // bypasses TraceData carries no severity, so treat it as informational.
             public override void WriteLine(string message)
             {
-                Handle(message);
+                Handle(TraceEventType.Information, message, null);
             }
 
-            void Handle(string message)
+            void Handle(TraceEventType eventType, string message, Exception exception)
             {
                 if (string.IsNullOrWhiteSpace(message))
                 {
                     return;
                 }
-                if (!IsSdkSpam(message))
+                if (!IsActionable(eventType) && IsSuppressed(message))
                 {
-                    using (var context = new EventContext("AwsSdk", "Event"))
-                    {
-                        context["Message"] = message;
+                    return;
+                }
 
-                        // some example exception messages:
-                        // An exception of type HttpErrorResponseException was handled in ErrorHandler...
-                        // UnsupportedLanguagePairException making request TranslateTextRequest...
-                        // An exception of type TimeoutException was handled in ErrorHandler...
-                        if (message.IndexOf("exception", Math.Min(100, message.Length), StringComparison.OrdinalIgnoreCase) != -1)
+                using (var context = new EventContext("AwsSdk", "Event"))
+                {
+                    context["Message"] = message;
+
+                    if (eventType == TraceEventType.Error || eventType == TraceEventType.Critical)
+                    {
+                        if (exception == null)
                         {
                             context.SetToError();
+                        }
+                        else
+                        {
+                            // also sets the level to error
+                            context.IncludeException(exception);
+                        }
+                    }
+                    else
+                    {
+                        if (eventType == TraceEventType.Warning)
+                        {
+                            context.SetToWarning();
+                        }
+                        if (exception != null)
+                        {
+                            context.IncludeInformationalException(exception, "Exception");
                         }
                     }
                 }
             }
 
-            static bool IsSdkSpam(string message)
+            static bool IsActionable(TraceEventType eventType)
             {
-                // this message happens often and for all configurations (legacy/standard/etc)
-                if (message.StartsWith("Resolved DefaultConfigurationMode for RegionEndpoint"))
+                switch (eventType)
                 {
-                    return true;
+                    case TraceEventType.Critical:
+                    case TraceEventType.Error:
+                    case TraceEventType.Warning:
+                        return true;
+                    default:
+                        return false;
                 }
-                // this message happens as part of routine DynamoDB usage
-                if (message.StartsWith("Description for table") && message.EndsWith("loaded from SDK Cache"))
-                {
-                    return true;
-                }
+            }
 
-                return false;
+            bool IsSuppressed(string message)
+            {
+                return _suppressedPrefixes.Any(prefix => message.StartsWith(prefix, StringComparison.Ordinal));
             }
 
             public override string Name { get; set; } = nameof(AwsEvent);

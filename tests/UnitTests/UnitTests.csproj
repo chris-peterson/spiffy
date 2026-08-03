@@ -14,6 +14,7 @@
     
     <ItemGroup>
         <ProjectReference Include="..\..\src\Spiffy.Monitoring\Spiffy.Monitoring.csproj" />
+        <ProjectReference Include="..\..\src\Spiffy.Monitoring.Aws\Spiffy.Monitoring.Aws.csproj" />
         <PackageReference Include="AwesomeAssertions" Version="9.1.*" />
         <PackageReference Include="Kekiri" Version="5.1.*" />
         <PackageReference Include="Kekiri.Xunit" Version="1.2.*" />
