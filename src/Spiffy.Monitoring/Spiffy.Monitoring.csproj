@@ -17,8 +17,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Ben.Demystifier" Version="0.4.*" />
-    <PackageReference Include="System.Diagnostics.StackTrace" Version="4.3.*" />
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.*" />
   </ItemGroup>
   <ItemGroup>

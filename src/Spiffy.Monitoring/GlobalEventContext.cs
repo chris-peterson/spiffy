@@ -20,11 +20,11 @@ namespace Spiffy.Monitoring
             return this;
         }
 
-        internal void CopyTo(EventContext other)
+        internal void CopyToCore(EventContext other)
         {
             foreach (var kvp in _values)
             {
-                other[kvp.Key] = kvp.Value;
+                other.SetCore(kvp.Key, kvp.Value);
             }
         }
     }

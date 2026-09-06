@@ -20,7 +20,7 @@ namespace Spiffy.Monitoring
                         }
                         string key = string.IsNullOrEmpty(keyPrefix)
                             ? property.Name
-                            : string.Format("{0}_{1}", keyPrefix, property.Name);
+                            : string.Concat(keyPrefix, "_", property.Name);
                         this[key] = val;
                     }
                     // ReSharper disable once EmptyGeneralCatchClause -- intentionally squashed

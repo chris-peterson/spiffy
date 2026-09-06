@@ -41,6 +41,27 @@ public class EventContextCreation : Scenarios
         Then(Component_and_operation_should_be, "RuntimeType", "CreateInstanceDefaultCtor");
     }
 
+    [Scenario]
+    public void Implicit_creation_from_a_lambda()
+    {
+        When(Creating_an_event_context_in_a_lambda);
+        Then(Component_and_operation_should_be, GetType().Name, nameof(Creating_an_event_context_in_a_lambda));
+    }
+
+    [Scenario]
+    public void Implicit_creation_from_a_local_function()
+    {
+        When(Creating_an_event_context_in_a_local_function);
+        Then(Component_and_operation_should_be, GetType().Name, nameof(Creating_an_event_context_in_a_local_function));
+    }
+
+    [Scenario]
+    public void Implicit_creation_from_a_generic_async_method()
+    {
+        WhenAsync(Creating_an_event_context_in_a_generic_async_method<int>);
+        Then(Component_and_operation_should_be, GetType().Name, "Creating_an_event_context_in_a_generic_async_method");
+    }
+
     void Component_and_operation_should_be(string component, string operation)
     {
         var context = (EventContext) Context.EventContext;
@@ -62,6 +83,24 @@ public class EventContextCreation : Scenarios
     void Creating_an_event_context_via_reflection()
     {
         Context.EventContext = Activator.CreateInstance(typeof(EventContext));
+    }
+
+    void Creating_an_event_context_in_a_lambda()
+    {
+        Func<EventContext> create = () => new EventContext();
+        Context.EventContext = create();
+    }
+
+    void Creating_an_event_context_in_a_local_function()
+    {
+        EventContext Create() => new EventContext();
+        Context.EventContext = Create();
+    }
+
+    async Task Creating_an_event_context_in_a_generic_async_method<T>()
+    {
+        Context.EventContext = new EventContext();
+        await Task.CompletedTask;
     }
 }
 
@@ -184,6 +223,7 @@ public class EventContextValues : Scenarios<EventContextTestContext>
     [Example("a&b", "\"a&b\"", "ampersands are encapsulated")]
     [Example("\"", "'\"'", "double quotes are wrapped in single quotes")]
     [Example("\"'", "`\"'", "if double and single quotes are used, wrap in backtick")]
+    [Example("'\"", "`'\"", "quote choice does not depend on which quote appears first")]
     [Example("\"'`", "\"\"'`", "if all quote types are used, use double quotes")]
     [Example("\"'`foo", "\"\"'`foo", "don't throw out-of-range-exceptions (regression test for !35)")]
     public void Values_are_encapsulated_with_quotes_if_necessary(string input, string expectedResult, string reason)
