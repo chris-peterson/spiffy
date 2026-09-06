@@ -99,6 +99,30 @@ public class Publishing : Scenarios
         Then(It_should_first_trigger_callbacks);
     }
 
+    [ScenarioOutline]
+    [Example("db call", "TimeElapsed_db_call", "whitespace in a timer key is replaced")]
+    [Example("db.call", "TimeElapsed_db_call", "dots in a timer key are replaced")]
+    [Example("x Level=Debug", "TimeElapsed_x_Level=Debug", "a timer key cannot introduce a second field")]
+    public void Timer_keys_are_normalized(string timerKey, string expectedKey, string reason)
+    {
+        Given(A_publishing_context)
+            .And(A_code_block_is_timed_under, timerKey);
+        When(Disposing_an_event_context);
+        Then(The_message_contains_the_key, expectedKey, reason);
+    }
+
+    void A_code_block_is_timed_under(string timerKey)
+    {
+        using (_context.EventContext.Time(timerKey))
+        {
+        }
+    }
+
+    void The_message_contains_the_key(string expectedKey, string reason)
+    {
+        _context.LogEvents.Single().Message.Should().Contain(expectedKey, because: reason);
+    }
+
     void A_code_block_is_timed()
     {
         using (_context.EventContext.Time("TimingKey"))

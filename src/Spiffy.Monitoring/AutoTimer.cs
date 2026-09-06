@@ -1,13 +1,13 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 
 namespace Spiffy.Monitoring
 {
     internal class AutoTimer : ITimedContext
     {
-        private long _startTimestamp;
-        private double _accumulatedMs;
-        private bool _running;
+        long _startTimestamp;
+        double _accumulatedMs;
+        bool _running;
 
         public int Count { get; private set;}
 
@@ -62,7 +62,7 @@ namespace Spiffy.Monitoring
             _running = true;
         }
 
-        private static double GetElapsedMs(long startTimestamp)
+        static double GetElapsedMs(long startTimestamp)
         {
             return (Stopwatch.GetTimestamp() - startTimestamp) * 1000.0 / Stopwatch.Frequency;
         }

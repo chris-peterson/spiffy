@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Spiffy.Monitoring.Config.Formatting;
@@ -46,26 +45,41 @@ namespace Spiffy.Monitoring
             }
         }
 
-        // Compiler-generated types (async state machines, lambdas) have a declaring type
-        // like "Namespace.OuterClass+<MethodName>d__5". We resolve back to the outer class
-        // and original method name.
-        static readonly Regex GeneratedTypePattern = new Regex(
-            @"^<(\w+)>[a-z]__\d+$", RegexOptions.Compiled);
+        // An async or iterator method compiles to a nested state machine type named
+        // "<Foo>d__5" (or "<Foo>d__5`1" when the method is generic), whose frame is MoveNext.
+        static readonly Regex StateMachineTypePattern = new Regex(
+            @"^<(\w+)>d__\d+(?:`\d+)?$", RegexOptions.Compiled);
+
+        // A lambda compiles to "<Foo>b__7_0" and a local function to "<Foo>g__Local|0_0",
+        // both of which keep the original method name in their own name.
+        static readonly Regex GeneratedMethodPattern = new Regex(
+            @"^<(\w+)>[bg]__", RegexOptions.Compiled);
 
         static (string Component, string Operation) ResolveCaller(MethodBase method)
         {
             var declaringType = method.DeclaringType;
+            var operation = method.Name;
 
-            if (declaringType.DeclaringType != null)
+            var methodMatch = GeneratedMethodPattern.Match(operation);
+            if (methodMatch.Success)
             {
-                var match = GeneratedTypePattern.Match(declaringType.Name);
-                if (match.Success)
-                {
-                    return (declaringType.DeclaringType.Name, match.Groups[1].Value);
-                }
+                operation = methodMatch.Groups[1].Value;
             }
 
-            return (declaringType.Name, method.Name);
+            // Walk out of the compiler-generated nesting -- a state machine, or a lambda's
+            // "<>c" / "<>c__DisplayClass7_0" closure -- to the type the caller wrote.
+            while (declaringType.DeclaringType != null
+                   && declaringType.Name.StartsWith("<", StringComparison.Ordinal))
+            {
+                var typeMatch = StateMachineTypePattern.Match(declaringType.Name);
+                if (typeMatch.Success)
+                {
+                    operation = typeMatch.Groups[1].Value;
+                }
+                declaringType = declaringType.DeclaringType;
+            }
+
+            return (declaringType.Name, operation);
         }
 
         public EventContext(string component, string operation) : this(component, operation, null)
@@ -88,11 +102,12 @@ namespace Spiffy.Monitoring
 
         public Level Level { get; private set; }
 
-        private const int InitialCapacity = 16;
-        private string[] _keys = new string[InitialCapacity];
-        private object[] _vals = new object[InitialCapacity];
-        private int _count;
-        private Dictionary<string, uint> _counts;
+        const int InitialCapacity = 16;
+        readonly object _lock = new object();
+        string[] _keys = new string[InitialCapacity];
+        object[] _vals = new object[InitialCapacity];
+        int _count;
+        Dictionary<string, uint> _counts;
 
         readonly DateTime _timestamp;
         DateTime? _customTimestamp;
@@ -108,12 +123,21 @@ namespace Spiffy.Monitoring
             return Timers.Accumulate(key);
         }
 
-        private TimerCollection _timers;
-        public TimerCollection Timers => _timers ??= new TimerCollection();
+        TimerCollection _timers;
+        public TimerCollection Timers
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _timers ??= new TimerCollection();
+                }
+            }
+        }
 
         public void Count(string key)
         {
-            lock (this)
+            lock (_lock)
             {
                 _counts ??= new Dictionary<string, uint>();
                 if (_counts.TryGetValue(key, out var val))
@@ -127,7 +151,7 @@ namespace Spiffy.Monitoring
         {
             get
             {
-                lock (this)
+                lock (_lock)
                 {
                     var idx = FindKey(key);
                     return idx >= 0 ? _vals[idx] : string.Empty;
@@ -138,7 +162,7 @@ namespace Spiffy.Monitoring
 
         public void Set(string key, object value, FieldConflict behavior = FieldConflict.Overwrite)
         {
-            lock (this)
+            lock (_lock)
             {
                 SetCore(key, value, behavior);
             }
@@ -168,19 +192,23 @@ namespace Spiffy.Monitoring
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int FindKey(string key)
+        int FindKey(string key)
         {
+            if (key == null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
             for (int i = 0; i < _count; i++)
             {
                 if (string.Equals(_keys[i], key, StringComparison.Ordinal))
+                {
                     return i;
+                }
             }
             return -1;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void AppendEntry(string key, object value)
+        void AppendEntry(string key, object value)
         {
             if (_count == _keys.Length)
             {
@@ -209,12 +237,22 @@ namespace Spiffy.Monitoring
             }
         }
 
+        ConcurrentDictionary<string, string> _privateData;
+
         /// <summary>
         /// Data that is attached to the EventContext but is not published.  This could be useful for
         /// stashing relevant contextual information, e.g. metric labels.
         /// </summary>
-        private ConcurrentDictionary<string, string> _privateData;
-        public ConcurrentDictionary<string, string> PrivateData => _privateData ??= new ConcurrentDictionary<string, string>();
+        public ConcurrentDictionary<string, string> PrivateData
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _privateData ??= new ConcurrentDictionary<string, string>();
+                }
+            }
+        }
 
         public void AddValues(params KeyValuePair<string, object>[] values)
         {
@@ -234,7 +272,7 @@ namespace Spiffy.Monitoring
 
         public bool Contains(string key)
         {
-            lock (this)
+            lock (_lock)
             {
                 return FindKey(key) >= 0;
             }
@@ -242,7 +280,7 @@ namespace Spiffy.Monitoring
 
         public void AppendToValue(string key, string content, string delimiter)
         {
-            lock (this)
+            lock (_lock)
             {
                 var idx = FindKey(key);
                 if (idx >= 0)
@@ -293,7 +331,7 @@ namespace Spiffy.Monitoring
 
         public void SuppressFields(params string [] fields)
         {
-            lock (this)
+            lock (_lock)
             {
                 foreach (var field in fields)
                 {
@@ -349,71 +387,88 @@ namespace Spiffy.Monitoring
         }
 
         [ThreadStatic]
-        private static StringBuilder t_sb;
+        static StringBuilder _renderBuffer;
 
-        private LogEvent Render()
+        const int RenderBufferRetainedCapacity = 4096;
+
+        // Holds _lock for the whole walk: _keys/_vals/_count are only consistent with
+        // each other between mutations, and SetCore below is itself a mutation.
+        LogEvent Render()
         {
-            var countsCount = _counts?.Count ?? 0;
-            var kvps = new Dictionary<string, string>(_count + countsCount + 8);
-            var hasCustomNull = _config.CustomNullValue != null;
-            for (int i = 0; i < _count; i++)
+            lock (_lock)
             {
-                var key = _keys[i];
-                if (key != null && (hasCustomNull || _vals[i] != null))
+                var countsCount = _counts?.Count ?? 0;
+                var kvps = new Dictionary<string, string>(_count + countsCount + 8);
+                var hasCustomNull = _config.CustomNullValue != null;
+                for (int i = 0; i < _count; i++)
                 {
-                    kvps[NormalizeKey(key)] = GetValue(_vals[i]);
+                    var key = _keys[i];
+                    if (key != null && (hasCustomNull || _vals[i] != null))
+                    {
+                        kvps[NormalizeKey(key)] = GetValue(_vals[i]);
+                    }
                 }
-            }
 
-            if (_counts != null)
-            {
-                foreach (var kvp in _counts)
+                if (_counts != null)
                 {
-                    kvps[NormalizeKey(kvp.Key)] = kvp.Value.ToString();
+                    foreach (var kvp in _counts)
+                    {
+                        kvps[NormalizeKey(kvp.Key)] = kvp.Value.ToString();
+                    }
                 }
+
+                if (_timers != null)
+                {
+                    _timers.WriteTimerValues(kvps, FieldName.Get(Field.TimeElapsed));
+                }
+
+                EncapsulateValuesIfNecessary(kvps);
+
+                var timeElapsedMs = _timer.ElapsedMilliseconds;
+                var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
+                SetCore(FieldName.Get(Field.TimeElapsed), formattedTimeElapsed);
+                kvps[FieldName.Get(Field.TimeElapsed)] = formattedTimeElapsed;
+                _privateData ??= new ConcurrentDictionary<string, string>();
+                _privateData["MetricsKey"] = string.Concat(Component, "/", Operation);
+
+                return new LogEvent(
+                    Level,
+                    Timestamp,
+                    TimeSpan.FromMilliseconds(timeElapsedMs),
+                    RenderTimestamp(),
+                    GetKeyValuePairsAsDelimitedString(kvps),
+                    kvps,
+                    _privateData);
             }
-
-            if (_timers != null)
-                GetTimeValues(kvps);
-
-            EncapsulateValuesIfNecessary(kvps);
-
-            var timeElapsedMs = _timer.ElapsedMilliseconds;
-            var formattedTimeElapsed = GetTimeFor(timeElapsedMs);
-            SetCore(FieldName.Get(Field.TimeElapsed), formattedTimeElapsed);
-            kvps[FieldName.Get(Field.TimeElapsed)] = formattedTimeElapsed;
-            IDictionary<string, string> privateData = _privateData ?? (IDictionary<string, string>)new Dictionary<string, string>(1);
-            privateData["MetricsKey"] = string.Concat(Component, "/", Operation);
-
-            return new LogEvent(
-                Level,
-                Timestamp,
-                TimeSpan.FromMilliseconds(timeElapsedMs),
-                RenderTimestamp(),
-                GetKeyValuePairsAsDelimitedString(kvps),
-                kvps,
-                privateData);
         }
 
-        private static string NormalizeKey(string key)
+        internal static string NormalizeKey(string key)
         {
             if (string.IsNullOrWhiteSpace(key))
                 return string.Concat("GeneratedKey(", Guid.NewGuid().ToString(), ")");
 
-            bool hasWhitespace = false;
-            bool hasDots = false;
-            for (int i = 0; i < key.Length; i++)
+            var hasWhitespace = false;
+            var hasDots = false;
+            for (var i = 0; i < key.Length; i++)
             {
-                if (char.IsWhiteSpace(key[i])) hasWhitespace = true;
-                else if (key[i] == '.') hasDots = true;
+                if (char.IsWhiteSpace(key[i]))
+                {
+                    hasWhitespace = true;
+                }
+                else if (key[i] == '.')
+                {
+                    hasDots = true;
+                }
             }
 
-            if (!hasWhitespace && !hasDots) return key;
-
             if (hasWhitespace)
+            {
                 key = key.RemoveWhiteSpace();
+            }
             if (hasDots)
+            {
                 key = key.Replace(".", "_");
+            }
             return key;
         }
         
@@ -436,18 +491,26 @@ namespace Spiffy.Monitoring
             }
         }
 
+        static void AppendPair(StringBuilder sb, string key, string value)
+        {
+            if (sb.Length > 0)
+            {
+                sb.Append(' ');
+            }
+            sb.Append(key).Append('=').Append(value);
+        }
+
         private string GetKeyValuePairsAsDelimitedString(Dictionary<string, string> keyValuePairs)
         {
             var deprioritizedLength = _config.DeprioritizedValueLength;
-            var sb = t_sb ??= new StringBuilder(512);
+            var sb = _renderBuffer ??= new StringBuilder(512);
             sb.Clear();
 
             foreach (var kvp in keyValuePairs)
             {
                 if (kvp.Value.Length <= deprioritizedLength)
                 {
-                    if (sb.Length > 0) sb.Append(' ');
-                    sb.Append(kvp.Key).Append('=').Append(kvp.Value);
+                    AppendPair(sb, kvp.Key, kvp.Value);
                 }
             }
 
@@ -455,12 +518,17 @@ namespace Spiffy.Monitoring
             {
                 if (kvp.Value.Length > deprioritizedLength)
                 {
-                    if (sb.Length > 0) sb.Append(' ');
-                    sb.Append(kvp.Key).Append('=').Append(kvp.Value);
+                    AppendPair(sb, kvp.Key, kvp.Value);
                 }
             }
 
-            return sb.ToString();
+            var rendered = sb.ToString();
+            sb.Clear();
+            if (sb.Capacity > RenderBufferRetainedCapacity)
+            {
+                _renderBuffer = null;
+            }
+            return rendered;
         }
 
         string GetValue(object value)
@@ -498,17 +566,9 @@ namespace Spiffy.Monitoring
             return ts;
         }
 
-        private void GetTimeValues(Dictionary<string, string> target)
+        internal static string GetTimeFor(double milliseconds)
         {
-            _timers.WriteTimerValues(target, FieldName.Get(Field.TimeElapsed));
+            return milliseconds.ToString("F1");
         }
-
-        private static readonly string ZeroTime = "0.0";
-
-        private static string GetTimeFor(double milliseconds)
-        {
-            return milliseconds == 0.0 ? ZeroTime : milliseconds.ToString("F1");
-        }
-
     }
 }

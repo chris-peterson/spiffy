@@ -14,9 +14,9 @@ namespace Benchmarks;
 [GcServer(true)]
 public class RenderPathBenchmarks
 {
-    private Configuration _defaultConfig;
-    private Configuration _logfmtConfig;
-    private Configuration _removeNewlinesConfig;
+    Configuration _defaultConfig;
+    Configuration _logfmtConfig;
+    Configuration _removeNewlinesConfig;
 
     [GlobalSetup]
     public void Setup()
@@ -42,7 +42,7 @@ public class RenderPathBenchmarks
     [Benchmark(Baseline = true, Description = "Default config: 10 fields")]
     public void DefaultConfig_10Fields()
     {
-        var ctx = new EventContext("Svc", "Op");
+        var ctx = new EventContext("Svc", "Op", _defaultConfig);
         PopulateTypical(ctx);
         ctx.Dispose();
     }
@@ -50,7 +50,7 @@ public class RenderPathBenchmarks
     [Benchmark(Description = "Logfmt config: 10 fields")]
     public void LogfmtConfig_10Fields()
     {
-        var ctx = new EventContext("Svc", "Op");
+        var ctx = new EventContext("Svc", "Op", _logfmtConfig);
         PopulateTypical(ctx);
         ctx.Dispose();
     }
@@ -58,7 +58,7 @@ public class RenderPathBenchmarks
     [Benchmark(Description = "Newline removal: multiline values")]
     public void NewlineRemoval()
     {
-        var ctx = new EventContext("Svc", "Op");
+        var ctx = new EventContext("Svc", "Op", _removeNewlinesConfig);
         ctx["StackTrace"] = "at Foo.Bar()\r\n  at Baz.Qux()\r\n  at Program.Main()";
         ctx["Message"] = "Line1\nLine2\nLine3";
         ctx["Details"] = "First\r\nSecond\r\nThird\r\nFourth\r\nFifth";
@@ -68,7 +68,7 @@ public class RenderPathBenchmarks
     [Benchmark(Description = "Mixed: fields + timers + counts + encapsulation")]
     public void MixedWorkload()
     {
-        var ctx = new EventContext("Svc", "Op");
+        var ctx = new EventContext("Svc", "Op", _defaultConfig);
         ctx["UserId"] = "user-12345";
         ctx["Query"] = "SELECT * FROM users WHERE id = 'test'";
         ctx["Endpoint"] = "/api/v1/items?page=1&size=10";
@@ -84,7 +84,7 @@ public class RenderPathBenchmarks
     [Benchmark(Description = "Large payload: 50 fields")]
     public void LargePayload_50Fields()
     {
-        var ctx = new EventContext("Svc", "Op");
+        var ctx = new EventContext("Svc", "Op", _defaultConfig);
         for (int i = 0; i < 50; i++)
         {
             ctx[$"Field{i}"] = $"Value{i}";
@@ -92,7 +92,7 @@ public class RenderPathBenchmarks
         ctx.Dispose();
     }
 
-    private static void PopulateTypical(EventContext ctx)
+    static void PopulateTypical(EventContext ctx)
     {
         ctx["UserId"] = "user-12345";
         ctx["RequestId"] = "req-abcdef-1234-5678";

@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
 using Spiffy.Monitoring;
 
 namespace Benchmarks;
@@ -8,13 +7,18 @@ namespace Benchmarks;
 /// <summary>
 /// Runs a realistic mixed workload for a fixed duration and reports throughput (ops/sec)
 /// and memory allocation rate. Invoked via: dotnet run -c Release -- throughput [seconds]
+///
+/// Compiled into both Benchmarks and Benchmarks.Baseline so the two runs differ only in
+/// which Spiffy.Monitoring they link against.
 /// </summary>
 public static class ThroughputHarness
 {
-    public static void Run(int durationSeconds = 60)
+    public static void Run(int durationSeconds = 60, string label = null)
     {
-        // Configure with a no-op provider so Render() runs but nothing is written to disk
-        var config = Configuration.Create(api =>
+        // Initialize rather than Create: only Initialize assigns Configuration.Default,
+        // which is what the EventContexts below bind -- without it Dispose() short-circuits
+        // on an empty provider list and never calls Render().
+        Configuration.Initialize(api =>
         {
             api.Providers.Add("noop", _ => { });
         });
@@ -67,7 +71,7 @@ public static class ThroughputHarness
         double bytesPerOp = (double)(memAfter - memBefore) / totalOps;
 
         Console.WriteLine();
-        Console.WriteLine("=== Throughput Results ===");
+        Console.WriteLine(label == null ? "=== Throughput Results ===" : $"=== Throughput Results ({label}) ===");
         Console.WriteLine($"Duration:       {sw.Elapsed.TotalSeconds:F2}s");
         Console.WriteLine($"Total ops:      {totalOps:N0}");
         Console.WriteLine($"Throughput:     {opsPerSec:N0} ops/sec");
@@ -120,7 +124,7 @@ public static class ThroughputHarness
             ctx["field.with.dots"] = "normalized";
         }
 
-        // Every 10th iteration: structure inclusion
+        // Every 10th iteration: a wider field set
         if (i % 10 == 0)
         {
             ctx["LargePayload"] = true;

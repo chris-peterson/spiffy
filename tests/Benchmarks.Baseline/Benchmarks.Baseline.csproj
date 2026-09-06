@@ -10,4 +10,9 @@
     <PackageReference Include="Spiffy.Monitoring" Version="6.4.7" />
   </ItemGroup>
 
+  <!-- Same workload as the candidate run; only the Spiffy.Monitoring reference differs. -->
+  <ItemGroup>
+    <Compile Include="..\Benchmarks\ThroughputHarness.cs" Link="ThroughputHarness.cs" />
+  </ItemGroup>
+
 </Project>

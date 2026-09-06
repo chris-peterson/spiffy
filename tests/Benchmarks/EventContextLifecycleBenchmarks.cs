@@ -13,12 +13,11 @@ namespace Benchmarks;
 [GcServer(true)]
 public class EventContextLifecycleBenchmarks
 {
-    private Configuration _config;
+    Configuration _config;
 
     [GlobalSetup]
     public void Setup()
     {
-        // Configure with a no-op provider so Render() runs but nothing is written
         _config = Configuration.Create(api =>
         {
             api.Providers.Add("noop", _ => { });
@@ -28,13 +27,13 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "Minimal: create + dispose")]
     public void MinimalLifecycle()
     {
-        using var ctx = new EventContext("TestComponent", "TestOperation");
+        using var ctx = new EventContext("TestComponent", "TestOperation", _config);
     }
 
     [Benchmark(Description = "Typical: 5 string fields")]
     public void TypicalLifecycle_5Fields()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx["UserId"] = "user-12345";
         ctx["RequestId"] = "req-abcdef";
         ctx["Endpoint"] = "/api/v1/items";
@@ -46,7 +45,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "Heavy: 20 mixed fields")]
     public void HeavyLifecycle_20Fields()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         for (int i = 0; i < 10; i++)
         {
             ctx[$"StringField{i}"] = $"value-{i}";
@@ -65,7 +64,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "With timers: 3 named timers")]
     public void LifecycleWithTimers()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx["RequestId"] = "req-abcdef";
         using (ctx.Time("Database")) { }
         using (ctx.Time("Serialization")) { }
@@ -76,7 +75,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "With counts: 5 counters")]
     public void LifecycleWithCounts()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         for (int i = 0; i < 5; i++)
         {
             ctx.Count("ItemsProcessed");
@@ -89,7 +88,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "With exception")]
     public void LifecycleWithException()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx["RequestId"] = "req-abcdef";
         try
         {
@@ -106,7 +105,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "With structure (10 properties)")]
     public void LifecycleWithStructure()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx.IncludeStructure(new SampleStructure
         {
             Name = "TestItem",
@@ -126,7 +125,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "Values needing encapsulation")]
     public void LifecycleWithEncapsulation()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx["Query"] = "SELECT * FROM users WHERE name = 'test'";
         ctx["Message"] = "Hello, world & goodbye";
         ctx["Path"] = "/api/v1/items?page=1&size=10";
@@ -138,7 +137,7 @@ public class EventContextLifecycleBenchmarks
     [Benchmark(Description = "Keys needing normalization")]
     public void LifecycleWithKeyNormalization()
     {
-        var ctx = new EventContext("TestComponent", "TestOperation");
+        var ctx = new EventContext("TestComponent", "TestOperation", _config);
         ctx["field with spaces"] = "value1";
         ctx["field.with.dots"] = "value2";
         ctx["  leading spaces"] = "value3";

@@ -5,8 +5,8 @@ namespace Spiffy.Monitoring
 {
     public class TimerCollection
     {
-        private readonly object _lock = new();
-        private readonly Dictionary<string, AutoTimer> _timers = new();
+        readonly object _lock = new object();
+        readonly Dictionary<string, AutoTimer> _timers = new Dictionary<string, AutoTimer>();
 
         public ITimedContext TimeOnce(string key)
         {
@@ -22,19 +22,14 @@ namespace Spiffy.Monitoring
             return timer;
         }
 
-        internal Dictionary<string, AutoTimer> ShallowClone()
-        {
-            lock (_lock)
-            {
-                return new Dictionary<string, AutoTimer>(_timers);
-            }
-        }
-
         internal void WriteTimerValues(Dictionary<string, string> target, string timeElapsedField)
         {
             lock (_lock)
             {
-                if (_timers.Count == 0) return;
+                if (_timers.Count == 0)
+                {
+                    return;
+                }
 
                 var keys = new List<string>(_timers.Keys);
                 keys.Sort(StringComparer.Ordinal);
@@ -42,10 +37,11 @@ namespace Spiffy.Monitoring
                 foreach (var key in keys)
                 {
                     var timer = _timers[key];
-                    target[string.Concat(timeElapsedField, "_", key)] = timer.ElapsedMilliseconds.ToString("F1");
+                    var timeKey = EventContext.NormalizeKey(string.Concat(timeElapsedField, "_", key));
+                    target[timeKey] = EventContext.GetTimeFor(timer.ElapsedMilliseconds);
                     if (timer.Count > 1)
                     {
-                        target[string.Concat("Count_", key)] = timer.Count.ToString();
+                        target[EventContext.NormalizeKey(string.Concat("Count_", key))] = timer.Count.ToString();
                     }
                 }
             }

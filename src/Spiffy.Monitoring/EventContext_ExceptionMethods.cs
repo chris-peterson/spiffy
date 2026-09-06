@@ -47,11 +47,11 @@ namespace Spiffy.Monitoring
                 }
 
                 // NOTE: In addition to the fields emitted above, we used to emit the full ex.ToString()
-                // We stopped doing this, because it is redundant, and (more importantly) because it was
-                // causing problems with Splunk indexing.  In certain conditions, fields after Exception
-                // (e.g. Service/BuildLife) were not being indexed.  We attribute this to hiting a max
+                // We stopped doing this, because it is redundant, and (more importantly) because it was 
+                // causing problems with Splunk indexing.  In certain conditions, fields after Exception 
+                // (e.g. Service/BuildLife) were not being indexed.  We attribute this to hiting a max 
                 // event limit of 10K.
-                // We will continue to emit a value for reporting and discoverability, i.e.
+                // We will continue to emit a value for reporting and discoverability, i.e. 
                 // "index=appdev Service=Foo Exception" will still return all events that have an exception.
                 this[keyPrefix] = inner == null
                     ? "See Exception_* for more details"

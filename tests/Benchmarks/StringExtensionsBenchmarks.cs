@@ -11,20 +11,6 @@ namespace Benchmarks;
 [GcServer(true)]
 public class StringExtensionsBenchmarks
 {
-    // --- ContainsWhiteSpace ---
-
-    [Benchmark(Description = "ContainsWhiteSpace: no whitespace")]
-    public bool ContainsWhiteSpace_None() => "ComponentName".ContainsWhiteSpace();
-
-    [Benchmark(Description = "ContainsWhiteSpace: has space")]
-    public bool ContainsWhiteSpace_Space() => "Component Name".ContainsWhiteSpace();
-
-    [Benchmark(Description = "ContainsWhiteSpace: has tab")]
-    public bool ContainsWhiteSpace_Tab() => "Component\tName".ContainsWhiteSpace();
-
-    [Benchmark(Description = "ContainsWhiteSpace: long key no whitespace")]
-    public bool ContainsWhiteSpace_LongKey() => "VeryLongFieldNameThatHasNoWhitespaceAnywhere".ContainsWhiteSpace();
-
     // --- RemoveWhiteSpace ---
 
     [Benchmark(Description = "RemoveWhiteSpace: simple")]
